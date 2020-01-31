@@ -1,0 +1,17 @@
+service: restlessness-rest-api
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+plugins:
+  - serverless-offline
+
+functions:
+  getMerchantByMerchantId:
+    handler: dist/handler.getEndpoints
+    events:
+      - http:
+          path: endpoints
+          method: get
+          cors: true

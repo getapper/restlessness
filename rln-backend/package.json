@@ -1,0 +1,22 @@
+{
+  "name": "restlessness-rest-api",
+  "version": "0.0.0",
+  "scripts": {
+    "dev:server": "tsc && serverless offline --port 4123"
+  },
+  "dependencies": {
+    "module-alias": "2.2.0"
+  },
+  "author": "Getapper",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "12.7.2",
+    "@typescript-eslint/parser": "^2.1.0",
+    "eslint": "6.3.0",
+    "serverless-offline": "5.12.1",
+    "typescript": "3.7.5"
+  },
+  "_moduleAliases": {
+    "root": "dist"
+  }
+}
