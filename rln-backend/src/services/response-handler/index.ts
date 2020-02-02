@@ -4,9 +4,9 @@ interface ResponseOptions {
   },
 }
 
-export default (cb: Function, response, status: number = 200, options?: ResponseOptions) => {
+export default (response, status: number = 200, options?: ResponseOptions) => {
   if (status === 200) {
-    return cb(null,
+    return (
       {
         statusCode: 200,
         body: JSON.stringify(response),

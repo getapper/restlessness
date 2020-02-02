@@ -7,11 +7,4 @@ provider:
 plugins:
   - serverless-offline
 
-functions:
-  getMerchantByMerchantId:
-    handler: dist/handler.getEndpoints
-    events:
-      - http:
-          path: endpoints
-          method: get
-          cors: true
+functions: ${file(./functions.json):functions}

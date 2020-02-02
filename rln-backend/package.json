@@ -2,7 +2,7 @@
   "name": "restlessness-rest-api",
   "version": "0.0.0",
   "scripts": {
-    "dev:server": "tsc && serverless offline --port 4123"
+    "dev:server": "tsc && IS_DEV=1 serverless offline --port 4123"
   },
   "dependencies": {
     "module-alias": "2.2.0"
