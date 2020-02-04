@@ -1,14 +1,9 @@
 require('module-alias/register');
-import res from 'root/services/response-handler';
-import Endpoint from 'root/models/Endpoint';
+import handler from './handler';
 
 export default async (event, context) => {
-  const endpoints: Endpoint[] = await Endpoint.getList();
-  return res(
-    endpoints, 200, {
-    headers: {
-      'Access-Control-Expose-Headers': 'content-range',
-      'content-range': `${endpoints.length}`,
-    },
-  });
+  // @TODO: Add lib request parser
+  // @TODO: Add payload Joi validator
+  const payload = JSON.parse(event.body);
+  return await handler({ payload });
 };

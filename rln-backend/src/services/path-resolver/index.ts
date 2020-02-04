@@ -3,11 +3,14 @@ import envVars from 'root/services/env-vars';
 
 const getPrjRoot = (): string => {
   if (envVars.isDev) {
-    return path.join(process.cwd(), 'dummy-prj');
+    return process.cwd();
   }
   return envVars.prjPath;
 };
 
+const getEndpointsRoot = (): string => path.join(getPrjRoot(), 'src', 'endpoints');
+
 export {
   getPrjRoot,
+  getEndpointsRoot,
 };

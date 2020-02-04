@@ -1,17 +1,5 @@
 {
   "functions": {
-    "getEndpoints": {
-      "handler": "dist/handler.getEndpoints",
-      "events": [
-        {
-          "http": {
-            "path": "endpoints",
-            "method": "get",
-            "cors": true
-          }
-        }
-      ]
-    },
     "postEndpoints": {
       "handler": "dist/handler.postEndpoints",
       "events": [
@@ -19,6 +7,18 @@
           "http": {
             "path": "endpoints",
             "method": "post",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getEndpoints": {
+      "handler": "dist/handler.getEndpoints",
+      "events": [
+        {
+          "http": {
+            "path": "endpoints",
+            "method": "get",
             "cors": true
           }
         }

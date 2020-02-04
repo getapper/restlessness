@@ -4,14 +4,12 @@ interface ResponseOptions {
   },
 }
 
-export default (response, status: number = 200, options?: ResponseOptions) => {
-  if (status === 200) {
-    return (
-      {
-        statusCode: 200,
-        body: JSON.stringify(response),
-        headers: options?.headers,
-      }
-    );
-  }
+export default (response, statusCode: number = 200, options?: ResponseOptions) => {
+  return (
+    {
+      statusCode,
+      body: JSON.stringify(response),
+      headers: options?.headers,
+    }
+  );
 };

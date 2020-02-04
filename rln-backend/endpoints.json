@@ -1,12 +1,12 @@
 [
-    {
-        "id": 1,
-        "route": "/endpoints",
-        "method": "get"
-    },
-    {
-        "id": 2,
-        "route": "/endpoints",
-        "method": "post"
-    }
+  {
+    "id": 1,
+    "route": "/endpoints",
+    "method": "post"
+  },
+  {
+    "route": "/endpoints",
+    "method": "get",
+    "id": 2
+  }
 ]
