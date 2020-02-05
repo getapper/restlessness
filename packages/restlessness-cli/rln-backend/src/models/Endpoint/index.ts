@@ -1,8 +1,9 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getPrjRoot, getEndpointsRoot } from 'root/services/path-resolver';
-import { handlerTemplate, indexTemplate, interfacesTemplate } from 'root/models/Endpoint/templates';
+import { getPrjRoot, getEndpointsRoot, getSrcRoot } from 'root/services/path-resolver';
+import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate } from 'root/models/Endpoint/templates';
 import { capitalize } from 'root/services/util';
+import Route from 'root/models/Route';
 
 enum HttpMethod {
   GET = 'get',
@@ -16,9 +17,15 @@ export {
   HttpMethod,
 };
 
+interface JsonEndpoint {
+  id: number,
+  route: string,
+  method: HttpMethod
+}
+
 export default class Endpoint {
   id: number
-  route: string
+  route: Route
   method: HttpMethod
 
   static get endpointsJsonPath(): string {
@@ -31,33 +38,26 @@ export default class Endpoint {
 
   static async getList(): Promise<Endpoint[]> {
     const file = await fs.readFile(Endpoint.endpointsJsonPath);
-    const endpoints = JSON.parse(file.toString());
+    const endpoints: JsonEndpoint[] = JSON.parse(file.toString());
+    console.log(endpoints);
     return endpoints.map(endpoint => {
       const ep = new Endpoint();
       ep.id = endpoint.id;
-      ep.route = endpoint.route;
+      ep.route = Route.parseFromText(endpoint.route);
       ep.method = endpoint.method;
       return ep;
     });
   }
 
   static async saveList(endpoints: Endpoint[]) {
-    await fs.writeFile(Endpoint.endpointsJsonPath, JSON.stringify(endpoints, null, 2));
+    const jsonEndpoints: JsonEndpoint[] = endpoints.map(ep => ({
+      ...ep,
+      route: ep.route.endpointRoute,
+    }));
+    await fs.writeFile(Endpoint.endpointsJsonPath, JSON.stringify(jsonEndpoints, null, 2));
   }
 
-  get folderName(): string {
-    const formattedRoute = this.route
-      .split('/')
-      .filter(p => p !== '')
-      .join('-');
-    return `${this.method}-${formattedRoute}`;
-  }
-
-  get folderPath(): string {
-    return path.join(getEndpointsRoot(), this.folderName);
-  }
-
-  async create(route: string, method: HttpMethod) {
+  async create(route: Route, method: HttpMethod) {
     this.route = route;
     this.method = method;
     const endpoints = await Endpoint.getList();
@@ -66,27 +66,20 @@ export default class Endpoint {
       .reduce((max, curr) => Math.max(max, curr), 0) || 0) + 1;
     endpoints.push(this);
     await Endpoint.saveList(endpoints);
-    // @TODO: create folders and entry inside functions.json
-    await fs.mkdir(this.folderPath);
-    await fs.writeFile(path.join(this.folderPath, 'index.ts'), indexTemplate());
-    await fs.writeFile(path.join(this.folderPath, 'handler.ts'), handlerTemplate());
-    await fs.writeFile(path.join(this.folderPath, 'interfaces.ts'), interfacesTemplate());
+    const folderPath = path.join(getEndpointsRoot(), this.method + '-' + route.folderName);
+    await fs.mkdir(folderPath);
+    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate());
+    await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate());
+    await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate());
+    await fs.writeFile(path.join(getSrcRoot(), 'exporter.ts'), exporterTemplate(endpoints));
     const functions = await Endpoint.getFunctions();
-    const functionName = this.method + this.route
-      .split('/')
-      .filter(p => p !== '')
-      .map(p =>  capitalize(p))
-      .join('');
-    const functionPath = this.route
-      .split('/')
-      .filter(p => p !== '')
-      .join('/');
+    const functionName = this.method + route.functionName;
     functions[functionName] = {
-      handler: `dist/handler.${functionName}`,
+      handler: `dist/exporter.${functionName}`,
       events: [
         {
           http: {
-            path: functionPath,
+            path: route.functionPath,
             method: this.method,
             cors: true,
           },

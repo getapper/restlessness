@@ -1,3 +1,5 @@
+import { Endpoint } from 'root/models';
+
 const indexTemplate = () => `require('module-alias/register');
 import handler from './handler';
 
@@ -28,8 +30,18 @@ export interface Request {
 }
 `;
 
+const exporterTemplate = (endpoints: Endpoint[]) => `require('module-alias/register');
+${endpoints.map(endpoint => `import ${endpoint.method}${endpoint.route.functionName} from 'root/endpoints/${endpoint.method}-${endpoint.route.folderName}';`).join('\n')}
+
+export {
+  ${endpoints.map(endpoint => `${endpoint.method}${endpoint.route.functionName},`).join('\n  ')}
+};
+
+`;
+
 export {
   indexTemplate,
   handlerTemplate,
   interfacesTemplate,
+  exporterTemplate,
 };

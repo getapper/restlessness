@@ -1,26 +1,27 @@
 require('module-alias/register');
 import res from 'root/services/response-handler';
 import { Request } from './interfaces';
-import Endpoint from 'root/models/Endpoint';
+import { Endpoint, Route } from 'root/models';
 
 export default async (req: Request) => {
   const {
     payload,
   } = req;
   const {
-    route,
+    route: text,
     method,
   } = payload;
-  const cleanRoute: string = '/' + route
-    .toLowerCase()
-    .split('/')
-    .filter(p => p !== '')
-    .join('/');
+  let route: Route;
+  try {
+    route = Route.parseFromText(text);
+  } catch (e) {
+    return res({ message: e.message }, 400);
+  }
   const endpoints = await Endpoint.getList();
-  if (~endpoints.findIndex(ep => ep.route === cleanRoute && ep.method === method)) {
+  if (~endpoints.findIndex(ep => ep.route.endpointRoute === route.endpointRoute && ep.method === method)) {
     return res({ message: 'Route already exists' }, 400);
   }
   const endpoint = new Endpoint();
-  await endpoint.create(cleanRoute, method);
+  await endpoint.create(route, method);
   return res(endpoint);
 };

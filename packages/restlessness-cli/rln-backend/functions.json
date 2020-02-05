@@ -1,7 +1,7 @@
 {
   "functions": {
     "postEndpoints": {
-      "handler": "dist/handler.postEndpoints",
+      "handler": "dist/exporter.postEndpoints",
       "events": [
         {
           "http": {
@@ -13,7 +13,7 @@
       ]
     },
     "getEndpoints": {
-      "handler": "dist/handler.getEndpoints",
+      "handler": "dist/exporter.getEndpoints",
       "events": [
         {
           "http": {
