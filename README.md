@@ -7,8 +7,8 @@ A framework to easy develop and deploy serverless AWS lambdas REST APIs
 
 - [x] ~~React Admin FE init~~
 - [x] ~~Serverless BE init~~
-- [ ] CLI init
-- [ ] CLI new project command
+- [x] ~~CLI init~~
+- [x] ~~CLI new project command~~
 - [ ] CLI run web interface command
 - [ ] Endpoint create
 - [ ] Endpoint request parser

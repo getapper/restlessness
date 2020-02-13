@@ -1,0 +1,25 @@
+{
+  "name": "@restlessness/cli",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "restlessness": "./index.js"
+  },
+  "keywords": [
+    "restlessness",
+    "cli",
+    "lambda",
+    "serverless",
+    "typescript"
+  ],
+  "author": "Getapper",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "3.0.0",
+    "minimist": "1.2.0"
+  }
+}

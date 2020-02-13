@@ -16,10 +16,15 @@ import res from 'root/services/response-handler';
 import { Request } from './interfaces';
 
 export default async (req: Request) => {
-  const {
-    payload,
-  } = req;
-  return res({});
+  try {
+    const {
+      
+    } = req;
+
+    return res({});
+  } catch (e) {
+    return res({}, 500);
+  }
 };
 `;
 

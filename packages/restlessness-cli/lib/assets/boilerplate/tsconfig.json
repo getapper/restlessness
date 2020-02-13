@@ -1,0 +1,1 @@
+{  "compilerOptions": {    "allowJs": false,    "target": "es6",    "sourceMap": true,    "module": "commonjs",    "moduleResolution": "node",    "resolveJsonModule": true,    "esModuleInterop": true,    "baseUrl": "src",    "paths": {      "root/*": ["./*"]    },    "outDir": "dist"  },  "include": [    "./src/**/*"  ],  "exclude": [    "node_modules"  ]}
