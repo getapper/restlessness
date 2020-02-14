@@ -1,0 +1,12 @@
+node_modules
+
+# IntelliJ
+.idea
+
+# OSX
+.DS_Store
+
+/rln-backend
+/rln-frontend
+
+/scripts

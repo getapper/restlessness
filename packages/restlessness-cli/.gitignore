@@ -1,0 +1,11 @@
+node_modules
+
+# IntelliJ
+.idea
+
+# OSX
+.DS_Store
+
+/lib/assets/backend
+/lib/assets/frontend
+

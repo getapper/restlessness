@@ -6,6 +6,9 @@ module.exports = () => {
     case 'init':
       require('./commands/init')(argv)
       break
+    case 'run':
+      require('./commands/run')(argv)
+      break
     default:
       console.log(chalk.red('Wrong invocation of RLN'))
       break
