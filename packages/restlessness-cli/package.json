@@ -1,10 +1,13 @@
 {
   "name": "@restlessness/cli",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "node scripts/copy-backend.js"
+    "build-backend": "cd rln-backend && tsc",
+    "build-frontend": "cd rln-frontend && npm run build",
+    "build": "npm run build-backend && npm run build-frontend && node scripts/copy-files.js",
+    "prepublishOnly": "npm run build"
   },
   "bin": {
     "restlessness": "./index.js"

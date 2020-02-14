@@ -19,9 +19,10 @@ function copyFileSync( source, target ) {
   fs.writeFileSync(targetFile, fs.readFileSync(source));
 }
 
-function copyFolderRecursiveSync( source, targetFolder ) {
+function copyFolderRecursiveSync( source, target, inside = false ) {
   var files = [];
 
+  var targetFolder = inside ? target : path.join( target, path.basename( source ) );
   if ( !fs.existsSync( targetFolder ) ) {
     fs.mkdirSync( targetFolder );
   }
@@ -56,7 +57,7 @@ const generatePackageJson = name => `{
   "name": "${name}",
   "version": "0.0.0",
   "scripts": {
-    "dev:server": "tsc serverless offline --port 3000"
+    "dev:server": "tsc && serverless offline --port 3000"
   },
   "dependencies": {
     "module-alias": "2.2.0"
@@ -67,6 +68,9 @@ const generatePackageJson = name => `{
     "eslint": "6.3.0",
     "serverless-offline": "5.12.1",
     "typescript": "3.7.5"
+  },
+  "peerDependencies": {
+    "serverless": "^1.63.0"
   },
   "_moduleAliases": {
     "root": "dist"
@@ -88,7 +92,7 @@ module.exports = async argv => {
     }
 
     try {
-      copyFolderRecursiveSync(path.join(__dirname, '..', '..', 'assets', 'boilerplate'), process.GLOBAL.PRJ_DIR)
+      copyFolderRecursiveSync(path.join(__dirname, '..', '..', 'assets', 'boilerplate'), process.GLOBAL.PRJ_DIR, true)
       fs.writeFileSync(path.join(process.GLOBAL.PRJ_DIR, 'serverless.yml'), generateServerlessYaml(name))
       fs.writeFileSync(path.join(process.GLOBAL.PRJ_DIR, 'package.json'), generatePackageJson(name))
       execSync('npm i', {

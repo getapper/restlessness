@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import fsSync, { promises as fs } from 'fs';
 import path from 'path';
 import { getPrjRoot, getEndpointsRoot, getSrcRoot } from 'root/services/path-resolver';
 import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate } from 'root/models/Endpoint/templates';
@@ -39,7 +39,6 @@ export default class Endpoint {
   static async getList(): Promise<Endpoint[]> {
     const file = await fs.readFile(Endpoint.endpointsJsonPath);
     const endpoints: JsonEndpoint[] = JSON.parse(file.toString());
-    console.log(endpoints);
     return endpoints.map(endpoint => {
       const ep = new Endpoint();
       ep.id = endpoint.id;
@@ -66,6 +65,9 @@ export default class Endpoint {
       .reduce((max, curr) => Math.max(max, curr), 0) || 0) + 1;
     endpoints.push(this);
     await Endpoint.saveList(endpoints);
+    if (!fsSync.existsSync(getEndpointsRoot())) {
+      await fs.mkdir(getEndpointsRoot());
+    }
     const folderPath = path.join(getEndpointsRoot(), this.method + '-' + route.folderName);
     await fs.mkdir(folderPath);
     await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate());
