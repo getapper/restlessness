@@ -2,7 +2,7 @@
   "name": "restlessness-rest-api",
   "version": "0.0.0",
   "scripts": {
-    "dev:server": "tsc && PRJ_PATH='/Users/antoniogiordano/Documents/getapper/internal-projects/adhesion/Backend' serverless offline --port 4123"
+    "dev:server": "tsc && PRJ_PATH='/Users/antoniogiordano/Desktop/test-rln' serverless offline --port 4123"
   },
   "dependencies": {
     "module-alias": "2.2.0"

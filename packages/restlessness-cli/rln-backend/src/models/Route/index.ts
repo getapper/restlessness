@@ -90,4 +90,16 @@ export default class Route {
   toJSON() {
     return this.endpointRoute;
   }
+
+  get vars(): string[] {
+    return this.params
+      .filter(p => p[0] === '{')
+      .map(p => p
+        .replace('{', '')
+        .replace('}', '')
+        .split('-')
+        .map((p2, index) => !index ? p2 : capitalize(p2))
+        .join('')
+      );
+  }
 }

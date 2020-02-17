@@ -10,10 +10,10 @@ A framework to easy develop and deploy serverless AWS lambdas REST APIs
 - [x] ~~CLI init~~
 - [x] ~~CLI new project command~~
 - [x] ~~CLI run web interface command~~
-- [ ] Endpoint create
-- [ ] Endpoint request parser
+- [x] ~~Endpoint create~~
+- [x] ~~Endpoint request parser~~
 - [ ] Endpoint request validation
-- [ ] Endpoint response
+- [x] ~~Endpoint response~~
 - [ ] Model create
 - [ ] DAO system
 - [ ] Mongo DAO

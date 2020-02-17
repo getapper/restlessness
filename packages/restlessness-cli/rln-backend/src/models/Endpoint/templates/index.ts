@@ -1,24 +1,28 @@
 import { Endpoint } from 'root/models';
 
-const indexTemplate = () => `require('module-alias/register');
+const indexTemplate = (hasPayload: boolean, vars: string[]): string => `require('module-alias/register');
 import handler from './handler';
+import { requestParser } from '@restlessness/core';
 
 export default async (event, context) => {
-  // @TODO: Add lib request parser
-  // @TODO: Add payload Joi validator
-  const payload = JSON.parse(event.body);
-  return await handler({ payload });
+  // @TODO: Add payload validator
+  const {
+    queryStringParameters,${hasPayload ? '\n      payload,' : ''}${vars.length ? '\n      pathParameters,' : ''}
+  } = requestParser(event);
+  return await handler({
+    queryStringParameters,${hasPayload ? '\n      payload,' : ''}${vars.length ? '\n      pathParameters,' : ''}
+  });
 };
 `;
 
-const handlerTemplate = () => `require('module-alias/register');
+const handlerTemplate = (hasPayload: boolean, vars: string[]): string => `require('module-alias/register');
 import res from 'root/services/response-handler';
 import { Request } from './interfaces';
 
 export default async (req: Request) => {
   try {
     const {
-      
+      queryStringParameters,${hasPayload ? '\n      payload,' : ''}${vars.length ? '\n      pathParameters,' : ''}
     } = req;
 
     return res({});
@@ -28,10 +32,14 @@ export default async (req: Request) => {
 };
 `;
 
-const interfacesTemplate = () => `export interface Payload {}
+const interfacesTemplate = (hasPayload: boolean, vars: string[]): string => `export interface QueryStringParameters {}${hasPayload
+  ? '\n\nexport interface Payload {}' : ''}${vars.length ? `\n\nexport interface PathParameters {
+${vars.map(v => `  ${v}: string,`).join('\n')}
+}` 
+  : ''}
 
 export interface Request {
-  payload: Payload
+  queryStringParameters: QueryStringParameters,${hasPayload ? '\n  payload: Payload,' : ''}${vars.length ? '\n  pathParameters: PathParameters,' : ''}
 }
 `;
 

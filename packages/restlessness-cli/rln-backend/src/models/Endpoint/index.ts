@@ -68,11 +68,14 @@ export default class Endpoint {
     if (!fsSync.existsSync(getEndpointsRoot())) {
       await fs.mkdir(getEndpointsRoot());
     }
+    const routeVars = route.vars;
+    const hasPayload = [HttpMethod.PATCH, HttpMethod.POST, HttpMethod.PUT].includes(this.method);
+    console.log(routeVars);
     const folderPath = path.join(getEndpointsRoot(), this.method + '-' + route.folderName);
     await fs.mkdir(folderPath);
-    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate());
-    await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate());
-    await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate());
+    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(hasPayload, routeVars));
+    await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars));
+    await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars));
     await fs.writeFile(path.join(getSrcRoot(), 'exporter.ts'), exporterTemplate(endpoints));
     const functions = await Endpoint.getFunctions();
     const functionName = this.method + route.functionName;
