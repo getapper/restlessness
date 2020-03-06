@@ -1,14 +1,14 @@
 import React from 'react';
 import { List, Datagrid, TextField } from 'react-admin';
 
-const EndpointsList = (props) => (
+const ModelsList = (props) => (
   <List {...props}>
     <Datagrid>
       <TextField source="id" />
-      <TextField source="route" />
-      <TextField source="method" />
+      <TextField source="name" />
+      <TextField source="dao" />
     </Datagrid>
   </List>
 );
 
-export default EndpointsList;
+export default ModelsList;

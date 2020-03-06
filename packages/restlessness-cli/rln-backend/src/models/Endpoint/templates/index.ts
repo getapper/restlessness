@@ -7,10 +7,10 @@ import { requestParser } from '@restlessness/core';
 export default async (event, context) => {
   // @TODO: Add payload validator
   const {
-    queryStringParameters,${hasPayload ? '\n      payload,' : ''}${vars.length ? '\n      pathParameters,' : ''}
+    queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}
   } = requestParser(event);
   return await handler({
-    queryStringParameters,${hasPayload ? '\n      payload,' : ''}${vars.length ? '\n      pathParameters,' : ''}
+    queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}
   });
 };
 `;

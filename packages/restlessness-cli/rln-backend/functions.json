@@ -23,6 +23,30 @@
           }
         }
       ]
+    },
+    "postModels": {
+      "handler": "dist/exporter.postModels",
+      "events": [
+        {
+          "http": {
+            "path": "models",
+            "method": "post",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getModels": {
+      "handler": "dist/exporter.getModels",
+      "events": [
+        {
+          "http": {
+            "path": "models",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
     }
   }
 }

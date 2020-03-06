@@ -5,8 +5,18 @@
     "method": "post"
   },
   {
+    "id": 2,
     "route": "/endpoints",
+    "method": "get"
+  },
+  {
+    "id": 3,
+    "route": "/models",
+    "method": "post"
+  },
+  {
+    "route": "/models",
     "method": "get",
-    "id": 2
+    "id": 4
   }
 ]
