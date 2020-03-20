@@ -1,0 +1,34 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "sourceType": "module"
+  },
+  "rules": {
+    "semi": [
+      "error",
+      "always"
+    ],
+    "comma-dangle": ["error", "always-multiline"],
+    "eqeqeq": "error",
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "curly": "error",
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1
+      }
+    ],
+    "rest-spread-spacing": [
+      "error",
+      "never"
+    ],
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ]
+  }
+}

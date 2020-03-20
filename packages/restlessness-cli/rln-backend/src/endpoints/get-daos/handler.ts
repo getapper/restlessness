@@ -1,7 +1,7 @@
 require('module-alias/register');
 import res from 'root/services/response-handler';
+import { Dao } from 'root/models';
 import { Request } from './interfaces';
-import { Model } from 'root/models';
 
 export default async (req: Request) => {
   try {
@@ -9,15 +9,18 @@ export default async (req: Request) => {
       queryStringParameters,
     } = req;
 
-    const models = await Model.getList();
-    return res(models, 200, {
+    const daos = await Dao.getList();
+    const emptyDao = new Dao();
+    emptyDao.id = 'null';
+    emptyDao.name = 'None';
+    daos.push(emptyDao);
+    return res(daos, 200, {
       headers: {
         'Access-Control-Expose-Headers': 'content-range',
-        'content-range': `${models.length}`,
+        'content-range': `${daos.length}`,
       },
     });
   } catch (e) {
-    console.error(e);
-    return res({ message: e.message }, 500);
+    return res({}, 500);
   }
 };

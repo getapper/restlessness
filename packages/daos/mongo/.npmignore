@@ -1,0 +1,7 @@
+src/
+.eslintrc.json
+tsconfig.json
+.gitignore
+.idea
+.DS_Store
+

@@ -15,8 +15,13 @@
     "method": "post"
   },
   {
+    "id": 4,
     "route": "/models",
+    "method": "get"
+  },
+  {
+    "route": "/daos",
     "method": "get",
-    "id": 4
+    "id": 5
   }
 ]
