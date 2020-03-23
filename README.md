@@ -18,6 +18,6 @@ The CLI package README useful to install and interact with a RLN project is avai
 - [x] ~~Endpoint request parser~~
 - [ ] Endpoint request validation
 - [x] ~~Endpoint response~~
-- [ ] Model create
-- [ ] DAO system
+- [x] ~~Model create~~
+- [x] ~~DAO system~~
 - [ ] Mongo DAO

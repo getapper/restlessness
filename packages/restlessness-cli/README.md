@@ -1,4 +1,4 @@
-# @restlessness/cli
+# @restlessness/cli [![npm version](https://img.shields.io/npm/v/@restlessness/cli.svg?style=flat)](https://www.npmjs.com/package/@restlessness/cli)
 The CLI to init and run restlessness projects.
 
 *Warning! This is still WIP!*
