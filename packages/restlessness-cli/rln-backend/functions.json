@@ -47,6 +47,18 @@
           }
         }
       ]
+    },
+    "getDaos": {
+      "handler": "dist/exporter.getDaos",
+      "events": [
+        {
+          "http": {
+            "path": "daos",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
     }
   }
 }

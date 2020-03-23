@@ -23,7 +23,7 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "3.0.0",
-    "minimist": "1.2.0",
+    "minimist": "1.2.2",
     "module-alias": "2.2.0",
     "serverless-offline": "5.12.1"
   },

@@ -12,6 +12,7 @@ function App() {
     <Admin dataProvider={restProvider('http://localhost:4123')}>
       <Resource name="endpoints" list={EndpointsList} create={EndpointsCreate}/>
       <Resource name="models" list={ModelsList} create={ModelsCreate}/>
+      <Resource name="daos" />
     </Admin>
   );
 }
