@@ -70,7 +70,6 @@ export default class Endpoint {
     }
     const routeVars = route.vars;
     const hasPayload = [HttpMethod.PATCH, HttpMethod.POST, HttpMethod.PUT].includes(this.method);
-    console.log(routeVars);
     const folderPath = path.join(getEndpointsRoot(), this.method + '-' + route.folderName);
     await fs.mkdir(folderPath);
     await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(hasPayload, routeVars));
