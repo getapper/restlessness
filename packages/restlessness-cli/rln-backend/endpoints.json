@@ -20,8 +20,18 @@
     "method": "get"
   },
   {
+    "id": 5,
     "route": "/daos",
-    "method": "get",
-    "id": 5
+    "method": "get"
+  },
+  {
+    "id": 6,
+    "route": "/envs",
+    "method": "get"
+  },
+  {
+    "route": "/envs",
+    "method": "post",
+    "id": 7
   }
 ]

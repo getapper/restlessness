@@ -57,7 +57,7 @@ const generatePackageJson = name => `{
   "name": "${name}",
   "version": "0.0.0",
   "scripts": {
-    "dev:server": "tsc && serverless offline --port 3000"
+    "DEV:locale": "cp configs/locale.json env.json && tsc && RLN_ENV=locale serverless offline --host 0.0.0.0"
   },
   "dependencies": {
     "module-alias": "2.2.0"

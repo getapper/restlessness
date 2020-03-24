@@ -59,6 +59,30 @@
           }
         }
       ]
+    },
+    "getEnvs": {
+      "handler": "dist/exporter.getEnvs",
+      "events": [
+        {
+          "http": {
+            "path": "envs",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "postEnvs": {
+      "handler": "dist/exporter.postEnvs",
+      "events": [
+        {
+          "http": {
+            "path": "envs",
+            "method": "post",
+            "cors": true
+          }
+        }
+      ]
     }
   }
 }

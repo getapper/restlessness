@@ -1,17 +1,22 @@
-import path from 'path';
-import { promises as fs } from 'fs';
+import { addDao, addToEachEnv } from '@restlessness/utilities';
 
 const postInstall = async () => {
   const PROJECT_PATH = process.argv[2];
-  const daoPath = path.join(PROJECT_PATH, 'daos.json');
-  const daos = require(daoPath);
-  if (daos.findIndex(dao => dao.name === 'mongo') === -1) {
-    daos.push({
+  try {
+    await addDao(PROJECT_PATH, 'mongo', {
       id: 'mongo',
       name: 'MongoDB',
       package: '@restlessness/dao-mongo',
     });
-    await fs.writeFile(daoPath, JSON.stringify(daos, null, 2));
+  } catch (e) {
+    console.error('Unhandled error while adding mongo to the daos.json file!');
+  }
+  try {
+    await addToEachEnv(PROJECT_PATH, 'mongo', {
+      uri: '',
+    });
+  } catch (e) {
+    console.error('Unhandler error while adding mongo config to the environments (envs/*.json) files!');
   }
 };
 

@@ -44,4 +44,11 @@ export default class Model {
     }
     return true;
   }
+
+  toJSON() {
+    return {
+      ...this,
+      dao: this.dao.name,
+    };
+  }
 }

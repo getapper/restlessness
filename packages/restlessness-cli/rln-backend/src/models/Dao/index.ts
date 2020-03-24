@@ -46,8 +46,4 @@ export default class Dao {
       return false;
     }
   }
-
-  toJSON() {
-    return this.name;
-  }
 }

@@ -51,3 +51,7 @@ class MongoDao {
 const mongoDao = new MongoDao();
 
 export default mongoDao;
+
+export {
+  MongoDao,
+};
