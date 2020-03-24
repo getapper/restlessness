@@ -64,7 +64,7 @@ const generatePackageJson = name => `{
   },
   "devDependencies": {
     "@types/node": "12.7.2",
-    "@typescript-eslint/parser": "^2.1.0",
+    "@typescript-eslint/parser": "2.1.0",
     "eslint": "6.3.0",
     "serverless-offline": "5.12.1",
     "typescript": "3.7.5"

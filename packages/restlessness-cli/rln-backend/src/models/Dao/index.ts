@@ -9,8 +9,9 @@ interface JsonDao {
 }
 
 interface Module {
-  indexTemplate: (name) => string,
+  indexTemplate: (name: string) => string,
   baseModelTemplate: () => string,
+  postEnvCreated: (projectPath: string, envName: string) => void,
 }
 
 export default class Dao {
@@ -23,7 +24,7 @@ export default class Dao {
     return path.join(getPrjRoot(), 'daos.json');
   }
 
-  static async getList(): Promise<Dao[]> {
+  static async getList(withModule: boolean = false): Promise<Dao[]> {
     const file = await fs.readFile(Dao.daosJsonPath);
     const jsonDaos: JsonDao[] = JSON.parse(file.toString());
     return jsonDaos.map(jsonDao => {
@@ -31,6 +32,9 @@ export default class Dao {
       dao.id = jsonDao.id;
       dao.name = jsonDao.name;
       dao.package = jsonDao.package;
+      if (withModule) {
+        dao.module = require(path.join(getNodeModulesRoot(), dao.package));
+      }
       return dao;
     });
   }

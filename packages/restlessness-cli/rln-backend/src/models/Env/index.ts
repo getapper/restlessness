@@ -1,17 +1,30 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getNodeModulesRoot, getPrjRoot } from 'root/services/path-resolver';
+import { getPrjRoot } from 'root/services/path-resolver';
+import { Dao } from 'root/models';
+
+export enum EnvType {
+  DEV = 'dev',
+  DEPLOY = 'deploy'
+}
+
+export enum EnvStage {
+  PREPROD = 'dev',
+  PRODUCTION = 'prod'
+}
 
 interface JsonEnv {
   id: number,
   name: string,
-  type: string,
+  type: EnvType,
+  stage: EnvStage,
 }
 
 export default class Env {
   id: number
   name: string
-  type: string
+  type: EnvType
+  stage: EnvStage
 
   static get envsJsonPath(): string {
     return path.join(getPrjRoot(), 'envs.json');
@@ -25,18 +38,54 @@ export default class Env {
       env.id = jsonEnv.id;
       env.name = jsonEnv.name;
       env.type = jsonEnv.type;
+      env.stage = jsonEnv.stage;
       return env;
     });
   }
 
-  async getById(envId: number): Promise<boolean> {
+  static async saveList(envs: Env[]) {
+    const jsonEnvs: JsonEnv[] = envs.map(env => ({
+      ...env,
+    }));
+    await fs.writeFile(Env.envsJsonPath, JSON.stringify(jsonEnvs, null, 2));
+  }
+
+  async create(name: string, type: EnvType, stage: EnvStage) {
+    this.name = name;
+    this.type = type;
+    this.stage = stage;
     const envs = await Env.getList();
-    const env = envs.find(d => d.id === envId);
-    if (env) {
-      Object.assign(this, { ...env });
-      return true;
-    } else {
-      return false;
+    this.id = (envs
+      .map(endpoint => endpoint.id)
+      .reduce((max, curr) => Math.max(max, curr), 0) || 0) + 1;
+    envs.push(this);
+    await Env.saveList(envs);
+    const envPath = path.join(getPrjRoot(), 'envs', `${name}.json`);
+    await fs.writeFile(envPath, JSON.stringify({}, null, 2));
+    const packageJsonPath = path.join(getPrjRoot(), 'package.json');
+    const packageJson = require(packageJsonPath);
+    packageJson.scripts = packageJson?.scripts || {};
+    if (type === EnvType.DEV) {
+      if ((packageJson?.scripts?.[`DEV:${name}`] ?? null) === null) {
+        packageJson.scripts[`DEV:${name}`] = `cp envs/${name}.json env.json && tsc && RLN_ENV=${name} serverless offline --host 0.0.0.0`;
+      } else {
+        console.warn(`Package Json Script command already found: DEV:${name}`);
+      }
+    } else if (type === EnvType.DEPLOY) {
+      if ((packageJson?.scripts?.[`DEPLOY:${name}`] ?? null) === null) {
+        packageJson.scripts[`DEPLOY:${name}`] = `cp envs/${name}.json env.json && tsc && serverless deploy --stage ${stage} --verbose`;
+      } else {
+        console.warn(`Package Json Script command already found: DEPLOY:${name}`);
+      }
+    }
+    await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    const daos = await Dao.getList(true);
+    for (let dao of daos) {
+      try {
+        await dao.module.postEnvCreated(getPrjRoot(), name);
+      } catch (e) {
+        console.error(`Error when calling afterEnvCreated hook on dao: ${dao.name} (${dao.id})`, e);
+      }
     }
   }
 }

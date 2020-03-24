@@ -6,6 +6,7 @@ const EnvsList = (props) => (
     <Datagrid>
       <TextField source="name" />
       <TextField source="type" />
+      <TextField source="stage" />
     </Datagrid>
   </List>
 );
