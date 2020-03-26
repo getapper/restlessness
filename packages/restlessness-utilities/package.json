@@ -1,0 +1,17 @@
+{
+  "name": "@restlessness/utilities",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
+  "author": "Getapper",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "13.7.1",
+    "@typescript-eslint/parser": "^2.1.0",
+    "eslint": "6.3.0",
+    "typescript": "3.7.5"
+  },
+  "repository": {
+    "url": "https://github.com/getapper/restlessness/tree/master/packages/restlessness-utilities"
+  }
+}

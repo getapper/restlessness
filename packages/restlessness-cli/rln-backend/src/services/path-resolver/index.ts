@@ -5,6 +5,7 @@ const getPrjRoot = (): string => {
   if (envVars.isDev) {
     // return process.cwd();
     return '/Users/lucatedesco/WebstormProjects/rln';
+    // return '/Users/antoniogiordano/Documents/getapper/adhesion/adhesion/Backend';
   }
   return envVars.prjPath;
 };

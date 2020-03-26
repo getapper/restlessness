@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/dao-mongo",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -11,6 +11,7 @@
     "typescript": "3.8.3"
   },
   "dependencies": {
+    "@restlessness/utilities": "0.0.1",
     "bson": "4.0.3",
     "mongodb": "3.5.5",
     "pluralize": "8.0.0"

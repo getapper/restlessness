@@ -57,14 +57,14 @@ const generatePackageJson = name => `{
   "name": "${name}",
   "version": "0.0.0",
   "scripts": {
-    "dev:server": "tsc && serverless offline --port 3000"
+    "DEV:locale": "cp configs/locale.json env.json && tsc && RLN_ENV=locale serverless offline --host 0.0.0.0"
   },
   "dependencies": {
     "module-alias": "2.2.0"
   },
   "devDependencies": {
     "@types/node": "12.7.2",
-    "@typescript-eslint/parser": "^2.1.0",
+    "@typescript-eslint/parser": "2.1.0",
     "eslint": "6.3.0",
     "serverless-offline": "5.12.1",
     "typescript": "3.7.5"

@@ -1,4 +1,4 @@
-import mongoDao from '../dao';
+import mongoDao, { MongoDao } from '../dao';
 import { ObjectId } from 'bson';
 import { InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
 
@@ -12,7 +12,7 @@ export default class MongoBase {
     return '';
   }
 
-  static get dao() {
+  static get dao(): MongoDao {
     return mongoDao;
   }
 
