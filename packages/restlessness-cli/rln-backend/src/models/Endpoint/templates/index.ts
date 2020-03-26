@@ -43,6 +43,13 @@ export interface Request {
 }
 `;
 
+const validationsTemplate = (hasPayload: boolean, hasParams: boolean): string => `const yup = require('yup')
+
+export default {
+  queryStringParameters: yup.object().shape({}),${hasParams? '\npathParameters: yup.object().shape({}),': ''}${hasPayload? '\npayload: yup.object().shape({}),': ''}
+};
+`;
+
 const exporterTemplate = (endpoints: Endpoint[]) => `require('module-alias/register');
 ${endpoints.map(endpoint => `import ${endpoint.method}${endpoint.route.functionName} from 'root/endpoints/${endpoint.method}-${endpoint.route.folderName}';`).join('\n')}
 
@@ -57,4 +64,5 @@ export {
   handlerTemplate,
   interfacesTemplate,
   exporterTemplate,
+  validationsTemplate,
 };

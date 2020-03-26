@@ -4,6 +4,7 @@ import getEndpoints from 'root/endpoints/get-endpoints';
 import postModels from 'root/endpoints/post-models';
 import getModels from 'root/endpoints/get-models';
 import getDaos from 'root/endpoints/get-daos';
+import getOpenapi from 'root/endpoints/get-openapi';
 
 export {
   postEndpoints,
@@ -11,5 +12,6 @@ export {
   postModels,
   getModels,
   getDaos,
+  getOpenapi,
 };
 

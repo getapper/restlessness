@@ -23,5 +23,10 @@
     "route": "/daos",
     "method": "get",
     "id": 5
+  },
+  {
+    "route": "/openapi",
+    "method": "get",
+    "id": 6
   }
 ]

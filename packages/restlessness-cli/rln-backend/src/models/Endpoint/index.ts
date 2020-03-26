@@ -1,9 +1,10 @@
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
 import { getPrjRoot, getEndpointsRoot, getSrcRoot } from 'root/services/path-resolver';
-import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate } from 'root/models/Endpoint/templates';
+import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate, validationsTemplate } from 'root/models/Endpoint/templates';
 import { capitalize } from 'root/services/util';
 import Route from 'root/models/Route';
+import validate = WebAssembly.validate;
 
 enum HttpMethod {
   GET = 'get',
@@ -70,11 +71,13 @@ export default class Endpoint {
     }
     const routeVars = route.vars;
     const hasPayload = [HttpMethod.PATCH, HttpMethod.POST, HttpMethod.PUT].includes(this.method);
+    const hasParams = true; // [HttpMethod.PATCH, HttpMethod.POST, HttpMethod.PUT].includes(this.method);
     const folderPath = path.join(getEndpointsRoot(), this.method + '-' + route.folderName);
     await fs.mkdir(folderPath);
     await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(hasPayload, routeVars));
     await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars));
     await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars));
+    await fs.writeFile(path.join(folderPath, 'validations.ts'), validationsTemplate(hasPayload, hasParams, routeVars));
     await fs.writeFile(path.join(getSrcRoot(), 'exporter.ts'), exporterTemplate(endpoints));
     const functions = await Endpoint.getFunctions();
     const functionName = this.method + route.functionName;

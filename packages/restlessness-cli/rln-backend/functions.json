@@ -59,6 +59,18 @@
           }
         }
       ]
+    },
+    "getSwagger": {
+      "handler": "dist/exporter.getOpenapi",
+      "events": [
+        {
+          "http": {
+            "path": "openapi",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
     }
   }
 }
