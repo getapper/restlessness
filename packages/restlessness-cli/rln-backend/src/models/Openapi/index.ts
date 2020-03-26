@@ -37,9 +37,7 @@ export default class Openapi {
       };
       const folderPath = path.join(getDistEndpointsRoot(), ep.method + '-' +  ep.route.folderName);
       const validationsRoutePath = path.join(folderPath, 'validations');
-      const validations  = require(validationsRoutePath);
-      console.log('path:', validationsRoutePath)
-      console.log(validations.default.queryStringParameters);
+      // @TODO: READ YUP object fields and add to OPENAPI.
     }
 
     await Openapi.saveOpenapi(openapi);

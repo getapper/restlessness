@@ -43,11 +43,16 @@ export interface Request {
 }
 `;
 
-const validationsTemplate = (hasPayload: boolean, hasParams: boolean): string => `const yup = require('yup')
+const validationsTemplate = (hasPayload: boolean, vars: string[]): string => `import * as yup from 'yup';
+import { QueryStringParameters,${hasPayload ? ' Payload,' : ''} PathParameters } from './interfaces';
+import { YupShapeByInterface } from '@restlessness/core';
+
+const queryStringParametersValidations: YupShapeByInterface<QueryStringParameters> = {};${hasPayload ?'\nconst payloadValidations: YupShapeByInterface<Payload> = {};' :''}${vars.length ? `\nconst pathParametersValidations: YupShapeByInterface<PathParameters> = {\n${vars.map(v => `  ${v}: yup.string().required(),`).join('\n')}\n};` : '' }
 
 export default {
-  queryStringParameters: yup.object().shape({}),${hasParams? '\npathParameters: yup.object().shape({}),': ''}${hasPayload? '\npayload: yup.object().shape({}),': ''}
+  queryStringParameters: yup.object().shape(queryStringParametersValidations),${hasPayload ?'\n  payload: yup.object().shape(payloadValidations),' :''}${vars.length ? '\n  pathParameters: yup.object().shape(pathParametersValidations),' : '' }
 };
+
 `;
 
 const exporterTemplate = (endpoints: Endpoint[]) => `require('module-alias/register');
