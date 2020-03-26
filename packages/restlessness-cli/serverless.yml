@@ -1,0 +1,10 @@
+service: restlessness-cli
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+plugins:
+  - serverless-offline
+
+functions: ${file(./functions.json):functions}
