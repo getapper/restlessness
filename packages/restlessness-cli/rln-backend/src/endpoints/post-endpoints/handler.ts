@@ -10,7 +10,6 @@ export default async (req: Request) => {
   const {
     route: text,
     method,
-
   } = payload;
   let route: Route;
   try {

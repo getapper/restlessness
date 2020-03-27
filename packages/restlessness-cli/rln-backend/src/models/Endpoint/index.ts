@@ -4,7 +4,6 @@ import { getPrjRoot, getEndpointsRoot, getSrcRoot } from 'root/services/path-res
 import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate, validationsTemplate } from 'root/models/Endpoint/templates';
 import { capitalize } from 'root/services/util';
 import Route from 'root/models/Route';
-import validate = WebAssembly.validate;
 
 enum HttpMethod {
   GET = 'get',

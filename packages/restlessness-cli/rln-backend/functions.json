@@ -84,7 +84,7 @@
         }
       ]
     },
-    "getSwagger": {
+    "getOpenapi": {
       "handler": "dist/exporter.getOpenapi",
       "events": [
         {

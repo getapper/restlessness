@@ -2,12 +2,25 @@ import fsSync, { promises as fs } from 'fs';
 import path from 'path';
 import { getEndpointsRoot, getPrjRoot, getDistEndpointsRoot } from 'root/services/path-resolver';
 import { Endpoint, Route } from 'root/models';
+import { reach } from 'yup';
 
 export default class Openapi {
   id: number
   
   static get openapiJsonPath(): string {
     return path.join(getPrjRoot(), 'openapi.json');
+  }
+
+  static getFields (fields, allKeys) {
+    const fieldsKeys = Object.keys(fields);
+    for (let fieldKey of fieldsKeys) {
+      if (fields[fieldKey]._type === 'object'){
+        allKeys[fieldKey] = {};
+        Openapi.getFields(fields[fieldKey].fields, allKeys[fieldKey]);
+      } else {
+        allKeys[fieldKey] = fields[fieldKey]._type;
+      }
+    }
   }
 
   async create() {
@@ -37,9 +50,13 @@ export default class Openapi {
       };
       const folderPath = path.join(getDistEndpointsRoot(), ep.method + '-' +  ep.route.folderName);
       const validationsRoutePath = path.join(folderPath, 'validations');
-      // @TODO: READ YUP object fields and add to OPENAPI.
-    }
 
+      const validationYUP = require(validationsRoutePath).default;
+      const allKeys = {};
+      Openapi.getFields(validationYUP, allKeys);
+      console.log(allKeys);
+      // @TODO: add params, query and payload in allKeys inside openapi.json
+    }
     await Openapi.saveOpenapi(openapi);
   }
   
