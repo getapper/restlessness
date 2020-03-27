@@ -33,5 +33,10 @@
     "route": "/envs",
     "method": "post",
     "id": 7
+  },
+  {
+    "route": "/openapi",
+    "method": "get",
+    "id": 8
   }
 ]

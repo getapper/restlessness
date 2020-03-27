@@ -6,7 +6,8 @@
   },
   "dependencies": {
     "@restlessness/core": "0.0.1",
-    "module-alias": "2.2.0"
+    "module-alias": "2.2.0",
+    "yup": "0.28.3"
   },
   "author": "Getapper",
   "license": "MIT",

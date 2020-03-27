@@ -1,7 +1,7 @@
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
 import { getPrjRoot, getEndpointsRoot, getSrcRoot } from 'root/services/path-resolver';
-import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate } from 'root/models/Endpoint/templates';
+import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate, validationsTemplate } from 'root/models/Endpoint/templates';
 import { capitalize } from 'root/services/util';
 import Route from 'root/models/Route';
 
@@ -75,6 +75,7 @@ export default class Endpoint {
     await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(hasPayload, routeVars));
     await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars));
     await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars));
+    await fs.writeFile(path.join(folderPath, 'validations.ts'), validationsTemplate(hasPayload, routeVars));
     await fs.writeFile(path.join(getSrcRoot(), 'exporter.ts'), exporterTemplate(endpoints));
     const functions = await Endpoint.getFunctions();
     const functionName = this.method + route.functionName;
