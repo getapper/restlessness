@@ -3,5 +3,17 @@
     "id": 1,
     "name": "locale",
     "type": "dev"
+  },
+  {
+    "id": 2,
+    "name": "beta",
+    "type": "deploy",
+    "stage": "dev"
+  },
+  {
+    "id": 3,
+    "name": "production",
+    "type": "deploy",
+    "stage": "deploy"
   }
 ]

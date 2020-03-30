@@ -6,7 +6,7 @@ import { reach } from 'yup';
 
 export default class Openapi {
   id: number
-  
+
   static get openapiJsonPath(): string {
     return path.join(getPrjRoot(), 'openapi.json');
   }
@@ -94,40 +94,43 @@ export default class Openapi {
         },
       };
       const folderPath = path.join(getDistEndpointsRoot(), ep.method + '-' +  ep.route.folderName);
-      const validationsRoutePath = path.join(folderPath, 'validations');
 
-      const validationYUP = require(validationsRoutePath).default;
+      try {
+        const validationYUP = require(validationsRoutePath).default;
 
-      if (validationYUP.payload) {
-        const properties = {};
-        Openapi.getPropertiesRequestBody(validationYUP.payload.fields, properties);
-        openapi.paths[routeName][routeMethod].requestBody = {
-          required: true,
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: properties,
+        if (validationYUP.payload) {
+          const properties = {};
+          Openapi.getPropertiesRequestBody(validationYUP.payload.fields, properties);
+          openapi.paths[routeName][routeMethod].requestBody = {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: properties,
+                },
               },
             },
-          },
-        };
-      }
+          };
+        }
 
-      if(validationYUP.pathParameters || validationYUP.queryStringParameters) {
-        const parameters = [];
-        if (validationYUP.pathParameters) {
-          Openapi.getParameters(validationYUP.pathParameters.fields, parameters, 'path');
+        if(validationYUP.pathParameters || validationYUP.queryStringParameters) {
+          const parameters = [];
+          if (validationYUP.pathParameters) {
+            Openapi.getParameters(validationYUP.pathParameters.fields, parameters, 'path');
+          }
+          if (validationYUP.queryStringParameters) {
+            Openapi.getParameters(validationYUP.queryStringParameters.fields, parameters, 'query');
+          }
+          openapi.paths[routeName][routeMethod].parameters = parameters;
         }
-        if (validationYUP.queryStringParameters) {
-          Openapi.getParameters(validationYUP.queryStringParameters.fields, parameters, 'query');
-        }
-        openapi.paths[routeName][routeMethod].parameters = parameters;
+      } catch (e) {
+        console.warn(e.message);
       }
     }
     await Openapi.saveOpenapi(openapi);
   }
-  
+
   static async saveOpenapi(openapi) {
     await fs.writeFile(Openapi.openapiJsonPath, JSON.stringify(openapi, null, 2));
   }

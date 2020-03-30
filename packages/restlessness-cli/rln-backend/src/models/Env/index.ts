@@ -50,10 +50,10 @@ export default class Env {
     await fs.writeFile(Env.envsJsonPath, JSON.stringify(jsonEnvs, null, 2));
   }
 
-  async create(name: string, type: EnvType, stage: EnvStage) {
+  async create(name: string) {
     this.name = name;
-    this.type = type;
-    this.stage = stage;
+    this.type = EnvType.DEV;
+    this.stage = null;
     const envs = await Env.getList();
     this.id = (envs
       .map(endpoint => endpoint.id)
@@ -65,18 +65,10 @@ export default class Env {
     const packageJsonPath = path.join(getPrjRoot(), 'package.json');
     const packageJson = require(packageJsonPath);
     packageJson.scripts = packageJson?.scripts || {};
-    if (type === EnvType.DEV) {
-      if ((packageJson?.scripts?.[`DEV:${name}`] ?? null) === null) {
-        packageJson.scripts[`DEV:${name}`] = `cp envs/${name}.json env.json && tsc && RLN_ENV=${name} serverless offline --host 0.0.0.0`;
-      } else {
-        console.warn(`Package Json Script command already found: DEV:${name}`);
-      }
-    } else if (type === EnvType.DEPLOY) {
-      if ((packageJson?.scripts?.[`DEPLOY:${name}`] ?? null) === null) {
-        packageJson.scripts[`DEPLOY:${name}`] = `cp envs/${name}.json env.json && tsc && serverless deploy --stage ${stage} --verbose`;
-      } else {
-        console.warn(`Package Json Script command already found: DEPLOY:${name}`);
-      }
+    if ((packageJson?.scripts?.[`DEV:${name}`] ?? null) === null) {
+      packageJson.scripts[`DEV:${name}`] = `cp envs/${name}.json env.json && tsc && RLN_ENV=${name} serverless offline --host 0.0.0.0`;
+    } else {
+      console.warn(`Package Json Script command already found: DEV:${name}`);
     }
     await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
     const daos = await Dao.getList(true);
