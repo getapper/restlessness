@@ -61,7 +61,7 @@ const generatePackageJson = name => `{
     "DEPLOY:beta": "cp envs/beta.json env.json && tsc && serverless deploy --stage dev --verbose",
     "REMOVE:beta": "serverless remove --stage dev",
     "DEPLOY:production": "cp envs/production.json env.json && tsc && serverless deploy --stage deploy --verbose",
-    "REMOVE:production": "serverless remove --stage production",
+    "REMOVE:production": "serverless remove --stage production"
   },
   "dependencies": {
     "module-alias": "2.2.0"
@@ -69,9 +69,9 @@ const generatePackageJson = name => `{
   "devDependencies": {
     "@types/node": "12.7.2",
     "@typescript-eslint/parser": "2.1.0",
-    "eslint": "6.3.0",
+    "eslint": "6.8.0",
     "serverless-offline": "5.12.1",
-    "typescript": "3.7.5"
+    "typescript": "3.8.3"
   },
   "peerDependencies": {
     "serverless": "^1.63.0"

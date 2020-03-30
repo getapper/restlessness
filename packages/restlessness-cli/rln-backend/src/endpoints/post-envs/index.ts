@@ -1,13 +1,13 @@
 require('module-alias/register');
 import handler from './handler';
+import validations from './validations';
 import { requestParser } from '@restlessness/core';
 
 export default async (event, context) => {
-  // @TODO: Add payload validator
   const {
     queryStringParameters,
     payload,
-  } = requestParser(event);
+  } = await requestParser(event, context, validations);
   return await handler({
     queryStringParameters,
     payload,

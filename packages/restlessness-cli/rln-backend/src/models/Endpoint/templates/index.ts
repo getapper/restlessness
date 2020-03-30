@@ -10,7 +10,7 @@ export default async (event, context) => {
   const {
     validationResult,
     queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}
-  } = requestParser(event, context, validations);
+  } = await requestParser(event, context, validations);
   return await handler({
     validationResult,
     queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}
@@ -24,9 +24,10 @@ import { Request } from './interfaces';
 
 export default async (req: Request) => {
   try {
-    validationResult,
-    ${hasPayload || vars.length ? `const {
-${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n' : ''}    } = req;\n` : ''}
+    const {
+      validationResult,
+${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n' : ''}    } = req;
+    
     return res({});
   } catch (e) {
     return res({}, StatusCodes.InternalServerError);
@@ -39,7 +40,7 @@ const interfacesTemplate = (hasPayload: boolean, vars: string[]): string => `imp
 export interface QueryStringParameters {}${hasPayload
   ? '\n\nexport interface Payload {}' : ''}${vars.length ? `\n\nexport interface PathParameters {
 ${vars.map(v => `  ${v}: string,`).join('\n')}
-}` 
+}`
   : ''}
 
 export interface Request {
@@ -60,7 +61,7 @@ export default {
 
 `;
 
-const exporterTemplate = (endpoints: Endpoint[]) => `require('module-alias/register');
+const exporterTemplate = (endpoints: Endpoint[]) => `import 'module-alias/register';
 ${endpoints.map(endpoint => `import ${endpoint.method}${endpoint.route.functionName} from 'root/endpoints/${endpoint.method}-${endpoint.route.folderName}';`).join('\n')}
 
 export {

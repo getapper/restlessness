@@ -21,7 +21,10 @@ module.exports = async argv => {
       cwd: path.join(__dirname, '..', '..', 'assets', 'frontend', 'build'),
       stdio: 'inherit'
     })
-    frontend.on('error', console.log)
+    frontend.on('error', err => {
+      console.log('Error while starting frontend with serve. Maybe you forgot to install it with: npm i serve -g')
+      process.exit(1)
+    })
   } catch (e) {
     console.log(e)
     process.exit(1)

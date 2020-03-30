@@ -84,11 +84,11 @@ export default class Openapi {
         openapi.paths[routeName] = {};
       }
       openapi.paths[routeName][routeMethod] = {
-        description: 'test description',
+        description: `${routeMethod}: ${routeName}`,
         tags: ['api'],
         responses: {
           200: {
-            description: 'successful operation',
+            description: 'Success',
           },
         },
       };
