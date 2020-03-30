@@ -6,7 +6,7 @@ import { reach } from 'yup';
 
 export default class Openapi {
   id: number
-  
+
   static get openapiJsonPath(): string {
     return path.join(getPrjRoot(), 'openapi.json');
   }
@@ -49,17 +49,21 @@ export default class Openapi {
         tags: ['api'],
       };
       const folderPath = path.join(getDistEndpointsRoot(), ep.method + '-' +  ep.route.folderName);
-      const validationsRoutePath = path.join(folderPath, 'validations');
 
-      const validationYUP = require(validationsRoutePath).default;
-      const allKeys = {};
-      Openapi.getFields(validationYUP, allKeys);
-      console.log(allKeys);
+      try {
+        const validationsRoutePath = path.join(folderPath, 'validations');
+        const validationYUP = require(validationsRoutePath).default;
+        const allKeys = {};
+        Openapi.getFields(validationYUP, allKeys);
+        // console.log(allKeys);
+      } catch (e) {
+        console.warn(e.message);
+      }
       // @TODO: add params, query and payload in allKeys inside openapi.json
     }
     await Openapi.saveOpenapi(openapi);
   }
-  
+
   static async saveOpenapi(openapi) {
     await fs.writeFile(Openapi.openapiJsonPath, JSON.stringify(openapi, null, 2));
   }

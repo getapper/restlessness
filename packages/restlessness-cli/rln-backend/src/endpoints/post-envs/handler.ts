@@ -11,8 +11,6 @@ export default async (req: Request) => {
     } = req;
     const {
       name,
-      type,
-      stage,
     } = payload;
 
     const parsedName = name.trim().replace(/ /g, '').toLowerCase();
@@ -21,7 +19,7 @@ export default async (req: Request) => {
       return res({ message: 'Env already exists' }, 400);
     }
     const env = new Env();
-    await env.create(parsedName, type, stage);
+    await env.create(parsedName);
 
     return res(env);
   } catch (e) {
