@@ -18,6 +18,6 @@ export default async (req: Request) => {
         'Access-Control-Expose-Headers': 'content-range',
         'content-range': `${swagger.length}`,
       },
-    }
+    },
   );
 };

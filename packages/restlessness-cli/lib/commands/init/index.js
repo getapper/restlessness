@@ -57,7 +57,11 @@ const generatePackageJson = name => `{
   "name": "${name}",
   "version": "0.0.0",
   "scripts": {
-    "DEV:locale": "cp configs/locale.json env.json && tsc && RLN_ENV=locale serverless offline --host 0.0.0.0"
+    "DEV:locale": "cp envs/locale.json env.json && tsc && RLN_ENV=locale serverless offline --host 0.0.0.0 --port 4000",
+    "DEPLOY:beta": "cp envs/beta.json env.json && tsc && serverless deploy --stage dev --verbose",
+    "REMOVE:beta": "serverless remove --stage dev",
+    "DEPLOY:production": "cp envs/production.json env.json && tsc && serverless deploy --stage deploy --verbose",
+    "REMOVE:production": "serverless remove --stage production",
   },
   "dependencies": {
     "module-alias": "2.2.0"
@@ -100,6 +104,10 @@ module.exports = async argv => {
         stdio: 'inherit'
       })
       execSync('npm i @restlessness/core@latest -S -E', {
+        cwd: process.GLOBAL.PRJ_DIR,
+        stdio: 'inherit'
+      })
+      execSync('npm i yup -S -E', {
         cwd: process.GLOBAL.PRJ_DIR,
         stdio: 'inherit'
       })
