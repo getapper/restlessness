@@ -1,8 +1,7 @@
-import fsSync, { promises as fs } from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
-import { getEndpointsRoot, getPrjRoot, getDistEndpointsRoot } from 'root/services/path-resolver';
-import { Endpoint, Route } from 'root/models';
-import { reach } from 'yup';
+import { getPrjRoot, getDistEndpointsRoot } from 'root/services/path-resolver';
+import { Endpoint } from 'root/models';
 
 export default class Openapi {
   id: number
@@ -94,6 +93,7 @@ export default class Openapi {
         },
       };
       const folderPath = path.join(getDistEndpointsRoot(), ep.method + '-' +  ep.route.folderName);
+      const validationsRoutePath = path.join(folderPath, 'validations');
 
       try {
         const validationYUP = require(validationsRoutePath).default;
