@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "@types/node": "13.7.1",
     "@types/yup": "^0.26.33",
     "@typescript-eslint/parser": "2.25.0",
-    "eslint": "6.3.0",
+    "eslint": "6.8.0",
     "typescript": "3.8.3"
   },
   "peerDependencies": {
