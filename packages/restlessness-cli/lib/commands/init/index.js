@@ -58,6 +58,7 @@ const generatePackageJson = name => `{
   "version": "0.0.0",
   "scripts": {
     "DEV:locale": "cp envs/locale.json env.json && tsc && RLN_ENV=locale serverless offline --host 0.0.0.0 --port 4000",
+    "DEV:restlessness": "npx @restlessness/cli run",
     "DEPLOY:beta": "cp envs/beta.json env.json && tsc && serverless deploy --stage dev --verbose",
     "REMOVE:beta": "serverless remove --stage dev",
     "DEPLOY:production": "cp envs/production.json env.json && tsc && serverless deploy --stage deploy --verbose",
