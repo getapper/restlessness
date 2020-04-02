@@ -53,6 +53,7 @@ plugins:
 functions: \${file(./functions.json):functions}
 `
 
+// @TODO: Move DEV and DEPLOY scripts to an external module like react-scripts (core?)
 const generatePackageJson = name => `{
   "name": "${name}",
   "version": "0.0.0",
