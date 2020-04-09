@@ -74,6 +74,18 @@ export default class Openapi {
         title: 'RLN Swagger API overview',
         version: '0.0.1',
       },
+      components: {
+        securitySchemes:{
+          JWT: {
+            type: 'apiKey',
+              in: 'header',
+            name: 'authorization',
+          },
+        },
+      },
+      security: [{
+        JWT: [],
+      }],
       paths: {},
     };
 
@@ -89,6 +101,13 @@ export default class Openapi {
         responses: {
           200: {
             description: 'Success',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                },
+              },
+            },
           },
         },
       };

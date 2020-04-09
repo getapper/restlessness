@@ -3,7 +3,8 @@ import envVars from 'root/services/env-vars';
 
 const getPrjRoot = (): string => {
   if (envVars.isDev) {
-    return process.cwd();
+    // return process.cwd();
+    return '/Users/lucatedesco/WebstormProjects/rln-test';
   }
   return envVars.prjPath;
 };

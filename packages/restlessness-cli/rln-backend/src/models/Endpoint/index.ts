@@ -47,7 +47,6 @@ export default class Endpoint {
       return ep;
     });
   }
-
   static async saveList(endpoints: Endpoint[]) {
     const jsonEndpoints: JsonEndpoint[] = endpoints.map(ep => ({
       ...ep,
@@ -56,7 +55,7 @@ export default class Endpoint {
     await fs.writeFile(Endpoint.endpointsJsonPath, JSON.stringify(jsonEndpoints, null, 2));
   }
 
-  async create(route: Route, method: HttpMethod) {
+  async create(route: Route, method: HttpMethod, authId: number) {
     this.route = route;
     this.method = method;
     const endpoints = await Endpoint.getList();
@@ -79,6 +78,24 @@ export default class Endpoint {
     await fs.writeFile(path.join(getSrcRoot(), 'exporter.ts'), exporterTemplate(endpoints));
     const functions = await Endpoint.getFunctions();
     const functionName = this.method + route.functionName;
+    /*
+    let endpointFunction = {
+      handler: `dist/exporter.${functionName}`,
+      events: [
+        {
+          http: {
+            path: route.functionPath,
+            method: this.method,
+            cors: true,
+          },
+        },
+      ],
+    };
+    if (authId) {
+      endpointFunction = auths[authId].module.preEndpointCreated(endpointFunction);
+    }
+    functions[functionName] = endpointFunction;
+     */
     functions[functionName] = {
       handler: `dist/exporter.${functionName}`,
       events: [
