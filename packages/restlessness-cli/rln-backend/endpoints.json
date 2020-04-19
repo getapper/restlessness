@@ -30,13 +30,18 @@
     "method": "get"
   },
   {
+    "id": 7,
     "route": "/envs",
-    "method": "post",
-    "id": 7
+    "method": "post"
   },
   {
+    "id": 8,
     "route": "/openapi",
+    "method": "get"
+  },
+  {
+    "route": "/auths",
     "method": "get",
-    "id": 8
+    "id": 9
   }
 ]

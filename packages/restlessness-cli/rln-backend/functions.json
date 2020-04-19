@@ -95,6 +95,18 @@
           }
         }
       ]
+    },
+    "getAuths": {
+      "handler": "dist/exporter.getAuths",
+      "events": [
+        {
+          "http": {
+            "path": "auths",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
     }
   }
 }

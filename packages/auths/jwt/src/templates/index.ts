@@ -1,5 +1,5 @@
 const jwtAuthorizerTemplate = (): string => `import jwt from 'jsonwebtoken';
-const config = require('../../../config.json');
+const config = require('../../config.json');
 
 const jwtSecret = config.jwt.secret;
 
@@ -41,7 +41,7 @@ const auth = async (event, context) => {
   }
 };
 
-export default (event, context, callback) => {
+const authorizer = (event, context, callback) => {
   auth(event, context)
     .then(result => {
       if (result.isValid) {
@@ -54,6 +54,10 @@ export default (event, context, callback) => {
       return callback(null, 'Unauthorized');
     });
 };
+
+export {
+  authorizer
+}
 `;
 
 export {

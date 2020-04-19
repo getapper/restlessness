@@ -17,6 +17,7 @@ function App() {
       <Resource name="endpoints" list={EndpointsList} create={EndpointsCreate}/>
       <Resource name="models" list={ModelsList} create={ModelsCreate}/>
       <Resource name="daos" />
+      <Resource name="auths" />
       <Resource name="swagger" list={SwaggerList} />
     </Admin>
   );

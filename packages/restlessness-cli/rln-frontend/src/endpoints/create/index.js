@@ -1,5 +1,5 @@
 import React from 'react';
-import { Create, SimpleForm, TextInput, SelectInput } from 'react-admin';
+import { Create, SimpleForm, TextInput, SelectInput, ReferenceInput } from 'react-admin';
 
 const EndpointsCreate = (props) => (
   <Create {...props}>
@@ -12,6 +12,9 @@ const EndpointsCreate = (props) => (
         { id: 'put', name: 'PUT' },
         { id: 'patch', name: 'PATCH' },
       ]} />
+      <ReferenceInput label="Auth" source="authId" reference="auths">
+        <SelectInput />
+      </ReferenceInput>
     </SimpleForm>
   </Create>
 );
