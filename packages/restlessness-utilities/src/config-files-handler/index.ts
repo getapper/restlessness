@@ -24,6 +24,17 @@ const addDao = async (projectPath: string, daoId: string, dao: JsonDao) => {
   }
 };
 
+const addAuth = async (projectPath: string, authId: string, dao: JsonDao) => {
+  const authPath = path.join(projectPath, 'auths.json');
+  const auths: JsonDao[] = require(authPath);
+  if (auths.findIndex((auth: JsonDao) => auth.id === authId) === -1) {
+    auths.push(dao);
+    await fs.writeFile(authPath, JSON.stringify(auths, null, 2));
+  } else {
+    console.warn(`${authId} Auth already found inside auths.json!`);
+  }
+};
+
 const addToEachEnv = async (projectPath: string, key: string, value: any) => {
   const envsPath = path.join(projectPath, 'envs.json');
   const jsonEnvs: JsonDao[] = require(envsPath);
@@ -52,4 +63,5 @@ export {
   addDao,
   addToEachEnv,
   addToEnv,
+  addAuth,
 };

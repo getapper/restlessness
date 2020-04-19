@@ -1,0 +1,24 @@
+{
+  "name": "@restlessness/dao-jwt",
+  "version": "0.0.3",
+  "main": "dist/index.js",
+  "author": "Getapper",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "13.7.1",
+    "@typescript-eslint/parser": "^2.1.0",
+    "eslint": "6.8.0",
+    "typescript": "3.8.3"
+  },
+  "dependencies": {
+    "@restlessness/utilities": "0.0.1",
+    "pluralize": "8.0.0"
+  },
+  "repository": {
+    "url": "https://github.com/getapper/restlessness/tree/master/packages/daos/jwt"
+  },
+  "scripts": {
+    "preinstall": "node ./dist/hooks/pre-install/index.js $INIT_CWD",
+    "postinstall": "node ./dist/hooks/post-install/index.js $INIT_CWD"
+  }
+}
