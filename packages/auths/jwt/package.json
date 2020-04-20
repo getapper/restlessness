@@ -1,6 +1,6 @@
 {
-  "name": "@restlessness/dao-jwt",
-  "version": "0.0.3",
+  "name": "@restlessness/auth-jwt",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -15,7 +15,7 @@
     "pluralize": "8.0.0"
   },
   "repository": {
-    "url": "https://github.com/getapper/restlessness/tree/master/packages/daos/jwt"
+    "url": "https://github.com/getapper/restlessness/tree/master/packages/auths/jwt"
   },
   "scripts": {
     "preinstall": "node ./dist/hooks/pre-install/index.js $INIT_CWD",
