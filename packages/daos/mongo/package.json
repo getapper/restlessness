@@ -5,6 +5,7 @@
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.50",
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "^2.1.0",
     "eslint": "6.8.0",

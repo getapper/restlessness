@@ -16,7 +16,14 @@ class MongoDao {
     }
   }
 
-  async openConnection() {
+  async openConnection(context: AWSLambda.Context) {
+    context.callbackWaitsForEmptyEventLoop = false;
+    try {
+      this.checkConnection();
+      return this.mongoClient;
+    } catch (e) {
+
+    }
     const config = require(path.join(process.cwd(), 'config.json'));
     const uri = config?.mongo?.uri ?? null;
     if (uri === null) {

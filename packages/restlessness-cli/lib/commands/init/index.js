@@ -69,6 +69,7 @@ const generatePackageJson = name => `{
     "module-alias": "2.2.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "8.10.50",
     "@types/node": "12.7.2",
     "@typescript-eslint/parser": "2.1.0",
     "eslint": "6.8.0",

@@ -6,11 +6,12 @@ import { requestParser } from '@restlessness/core';
 import { res, StatusCodes } from '@restlessness/core';
 import validations from './validations';
 
-export default async (event, context) => {
+export default async (event: AWSLambda.APIGatewayProxyEventBase<null>, context: AWSLambda.Context) => {
   const {
     validationResult,
     queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}
   } = await requestParser(event, context, validations);
+
   return await handler({
     validationResult,
     queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}
