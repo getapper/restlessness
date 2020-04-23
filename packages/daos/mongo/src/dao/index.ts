@@ -1,5 +1,5 @@
 import path from 'path';
-import { Db, InsertOneWriteOpResult, MongoClient, UpdateWriteOpResult } from 'mongodb';
+import { Db, InsertOneWriteOpResult, MongoClient, UpdateWriteOpResult, FindOneOptions } from 'mongodb';
 
 class MongoDao {
   mongoClient: MongoClient
@@ -24,10 +24,10 @@ class MongoDao {
     } catch (e) {
 
     }
-    const config = require(path.join(process.cwd(), 'config.json'));
+    const config = require(path.join(process.cwd(), 'env.json'));
     const uri = config?.mongo?.uri ?? null;
     if (uri === null) {
-      throw new Error('No mongo configuration found in config.json');
+      throw new Error('No mongo configuration found in env.json');
     }
     // @TODO: Close if open
     this.mongoClient = await MongoClient.connect(config.mongo.uri);
@@ -39,12 +39,12 @@ class MongoDao {
     return this.db.collection(collectionName).findOne(filters, options);
   }
 
-  async find(collectionName: string, query, options?): Promise<any> {
+  async find(collectionName: string, query, options?: FindOneOptions): Promise<any> {
     this.checkConnection();
     return this.db.collection(collectionName).find(query, options).toArray();
   }
 
-  async insertOne(collectionName: string, object): Promise<InsertOneWriteOpResult> {
+  async insertOne(collectionName: string, object): Promise<InsertOneWriteOpResult<null>> {
     this.checkConnection();
     return this.db.collection(collectionName).insertOne(object);
   }
