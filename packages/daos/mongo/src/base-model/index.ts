@@ -1,6 +1,12 @@
 import mongoDao, { MongoDao } from '../dao';
 import { ObjectId } from 'bson';
-import {InsertOneWriteOpResult, UpdateWriteOpResult, FindOneOptions, QuerySelector} from 'mongodb';
+import {
+  InsertOneWriteOpResult,
+  UpdateWriteOpResult,
+  FindOneOptions,
+  QuerySelector,
+  DeleteWriteOpResultObject,
+} from 'mongodb';
 
 export default class MongoBase {
   ['constructor']: typeof MongoBase
@@ -74,6 +80,16 @@ export default class MongoBase {
         $set: fields,
       });
       return !!response?.result?.ok ?? false;
+    }
+    return false;
+  }
+
+  async remove<T>(): Promise<boolean> {
+    if (this._id) {
+      const response: DeleteWriteOpResultObject = await MongoBase.dao.deleteOne(this.constructor.collectionName, {
+        _id: this._id,
+      });
+      return response?.result?.ok === 1 || false;
     }
     return false;
   }

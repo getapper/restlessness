@@ -1,5 +1,12 @@
 import path from 'path';
-import { Db, InsertOneWriteOpResult, MongoClient, UpdateWriteOpResult, FindOneOptions } from 'mongodb';
+import {
+  Db,
+  InsertOneWriteOpResult,
+  MongoClient,
+  UpdateWriteOpResult,
+  FindOneOptions,
+  DeleteWriteOpResultObject, FilterQuery
+} from 'mongodb';
 
 class MongoDao {
   mongoClient: MongoClient
@@ -52,6 +59,11 @@ class MongoDao {
   async updateOne(collectionName: string, filter, object): Promise<UpdateWriteOpResult> {
     this.checkConnection();
     return this.db.collection(collectionName).updateOne(filter, object);
+  }
+
+  async deleteOne(collectionName: string, filter): Promise<DeleteWriteOpResultObject> {
+    this.checkConnection();
+    return this.db.collection(collectionName).deleteOne(filter);
   }
 }
 
