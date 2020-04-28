@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",

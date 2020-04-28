@@ -85,6 +85,21 @@ const generatePackageJson = name => `{
 }
 `
 
+const generateGitIgnore = () => `node_modules
+.serverless
+
+# IntelliJ
+.idea
+
+# OSX
+.DS_Store
+
+#TSC
+/dist
+envs/beta.json
+envs/production.json
+`
+
 module.exports = async argv => {
   if (argv._.length > 2) {
     console.log(chalk.red('Unexpected number of arguments'))
@@ -102,6 +117,7 @@ module.exports = async argv => {
       copyFolderRecursiveSync(path.join(__dirname, '..', '..', 'assets', 'boilerplate'), process.GLOBAL.PRJ_DIR, true)
       fs.writeFileSync(path.join(process.GLOBAL.PRJ_DIR, 'serverless.yml'), generateServerlessYaml(name))
       fs.writeFileSync(path.join(process.GLOBAL.PRJ_DIR, 'package.json'), generatePackageJson(name))
+      fs.writeFileSync(path.join(process.GLOBAL.PRJ_DIR, '.gitignore'), generateGitIgnore())
       execSync('npm i', {
         cwd: process.GLOBAL.PRJ_DIR,
         stdio: 'inherit'

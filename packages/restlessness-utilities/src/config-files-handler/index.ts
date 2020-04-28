@@ -7,6 +7,12 @@ interface JsonDao {
   package: string,
 }
 
+interface JsonPlugin {
+  id: string,
+  name: string,
+  package: string,
+}
+
 interface JsonEnv {
   id: number,
   name: string,
@@ -21,6 +27,17 @@ const addDao = async (projectPath: string, daoId: string, dao: JsonDao) => {
     await fs.writeFile(daosPath, JSON.stringify(daos, null, 2));
   } else {
     console.warn(`${daoId} DAO already found inside daos.json!`);
+  }
+};
+
+const addPlugin = async (projectPath: string, pluginId: string, plugin: JsonPlugin) => {
+  const pluginsPath = path.join(projectPath, 'plugins.json');
+  const plugins: JsonPlugin[] = require(pluginsPath);
+  if (plugins.findIndex((plugin: JsonPlugin) => plugin.id === pluginId) === -1) {
+    plugins.push(plugin);
+    await fs.writeFile(pluginsPath, JSON.stringify(plugins, null, 2));
+  } else {
+    console.warn(`${pluginId} plugin already found inside plugins.json!`);
   }
 };
 
@@ -50,6 +67,7 @@ const addToEnv = async (projectPath: string, envName: string, key: string, value
 
 export {
   addDao,
+  addPlugin,
   addToEachEnv,
   addToEnv,
 };

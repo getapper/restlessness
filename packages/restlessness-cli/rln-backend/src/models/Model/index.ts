@@ -68,7 +68,7 @@ export default class Model {
   toJSON() {
     return {
       ...this,
-      dao: this.dao.name,
+      dao: this.dao?.name ?? 'null',
     };
   }
 }
