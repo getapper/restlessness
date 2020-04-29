@@ -17,7 +17,6 @@ const res = (response, statusCode:StatusCodes = StatusCodes.OK, options?: Respon
   if (options?.headers) {
     Object.assign(headers, options?.headers);
   }
-  console.log(headers);
   return {
     statusCode,
     body: JSON.stringify(response),

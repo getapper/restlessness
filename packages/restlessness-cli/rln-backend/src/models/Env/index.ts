@@ -61,7 +61,7 @@ export default class Env {
     envs.push(this);
     await Env.saveList(envs);
     const envPath = path.join(getPrjRoot(), 'envs', `${name}.json`);
-    await fs.writeFile(envPath, JSON.stringify({}, null, 2));
+    await fs.writeFile(envPath, JSON.stringify({ name }, null, 2));
     const packageJsonPath = path.join(getPrjRoot(), 'package.json');
     const packageJson = require(packageJsonPath);
     packageJson.scripts = packageJson?.scripts || {};

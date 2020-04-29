@@ -15,7 +15,7 @@
     "aws-sdk": "^2.664.0"
   },
   "dependencies": {
-    "@restlessness/utilities": "0.0.2"
+    "@restlessness/utilities": "0.0.3"
   },
   "scripts": {
     "preinstall": "node ./dist/hooks/pre-install/index.js $INIT_CWD",
