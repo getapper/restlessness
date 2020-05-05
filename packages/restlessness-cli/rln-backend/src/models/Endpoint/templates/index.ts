@@ -6,11 +6,12 @@ import { requestParser } from '@restlessness/core';
 import { res, StatusCodes } from '@restlessness/core';
 import validations from './validations';
 
-export default async (event, context) => {
+export default async (event: AWSLambda.APIGatewayProxyEventBase<null>, context: AWSLambda.Context) => {
   const {
     validationResult,
     queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}
   } = await requestParser(event, context, validations);
+
   return await handler({
     validationResult,
     queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}
@@ -56,7 +57,7 @@ import { YupShapeByInterface } from '@restlessness/core';
 const queryStringParametersValidations: YupShapeByInterface<QueryStringParameters> = {};${hasPayload ?'\nconst payloadValidations: YupShapeByInterface<Payload> = {};' :''}${vars.length ? `\nconst pathParametersValidations: YupShapeByInterface<PathParameters> = {\n${vars.map(v => `  ${v}: yup.string().required(),`).join('\n')}\n};` : '' }
 
 export default {
-  queryStringParameters: yup.object().shape(queryStringParametersValidations),${hasPayload ?'\n  payload: yup.object().shape(payloadValidations),' :''}${vars.length ? '\n  pathParameters: yup.object().shape(pathParametersValidations),' : '' }
+  queryStringParameters: yup.object().shape(queryStringParametersValidations),${hasPayload ?'\n  payload: yup.object().shape(payloadValidations).noUnknown(),' :''}${vars.length ? '\n  pathParameters: yup.object().shape(pathParametersValidations),' : '' }
 };
 
 `;

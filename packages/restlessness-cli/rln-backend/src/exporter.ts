@@ -8,6 +8,7 @@ import getEnvs from 'root/endpoints/get-envs';
 import postEnvs from 'root/endpoints/post-envs';
 import getOpenapi from 'root/endpoints/get-openapi';
 import getAuths from 'root/endpoints/get-auths';
+import getPlugins from 'root/endpoints/get-plugins';
 
 export {
   postEndpoints,
@@ -19,5 +20,6 @@ export {
   postEnvs,
   getOpenapi,
   getAuths,
+  getPlugins,
 };
 

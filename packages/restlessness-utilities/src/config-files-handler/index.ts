@@ -1,7 +1,19 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 
+interface JsonAuth {
+  id: string,
+  name: string,
+  package: string,
+}
+
 interface JsonDao {
+  id: string,
+  name: string,
+  package: string,
+}
+
+interface JsonPlugin {
   id: string,
   name: string,
   package: string,
@@ -24,11 +36,22 @@ const addDao = async (projectPath: string, daoId: string, dao: JsonDao) => {
   }
 };
 
-const addAuth = async (projectPath: string, authId: string, dao: JsonDao) => {
+const addPlugin = async (projectPath: string, pluginId: string, plugin: JsonPlugin) => {
+  const pluginsPath = path.join(projectPath, 'plugins.json');
+  const plugins: JsonPlugin[] = require(pluginsPath);
+  if (plugins.findIndex((plugin: JsonPlugin) => plugin.id === pluginId) === -1) {
+    plugins.push(plugin);
+    await fs.writeFile(pluginsPath, JSON.stringify(plugins, null, 2));
+  } else {
+    console.warn(`${pluginId} plugin already found inside plugins.json!`);
+  }
+};
+
+const addAuth = async (projectPath: string, authId: string, auth: JsonAuth) => {
   const authPath = path.join(projectPath, 'auths.json');
-  const auths: JsonDao[] = require(authPath);
-  if (auths.findIndex((auth: JsonDao) => auth.id === authId) === -1) {
-    auths.push(dao);
+  const auths: JsonAuth[] = require(authPath);
+  if (auths.findIndex((auth: JsonAuth) => auth.id === authId) === -1) {
+    auths.push(auth);
     await fs.writeFile(authPath, JSON.stringify(auths, null, 2));
   } else {
     console.warn(`${authId} Auth already found inside auths.json!`);
@@ -61,6 +84,7 @@ const addToEnv = async (projectPath: string, envName: string, key: string, value
 
 export {
   addDao,
+  addPlugin,
   addToEachEnv,
   addToEnv,
   addAuth,

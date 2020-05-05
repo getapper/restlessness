@@ -69,6 +69,7 @@ const generatePackageJson = name => `{
     "module-alias": "2.2.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "8.10.50",
     "@types/node": "12.7.2",
     "@typescript-eslint/parser": "2.1.0",
     "eslint": "6.8.0",
@@ -82,6 +83,21 @@ const generatePackageJson = name => `{
     "root": "dist"
   }
 }
+`
+
+const generateGitIgnore = () => `node_modules
+.serverless
+
+# IntelliJ
+.idea
+
+# OSX
+.DS_Store
+
+#TSC
+/dist
+envs/beta.json
+envs/production.json
 `
 
 module.exports = async argv => {
@@ -101,6 +117,7 @@ module.exports = async argv => {
       copyFolderRecursiveSync(path.join(__dirname, '..', '..', 'assets', 'boilerplate'), process.GLOBAL.PRJ_DIR, true)
       fs.writeFileSync(path.join(process.GLOBAL.PRJ_DIR, 'serverless.yml'), generateServerlessYaml(name))
       fs.writeFileSync(path.join(process.GLOBAL.PRJ_DIR, 'package.json'), generatePackageJson(name))
+      fs.writeFileSync(path.join(process.GLOBAL.PRJ_DIR, '.gitignore'), generateGitIgnore())
       execSync('npm i', {
         cwd: process.GLOBAL.PRJ_DIR,
         stdio: 'inherit'

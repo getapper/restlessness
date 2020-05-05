@@ -1,6 +1,12 @@
 import mongoDao, { MongoDao } from '../dao';
 import { ObjectId } from 'bson';
-import { InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
+import {
+  InsertOneWriteOpResult,
+  UpdateWriteOpResult,
+  FindOneOptions,
+  QuerySelector,
+  DeleteWriteOpResultObject,
+} from 'mongodb';
 
 export default class MongoBase {
   ['constructor']: typeof MongoBase
@@ -26,9 +32,28 @@ export default class MongoBase {
     return result !== null;
   }
 
+  static async getList<T>(query: QuerySelector<T> = {}, limit: number = 10, skip: number = 0, sortBy: string = null, asc: boolean = true): Promise<T[]> {
+    const options: FindOneOptions = {};
+    options.limit = limit;
+    if (sortBy) {
+      options.sort = {
+        [sortBy]: asc ? 1 : -1,
+      };
+    }
+    if (skip !== null) {
+      options.skip = skip;
+    }
+    const results = await MongoBase.dao.find(this.collectionName, query, options);
+    return results.map(r => {
+      const i = new this();
+      Object.assign(i, r);
+      return i;
+    });
+  }
+
   async save() {
     this.created = new Date();
-    const response: InsertOneWriteOpResult = await MongoBase.dao.insertOne(this.constructor.collectionName, this);
+    const response: InsertOneWriteOpResult<MongoBase> = await MongoBase.dao.insertOne(this.constructor.collectionName, this);
     if (response?.result?.ok) {
       this._id = response?.insertedId;
     }
@@ -55,6 +80,16 @@ export default class MongoBase {
         $set: fields,
       });
       return !!response?.result?.ok ?? false;
+    }
+    return false;
+  }
+
+  async remove<T>(): Promise<boolean> {
+    if (this._id) {
+      const response: DeleteWriteOpResultObject = await MongoBase.dao.deleteOne(this.constructor.collectionName, {
+        _id: this._id,
+      });
+      return response?.result?.ok === 1 || false;
     }
     return false;
   }

@@ -1,10 +1,11 @@
 {
   "name": "@restlessness/core",
-  "version": "0.0.3",
+  "version": "0.0.7",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
+    "@types/aws-lambda": "8.10.50",
     "@types/node": "13.7.1",
     "@types/yup": "^0.26.33",
     "@typescript-eslint/parser": "2.25.0",

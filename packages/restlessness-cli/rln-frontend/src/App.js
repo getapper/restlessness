@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { Admin, Resource } from 'react-admin';
+import { Admin, Resource, ListGuesser } from 'react-admin';
 import restProvider from 'ra-data-simple-rest';
 import EnvsList from './envs/list'
 import EndpointsList from './endpoints/list'
@@ -16,7 +16,8 @@ function App() {
       <Resource name="envs" list={EnvsList} create={EnvsCreate}/>
       <Resource name="endpoints" list={EndpointsList} create={EndpointsCreate}/>
       <Resource name="models" list={ModelsList} create={ModelsCreate}/>
-      <Resource name="daos" />
+      <Resource name="daos" list={ListGuesser} />
+      <Resource name="plugins" list={ListGuesser} />
       <Resource name="auths" />
       <Resource name="swagger" list={SwaggerList} />
     </Admin>

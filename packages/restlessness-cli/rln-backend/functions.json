@@ -96,6 +96,18 @@
         }
       ]
     },
+    "getPlugins": {
+      "handler": "dist/exporter.getPlugins",
+      "events": [
+        {
+          "http": {
+            "path": "plugins",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
     "getAuths": {
       "handler": "dist/exporter.getAuths",
       "events": [
