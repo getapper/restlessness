@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/utilities",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "author": "Getapper",
@@ -15,6 +15,7 @@
     "url": "https://github.com/getapper/restlessness/tree/master/packages/restlessness-utilities"
   },
   "scripts": {
+    "prepublishOnly": "tsc",
     "npm:tag": "node ../../scripts/git-packages-tagger.js"
   }
 }

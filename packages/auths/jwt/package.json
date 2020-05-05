@@ -11,7 +11,7 @@
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "@restlessness/utilities": "0.0.1",
+    "@restlessness/utilities": "0.0.4",
     "pluralize": "8.0.0"
   },
   "repository": {
