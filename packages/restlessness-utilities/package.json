@@ -13,5 +13,8 @@
   },
   "repository": {
     "url": "https://github.com/getapper/restlessness/tree/master/packages/restlessness-utilities"
+  },
+  "scripts": {
+    "npm:tag": "node ../../scripts/git-packages-tagger.js"
   }
 }
