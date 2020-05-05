@@ -4,6 +4,7 @@ import { getPrjRoot, getEndpointsRoot, getSrcRoot } from 'root/services/path-res
 import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate, validationsTemplate } from 'root/models/Endpoint/templates';
 import { capitalize } from 'root/services/util';
 import Route from 'root/models/Route';
+import { Auth } from 'root/models';
 
 enum HttpMethod {
   GET = 'get',
@@ -21,12 +22,14 @@ interface JsonEndpoint {
   id: number,
   route: string,
   method: HttpMethod
+  auth: string
 }
 
 export default class Endpoint {
   id: number
   route: Route
   method: HttpMethod
+  auth: string
 
   static get endpointsJsonPath(): string {
     return path.join(getPrjRoot(), 'endpoints.json');
@@ -47,7 +50,6 @@ export default class Endpoint {
       return ep;
     });
   }
-
   static async saveList(endpoints: Endpoint[]) {
     const jsonEndpoints: JsonEndpoint[] = endpoints.map(ep => ({
       ...ep,
@@ -56,10 +58,14 @@ export default class Endpoint {
     await fs.writeFile(Endpoint.endpointsJsonPath, JSON.stringify(jsonEndpoints, null, 2));
   }
 
-  async create(route: Route, method: HttpMethod) {
+  async create(route: Route, method: HttpMethod, authId?: string) {
     this.route = route;
     this.method = method;
     const endpoints = await Endpoint.getList();
+    const auths = await Auth.getList();
+    if (authId) {
+      this.auth = authId;
+    }
     this.id = (endpoints
       .map(endpoint => endpoint.id)
       .reduce((max, curr) => Math.max(max, curr), 0) || 0) + 1;
@@ -79,6 +85,32 @@ export default class Endpoint {
     await fs.writeFile(path.join(getSrcRoot(), 'exporter.ts'), exporterTemplate(endpoints));
     const functions = await Endpoint.getFunctions();
     const functionName = this.method + route.functionName;
+
+    let endpointFunction = {
+      handler: `dist/exporter.${functionName}`,
+      events: [
+        {
+          http: {
+            path: route.functionPath,
+            method: this.method,
+            cors: true,
+            authorizer: null,
+          },
+        },
+      ],
+    };
+    if (authId) {
+      const auth = auths.find(d => d.id === authId);
+      endpointFunction.events[0].http.authorizer = auth.name;
+      console.log(auth, auth.functionName)
+      if (!functions[auth.name]) {
+        functions[auth.name] = {
+          handler: `dist/auths/${auth.functionName}`,
+        };
+      }
+    }
+    functions[functionName] = endpointFunction;
+    /*
     functions[functionName] = {
       handler: `dist/exporter.${functionName}`,
       events: [
@@ -91,6 +123,7 @@ export default class Endpoint {
         },
       ],
     };
+    */
     await Endpoint.saveFunctions(functions);
   }
 

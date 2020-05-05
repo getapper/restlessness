@@ -1,4 +1,4 @@
-import Openapi from 'root/models/Openapi';
+import { Openapi } from 'root/models';
 
 require('module-alias/register');
 import { promises as fs } from 'fs';

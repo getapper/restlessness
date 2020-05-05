@@ -43,5 +43,10 @@
     "route": "/plugins",
     "method": "get",
     "id": 9
+  },
+  {
+    "route": "/auths",
+    "method": "get",
+    "id": 10
   }
 ]

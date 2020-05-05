@@ -2,7 +2,8 @@ import { HttpMethod } from 'root/models/Endpoint';
 
 export interface Payload {
   route: string,
-  method: HttpMethod
+  method: HttpMethod,
+  authId: string
 }
 
 export interface Request {

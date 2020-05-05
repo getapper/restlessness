@@ -1,6 +1,12 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 
+interface JsonAuth {
+  id: string,
+  name: string,
+  package: string,
+}
+
 interface JsonDao {
   id: string,
   name: string,
@@ -41,6 +47,17 @@ const addPlugin = async (projectPath: string, pluginId: string, plugin: JsonPlug
   }
 };
 
+const addAuth = async (projectPath: string, authId: string, auth: JsonAuth) => {
+  const authPath = path.join(projectPath, 'auths.json');
+  const auths: JsonAuth[] = require(authPath);
+  if (auths.findIndex((auth: JsonAuth) => auth.id === authId) === -1) {
+    auths.push(auth);
+    await fs.writeFile(authPath, JSON.stringify(auths, null, 2));
+  } else {
+    console.warn(`${authId} Auth already found inside auths.json!`);
+  }
+};
+
 const addToEachEnv = async (projectPath: string, key: string, value: any) => {
   const envsPath = path.join(projectPath, 'envs.json');
   const jsonEnvs: JsonDao[] = require(envsPath);
@@ -70,4 +87,5 @@ export {
   addPlugin,
   addToEachEnv,
   addToEnv,
+  addAuth,
 };
