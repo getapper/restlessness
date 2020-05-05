@@ -14,7 +14,7 @@ exec("git status --porcelain", (error, stdout, stderr) => {
     return;
   }
   if (!stdout) {
-    exec(`git tag ${packageJson.name}-v${packageJson.version}`, (error, stdout, stderr) => {
+    exec(`git tag -a ${packageJson.name}/v${packageJson.version} - m "${packageJson.name}/v${packageJson.version} Release"`, (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);
         return;
