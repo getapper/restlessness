@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 interface JsonAuth {
   id: string,
   name: string,
+  functionName: string,
   package: string,
 }
 
