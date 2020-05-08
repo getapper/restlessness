@@ -10,7 +10,7 @@ export default async (req: Request) => {
   const {
     route: text,
     method,
-    authId,
+    authorizerId,
   } = payload;
   let route: Route;
   try {
@@ -23,6 +23,6 @@ export default async (req: Request) => {
     return res({ message: 'Route already exists' }, 400);
   }
   const endpoint = new Endpoint();
-  await endpoint.create(route, method, authId);
+  await endpoint.create(route, method, authorizerId);
   return res(endpoint);
 };

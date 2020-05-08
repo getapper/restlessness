@@ -7,7 +7,7 @@ import getDaos from 'root/endpoints/get-daos';
 import getEnvs from 'root/endpoints/get-envs';
 import postEnvs from 'root/endpoints/post-envs';
 import getOpenapi from 'root/endpoints/get-openapi';
-import getAuths from 'root/endpoints/get-auths';
+import getAuthorizers from 'root/endpoints/get-authorizers';
 import getPlugins from 'root/endpoints/get-plugins';
 
 export {
@@ -19,7 +19,7 @@ export {
   getEnvs,
   postEnvs,
   getOpenapi,
-  getAuths,
+  getAuthorizers,
   getPlugins,
 };
 

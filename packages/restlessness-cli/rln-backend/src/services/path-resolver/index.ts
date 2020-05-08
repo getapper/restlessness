@@ -20,7 +20,7 @@ const getDistEndpointsRoot = (): string => path.join(getDistRoot(), 'endpoints')
 
 const getModelsRoot = (): string => path.join(getSrcRoot(), 'models');
 
-const getAuthsRoot = (): string => path.join(getSrcRoot(), 'auths');
+const getAuthorizersRoot = (): string => path.join(getSrcRoot(), 'authorizers');
 
 export {
   getNodeModulesRoot,
@@ -29,5 +29,5 @@ export {
   getEndpointsRoot,
   getModelsRoot,
   getDistEndpointsRoot,
-  getAuthsRoot,
+  getAuthorizersRoot,
 };

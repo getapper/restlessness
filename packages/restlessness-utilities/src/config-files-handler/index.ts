@@ -1,10 +1,10 @@
 import path from 'path';
-import { promises as fs } from 'fs';
+import { existsSync, promises as fs } from 'fs';
 
-interface JsonAuth {
+interface JsonAuthorizer {
   id: string,
   name: string,
-  functionName: string,
+  sessionModelName: string,
   package: string,
 }
 
@@ -48,14 +48,48 @@ const addPlugin = async (projectPath: string, pluginId: string, plugin: JsonPlug
   }
 };
 
-const addAuth = async (projectPath: string, authId: string, auth: JsonAuth) => {
-  const authPath = path.join(projectPath, 'auths.json');
-  const auths: JsonAuth[] = require(authPath);
-  if (auths.findIndex((auth: JsonAuth) => auth.id === authId) === -1) {
-    auths.push(auth);
-    await fs.writeFile(authPath, JSON.stringify(auths, null, 2));
+const addAuthorizer = async (projectPath: string, authorizerId: string, authorizer: JsonAuthorizer, authorizerTemplate: string, sessionModelTemplate: string) => {
+  const authorizersPath = path.join(projectPath, 'authorizers.json');
+  let existsFile: boolean = await existsSync(authorizersPath);
+  if (!existsFile) {
+    await fs.writeFile(authorizersPath, '[]');
+  }
+  const authorizers: JsonAuthorizer[] = require(authorizersPath);
+  if (authorizers.findIndex((authorizer: JsonAuthorizer) => authorizer.id === authorizerId) === -1) {
+    authorizers.push(authorizer);
+    await fs.writeFile(authorizersPath, JSON.stringify(authorizers, null, 2));
   } else {
-    console.warn(`${authId} Auth already found inside auths.json!`);
+    console.warn(`${authorizerId} Auth already found inside authorizers.json!`);
+  }
+  try {
+    const authorizersHandlersFolderPath = path.join(projectPath, 'src', 'authorizers');
+    let existsFolder: boolean = await existsSync(authorizersHandlersFolderPath);
+    if (!existsFolder) {
+      await fs.mkdir(authorizersHandlersFolderPath);
+    }
+    const authorizerHandlerPath = path.join(authorizersHandlersFolderPath, `${authorizer.id}.ts`);
+    let existsFile: boolean = await existsSync(authorizerHandlerPath);
+    if (!existsFile) {
+      await fs.writeFile(authorizerHandlerPath, authorizerTemplate);
+    }
+    const modelPath = path.join(projectPath, 'src', 'models');
+    existsFolder = await existsSync(modelPath);
+    if (!existsFolder) {
+      await fs.mkdir(modelPath);
+    }
+    const sessionModelPath = path.join(modelPath, authorizer.sessionModelName);
+    existsFolder = await existsSync(sessionModelPath);
+    if (!existsFolder) {
+      await fs.mkdir(sessionModelPath);
+    }
+    const sessionModelIndexPath = path.join(sessionModelPath, 'index.ts');
+    existsFile = await existsSync(sessionModelIndexPath);
+    if (!existsFile) {
+      await fs.writeFile(sessionModelIndexPath, sessionModelTemplate);
+    }
+  } catch (e) {
+    console.error(`Error generating Auth Session Model ${authorizer.sessionModelName}!`);
+    throw e;
   }
 };
 
@@ -88,5 +122,5 @@ export {
   addPlugin,
   addToEachEnv,
   addToEnv,
-  addAuth,
+  addAuthorizer,
 };

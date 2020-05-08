@@ -3,7 +3,7 @@ import { HttpMethod } from 'root/models/Endpoint';
 export interface Payload {
   route: string,
   method: HttpMethod,
-  authId: string
+  authorizerId: string
 }
 
 export interface Request {

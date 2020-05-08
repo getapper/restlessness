@@ -1,13 +1,14 @@
 {
   "name": "@restlessness/cli",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build-backend": "cd rln-backend && tsc",
     "build-frontend": "cd rln-frontend && npm run build",
     "build": "npm run build-backend && npm run build-frontend && node scripts/copy-files.js",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "npm:tag": "node ../../scripts/git-packages-tagger.js"
   },
   "bin": {
     "restlessness": "./index.js"

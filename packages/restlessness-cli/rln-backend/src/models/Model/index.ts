@@ -37,7 +37,7 @@ export default class Model {
     const jsonModels: JsonModel[] = models.map(m => ({
       id: m.id,
       name: m.name,
-      daoId: m.dao.id,
+      daoId: m.dao?.id ?? null,
     }));
     await fs.writeFile(Model.modelsJsonPath, JSON.stringify(jsonModels, null, 2));
   }

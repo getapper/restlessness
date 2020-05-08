@@ -108,12 +108,12 @@
         }
       ]
     },
-    "getAuths": {
-      "handler": "dist/exporter.getAuths",
+    "getAuthorizers": {
+      "handler": "dist/exporter.getAuthorizers",
       "events": [
         {
           "http": {
-            "path": "auths",
+            "path": "authorizers",
             "method": "get",
             "cors": true
           }

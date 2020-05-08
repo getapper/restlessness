@@ -18,7 +18,7 @@ function App() {
       <Resource name="models" list={ModelsList} create={ModelsCreate}/>
       <Resource name="daos" list={ListGuesser} />
       <Resource name="plugins" list={ListGuesser} />
-      <Resource name="auths" />
+      <Resource name="authorizers" />
       <Resource name="swagger" list={SwaggerList} />
     </Admin>
   );

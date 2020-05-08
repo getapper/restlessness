@@ -45,7 +45,7 @@
     "id": 9
   },
   {
-    "route": "/auths",
+    "route": "/authorizers",
     "method": "get",
     "id": 10
   }

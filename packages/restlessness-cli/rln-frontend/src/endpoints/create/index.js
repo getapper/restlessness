@@ -12,7 +12,7 @@ const EndpointsCreate = (props) => (
         { id: 'put', name: 'PUT' },
         { id: 'patch', name: 'PATCH' },
       ]} />
-      <ReferenceInput label="Auth" source="authId" reference="auths">
+      <ReferenceInput label="Authorizer" source="authorizerId" reference="authorizers">
         <SelectInput />
       </ReferenceInput>
     </SimpleForm>

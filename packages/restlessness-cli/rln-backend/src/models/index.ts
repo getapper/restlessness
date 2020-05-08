@@ -4,11 +4,11 @@ import Dao from 'root/models/Dao';
 import Plugin from 'root/models/Plugin';
 import Model from 'root/models/Model';
 import Env from 'root/models/Env';
-import Auth from 'root/models/Auth';
+import Authorizer from 'root/models/Authorizer';
 import Openapi from 'root/models/Openapi';
 
 export {
-  Auth,
+  Authorizer,
   Endpoint,
   Route,
   Dao,
