@@ -107,6 +107,18 @@
           }
         }
       ]
+    },
+    "getAuthorizers": {
+      "handler": "dist/exporter.getAuthorizers",
+      "events": [
+        {
+          "http": {
+            "path": "authorizers",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
     }
   }
 }

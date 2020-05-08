@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/utilities",
-  "version": "0.0.3",
+  "version": "0.0.8",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "author": "Getapper",
@@ -9,9 +9,14 @@
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "2.25.0",
     "eslint": "6.8.0",
+    "rimraf": "3.0.2",
     "typescript": "3.7.5"
   },
   "repository": {
     "url": "https://github.com/getapper/restlessness/tree/master/packages/restlessness-utilities"
+  },
+  "scripts": {
+    "prepublishOnly": "rimraf ./dist && tsc",
+    "npm:tag": "node ../../scripts/git-packages-tagger.js"
   }
 }

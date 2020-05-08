@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/core",
-  "version": "0.0.7",
+  "version": "0.0.10",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -10,9 +10,14 @@
     "@types/yup": "^0.26.33",
     "@typescript-eslint/parser": "2.25.0",
     "eslint": "6.8.0",
+    "rimraf": "3.0.2",
     "typescript": "3.8.3"
   },
   "peerDependencies": {
     "yup": "^0.28.3"
+  },
+  "scripts": {
+    "prepublishOnly": "rimraf ./dist && tsc",
+    "npm:tag": "node ../../scripts/git-packages-tagger.js"
   }
 }

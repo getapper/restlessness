@@ -2,7 +2,7 @@ import { ValidationObjects, ValidationResult } from './interfaces';
 
 export * from './interfaces';
 
-export const requestParser = async (event: AWSLambda.APIGatewayProxyEventBase<null>, context: AWSLambda.Context, validations: ValidationObjects) => {
+export const requestParser = async<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context, validations: ValidationObjects) => {
   let queryStringParameters: any = event.queryStringParameters || {};
   let payload = JSON.parse(event.body) || {};
   let pathParameters: any = event.pathParameters || {};
