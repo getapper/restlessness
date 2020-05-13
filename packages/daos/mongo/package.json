@@ -15,6 +15,7 @@
   "dependencies": {
     "@restlessness/utilities": "0.0.1",
     "bson": "4.0.3",
+    "cross-env": "7.0.2",
     "mongodb": "3.5.5",
     "pluralize": "8.0.0"
   },
@@ -22,7 +23,7 @@
     "url": "https://github.com/getapper/restlessness/tree/master/packages/daos/mongo"
   },
   "scripts": {
-    "preinstall": "node ./dist/hooks/pre-install/index.js $INIT_CWD",
-    "postinstall": "node ./dist/hooks/post-install/index.js $INIT_CWD"
+    "preinstall": "cross-env-shell node ./dist/hooks/pre-install/index.js $INIT_CWD",
+    "postinstall": "cross-env-shell node ./dist/hooks/post-install/index.js $INIT_CWD"
   }
 }
