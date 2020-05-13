@@ -15,10 +15,11 @@
     "aws-sdk": "^2.664.0"
   },
   "dependencies": {
-    "@restlessness/utilities": "0.0.3"
+    "@restlessness/utilities": "0.0.3",
+    "cross-env": "7.0.2"
   },
   "scripts": {
-    "preinstall": "node ./dist/hooks/pre-install/index.js $INIT_CWD",
-    "postinstall": "node ./dist/hooks/post-install/index.js $INIT_CWD"
+    "preinstall": "cross-env-shell node ./dist/hooks/pre-install/index.js $INIT_CWD",
+    "postinstall": "cross-env-shell node ./dist/hooks/post-install/index.js $INIT_CWD"
   }
 }
