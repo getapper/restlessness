@@ -1,12 +1,14 @@
-require('module-alias/register');
+import 'module-alias/register';
 import postEndpoints from 'root/endpoints/post-endpoints';
 import getEndpoints from 'root/endpoints/get-endpoints';
 import postModels from 'root/endpoints/post-models';
 import getModels from 'root/endpoints/get-models';
 import getDaos from 'root/endpoints/get-daos';
-import getOpenapi from 'root/endpoints/get-openapi';
 import getEnvs from 'root/endpoints/get-envs';
 import postEnvs from 'root/endpoints/post-envs';
+import getOpenapi from 'root/endpoints/get-openapi';
+import getAuthorizers from 'root/endpoints/get-authorizers';
+import getPlugins from 'root/endpoints/get-plugins';
 
 export {
   postEndpoints,
@@ -14,8 +16,10 @@ export {
   postModels,
   getModels,
   getDaos,
-  getOpenapi,
   getEnvs,
   postEnvs,
+  getOpenapi,
+  getAuthorizers,
+  getPlugins,
 };
 

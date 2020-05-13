@@ -7,6 +7,7 @@ const EndpointsList = (props) => (
       <TextField source="id" />
       <TextField source="route" />
       <TextField source="method" />
+      <TextField source="authorizer" />
     </Datagrid>
   </List>
 );

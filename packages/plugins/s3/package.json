@@ -1,0 +1,24 @@
+{
+  "name": "@restlessness/s3",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "author": "Getapper",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-sdk": "2.7.0",
+    "@types/node": "13.7.1",
+    "@typescript-eslint/parser": "2.25.0",
+    "eslint": "6.8.0",
+    "typescript": "3.8.3"
+  },
+  "peerDependencies": {
+    "aws-sdk": "^2.664.0"
+  },
+  "dependencies": {
+    "@restlessness/utilities": "0.0.3"
+  },
+  "scripts": {
+    "preinstall": "node ./dist/hooks/pre-install/index.js $INIT_CWD",
+    "postinstall": "node ./dist/hooks/post-install/index.js $INIT_CWD"
+  }
+}

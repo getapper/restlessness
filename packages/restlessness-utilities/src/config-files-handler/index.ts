@@ -1,7 +1,20 @@
 import path from 'path';
-import { promises as fs } from 'fs';
+import { existsSync, promises as fs } from 'fs';
+
+interface JsonAuthorizer {
+  id: string,
+  name: string,
+  sessionModelName: string,
+  package: string,
+}
 
 interface JsonDao {
+  id: string,
+  name: string,
+  package: string,
+}
+
+interface JsonPlugin {
   id: string,
   name: string,
   package: string,
@@ -21,6 +34,62 @@ const addDao = async (projectPath: string, daoId: string, dao: JsonDao) => {
     await fs.writeFile(daosPath, JSON.stringify(daos, null, 2));
   } else {
     console.warn(`${daoId} DAO already found inside daos.json!`);
+  }
+};
+
+const addPlugin = async (projectPath: string, pluginId: string, plugin: JsonPlugin) => {
+  const pluginsPath = path.join(projectPath, 'plugins.json');
+  const plugins: JsonPlugin[] = require(pluginsPath);
+  if (plugins.findIndex((plugin: JsonPlugin) => plugin.id === pluginId) === -1) {
+    plugins.push(plugin);
+    await fs.writeFile(pluginsPath, JSON.stringify(plugins, null, 2));
+  } else {
+    console.warn(`${pluginId} plugin already found inside plugins.json!`);
+  }
+};
+
+const addAuthorizer = async (projectPath: string, authorizerId: string, authorizer: JsonAuthorizer, authorizerTemplate: string, sessionModelTemplate: string) => {
+  const authorizersPath = path.join(projectPath, 'authorizers.json');
+  let existsFile: boolean = await existsSync(authorizersPath);
+  if (!existsFile) {
+    await fs.writeFile(authorizersPath, '[]');
+  }
+  const authorizers: JsonAuthorizer[] = require(authorizersPath);
+  if (authorizers.findIndex((authorizer: JsonAuthorizer) => authorizer.id === authorizerId) === -1) {
+    authorizers.push(authorizer);
+    await fs.writeFile(authorizersPath, JSON.stringify(authorizers, null, 2));
+  } else {
+    console.warn(`${authorizerId} Auth already found inside authorizers.json!`);
+  }
+  try {
+    const authorizersHandlersFolderPath = path.join(projectPath, 'src', 'authorizers');
+    let existsFolder: boolean = await existsSync(authorizersHandlersFolderPath);
+    if (!existsFolder) {
+      await fs.mkdir(authorizersHandlersFolderPath);
+    }
+    const authorizerHandlerPath = path.join(authorizersHandlersFolderPath, `${authorizer.id}.ts`);
+    let existsFile: boolean = await existsSync(authorizerHandlerPath);
+    if (!existsFile) {
+      await fs.writeFile(authorizerHandlerPath, authorizerTemplate);
+    }
+    const modelPath = path.join(projectPath, 'src', 'models');
+    existsFolder = await existsSync(modelPath);
+    if (!existsFolder) {
+      await fs.mkdir(modelPath);
+    }
+    const sessionModelPath = path.join(modelPath, authorizer.sessionModelName);
+    existsFolder = await existsSync(sessionModelPath);
+    if (!existsFolder) {
+      await fs.mkdir(sessionModelPath);
+    }
+    const sessionModelIndexPath = path.join(sessionModelPath, 'index.ts');
+    existsFile = await existsSync(sessionModelIndexPath);
+    if (!existsFile) {
+      await fs.writeFile(sessionModelIndexPath, sessionModelTemplate);
+    }
+  } catch (e) {
+    console.error(`Error generating Auth Session Model ${authorizer.sessionModelName}!`);
+    throw e;
   }
 };
 
@@ -50,6 +119,8 @@ const addToEnv = async (projectPath: string, envName: string, key: string, value
 
 export {
   addDao,
+  addPlugin,
   addToEachEnv,
   addToEnv,
+  addAuthorizer,
 };

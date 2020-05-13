@@ -108,6 +108,20 @@
           }
         }
       }
+    },
+    "/plugins": {
+      "get": {
+        "description": "get: /plugins",
+        "tags": [
+          "api"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": []
+      }
     }
   }
 }

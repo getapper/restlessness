@@ -95,6 +95,30 @@
           }
         }
       ]
+    },
+    "getPlugins": {
+      "handler": "dist/exporter.getPlugins",
+      "events": [
+        {
+          "http": {
+            "path": "plugins",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getAuthorizers": {
+      "handler": "dist/exporter.getAuthorizers",
+      "events": [
+        {
+          "http": {
+            "path": "authorizers",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
     }
   }
 }
