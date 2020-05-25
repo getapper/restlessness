@@ -4,6 +4,7 @@ import { getPrjRoot } from 'root/services/path-resolver';
 import { Dao } from 'root/models';
 
 export enum EnvType {
+  TEST = 'test',
   DEV = 'dev',
   DEPLOY = 'deploy'
 }

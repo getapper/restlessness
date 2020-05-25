@@ -63,16 +63,20 @@ const generatePackageJson = name => `{
     "DEPLOY:beta": "cp envs/beta.json env.json && tsc && serverless deploy --stage dev --verbose",
     "REMOVE:beta": "serverless remove --stage dev",
     "DEPLOY:production": "cp envs/production.json env.json && tsc && serverless deploy --stage deploy --verbose",
-    "REMOVE:production": "serverless remove --stage production"
+    "REMOVE:production": "serverless remove --stage production",
+    "test": "cp envs/test.json env.json && jest",
+    "test:ci": "cp envs/test.json env.json && tsc && jest"
   },
   "dependencies": {
     "module-alias": "2.2.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.50",
+    "@types/jest": "25.2.3",
     "@types/node": "12.7.2",
     "@typescript-eslint/parser": "2.1.0",
     "eslint": "6.8.0",
+    "jest": "26.0.1",
     "serverless-offline": "5.12.1",
     "typescript": "3.8.3"
   },
@@ -81,6 +85,12 @@ const generatePackageJson = name => `{
   },
   "_moduleAliases": {
     "root": "dist"
+  },
+  "jest": {
+    "rootDir": "dist",
+    "moduleNameMapper": {
+      "root/(.*)$": "<rootDir>/$1"
+    }
   }
 }
 `

@@ -68,7 +68,19 @@ interface ResponseOptions {
   },
 }
 
+interface HttpHeader {
+  [key: string]: string
+}
+
+interface Response {
+  statusCode: number,
+  body: string,
+  headers?: HttpHeader
+}
+
 export {
+  HttpHeader,
   StatusCodes,
   ResponseOptions,
+  Response,
 };

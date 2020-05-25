@@ -1,14 +1,12 @@
 import {
+  HttpHeader,
   StatusCodes,
   ResponseOptions,
+  Response,
 } from './interfaces';
 import path from 'path';
 
-interface HttpHeader {
-  [key: string]: string
-}
-
-const res = (response, statusCode:StatusCodes = StatusCodes.OK, options?: ResponseOptions) => {
+const res = (response, statusCode:StatusCodes = StatusCodes.OK, options?: ResponseOptions): Response => {
   const headers: HttpHeader = {};
   try {
     const defaultHeaders = require(path.join(process.cwd(), 'default-headers.json'));
