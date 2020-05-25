@@ -6,6 +6,7 @@ const { spawn } = require('child_process')
 process.GLOBAL.CWD = process.cwd()
 
 module.exports = async argv => {
+  // @TODO check node version >= 12.x
   const port = argv.port || argv.p || 4123
   try {
     const backend = spawn('serverless', ['offline', '--port', 4123], {
