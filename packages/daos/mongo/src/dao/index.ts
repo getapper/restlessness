@@ -23,6 +23,12 @@ class MongoDao {
     }
   }
 
+  async closeConnection() {
+    if (this.mongoClient !== null) {
+      await this.mongoClient.close();
+    }
+  }
+
   async openConnection(context: AWSLambda.Context) {
     context.callbackWaitsForEmptyEventLoop = false;
     try {
