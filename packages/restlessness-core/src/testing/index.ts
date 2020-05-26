@@ -17,12 +17,9 @@ interface EndPoint {
 }
 
 interface TestAPIGatewayProxyEventBase<TAuthorizerContext> {
-  body?: string | null;
   headers?: { [name: string]: string };
   multiValueHeaders?: { [name: string]: string[] };
   isBase64Encoded?: boolean;
-  pathParameters?: { [name: string]: string } | null;
-  queryStringParameters?: { [name: string]: string } | null;
   multiValueQueryStringParameters?: { [name: string]: string[] } | null;
   stageVariables?: { [name: string]: string } | null;
   requestContext?: APIGatewayEventRequestContextWithAuthorizer<TAuthorizerContext>;
@@ -43,6 +40,12 @@ interface TestContext {
   getRemainingTimeInMillis?(): number;
 }
 
+interface RequestData {
+  payload?: { [name: string]: string } | null,
+  queryStringParameters?: { [name: string]: string } | null,
+  pathParameters?: { [name: string]: string } | null,
+}
+
 type Lambda<TAuthorizerContext> = (
   event: AWSLambda.APIGatewayProxyEventBase<TAuthorizerContext>,
   context: AWSLambda.Context
@@ -50,6 +53,7 @@ type Lambda<TAuthorizerContext> = (
 
 const apiCall = async<TAuthorizerContext>(
   apiName: string,
+  data?: RequestData,
   event?: TestAPIGatewayProxyEventBase<TAuthorizerContext>,
   context?: TestContext,
 ): Promise<Response> => {
@@ -75,7 +79,11 @@ const apiCall = async<TAuthorizerContext>(
     stageVariables: null,
     requestContext: null,
     resource: null,
-  }, event);
+  }, event, {
+    body: data?.payload ? JSON.stringify(data.payload) : undefined,
+    pathParameters: data?.pathParameters,
+    queryStringParameters: data?.queryStringParameters,
+  });
 
   const contextOptions: AWSLambda.Context = Object.assign({
     callbackWaitsForEmptyEventLoop: false,
