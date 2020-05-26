@@ -6,6 +6,12 @@ const { spawn } = require('child_process')
 process.GLOBAL.CWD = process.cwd()
 
 module.exports = async argv => {
+  const [, majorVersion] = /^(\d+)(\.\d+){0,2}$/.exec(process.versions.node)
+  if (majorVersion < 12) {
+    console.log('Run command requires node version >= 12.x')
+    process.exit(1)
+  }
+
   const port = argv.port || argv.p || 4123
   try {
     const backend = spawn('serverless', ['offline', '--port', 4123], {
