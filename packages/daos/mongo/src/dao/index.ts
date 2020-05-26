@@ -29,22 +29,22 @@ class MongoDao {
     }
   }
 
-  async openConnection(context: AWSLambda.Context) {
-    context.callbackWaitsForEmptyEventLoop = false;
+  async openConnection(context?: AWSLambda.Context) {
+    if (context) {
+      context.callbackWaitsForEmptyEventLoop = false;
+    }
     try {
       this.checkConnection();
       return this.mongoClient;
     } catch (e) {
-
+      const config = require(path.join(process.cwd(), 'env.json'));
+      const uri = config?.mongo?.uri ?? null;
+      if (uri === null) {
+        throw new Error('No mongo configuration found in env.json');
+      }
+      this.mongoClient = await MongoClient.connect(config.mongo.uri);
+      this.db = this.mongoClient.db();
     }
-    const config = require(path.join(process.cwd(), 'env.json'));
-    const uri = config?.mongo?.uri ?? null;
-    if (uri === null) {
-      throw new Error('No mongo configuration found in env.json');
-    }
-    // @TODO: Close if open
-    this.mongoClient = await MongoClient.connect(config.mongo.uri);
-    this.db = this.mongoClient.db();
   }
 
   async findOne(collectionName: string, filters, options?): Promise<any> {
