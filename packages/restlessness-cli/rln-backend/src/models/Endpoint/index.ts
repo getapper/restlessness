@@ -1,7 +1,7 @@
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
 import { getPrjRoot, getEndpointsRoot, getSrcRoot } from 'root/services/path-resolver';
-import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate, validationsTemplate } from 'root/models/Endpoint/templates';
+import { handlerTemplate, indexTemplate, interfacesTemplate, exporterTemplate, validationsTemplate, testTemplate } from 'root/models/Endpoint/templates';
 import { capitalize } from 'root/services/util';
 import Route from 'root/models/Route';
 import { Authorizer } from 'root/models';
@@ -82,13 +82,14 @@ export default class Endpoint {
     const hasPayload = [HttpMethod.PATCH, HttpMethod.POST, HttpMethod.PUT].includes(this.method);
     const folderPath = path.join(getEndpointsRoot(), this.method + '-' + route.folderName);
     await fs.mkdir(folderPath);
+    const functionName = this.method + route.functionName;
     await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(hasPayload, routeVars, this.authorizer));
+    await fs.writeFile(path.join(folderPath, 'index.test.ts'), testTemplate(functionName, this.authorizer));
     await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars, this.authorizer));
     await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars, this.authorizer));
     await fs.writeFile(path.join(folderPath, 'validations.ts'), validationsTemplate(hasPayload, routeVars));
     await fs.writeFile(path.join(getSrcRoot(), 'exporter.ts'), exporterTemplate(endpoints));
     const functions = await Endpoint.getFunctions();
-    const functionName = this.method + route.functionName;
 
     let endpointFunction = {
       handler: `dist/exporter.${functionName}`,

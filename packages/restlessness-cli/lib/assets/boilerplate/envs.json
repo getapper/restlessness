@@ -6,12 +6,17 @@
   },
   {
     "id": 2,
+    "name": "test",
+    "type": "test"
+  },
+  {
+    "id": 3,
     "name": "beta",
     "type": "deploy",
     "stage": "dev"
   },
   {
-    "id": 3,
+    "id": 4,
     "name": "production",
     "type": "deploy",
     "stage": "deploy"

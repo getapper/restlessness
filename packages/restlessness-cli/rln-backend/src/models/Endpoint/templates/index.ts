@@ -1,6 +1,10 @@
 import { Authorizer, Endpoint } from 'root/models';
 
-const indexTemplate = (hasPayload: boolean, vars: string[], authorizer: Authorizer): string => `import 'module-alias/register';
+const indexTemplate = (
+  hasPayload: boolean,
+  vars: string[],
+  authorizer: Authorizer,
+): string => `import 'module-alias/register';
 import handler from './handler';
 import { requestParser } from '@restlessness/core';
 import validations from './validations';
@@ -16,6 +20,27 @@ ${authorizer ? `  const session: ${authorizer.sessionModelName} = await sessionP
     queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}${authorizer ? '\n    session,' : ''}
   });
 };
+`;
+
+const testTemplate = (
+  apiName: string,
+  authorizer: Authorizer,
+): string => `import { StatusCodes, apiCall } from '@restlessness/core';
+${authorizer ? `import { AuthorizerContext } from '${authorizer.package}';\nimport ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
+const ${apiName} = '${apiName}';
+
+test('', async (done) => {
+  const res = await apiCall${authorizer ? '<AuthorizerContext>' : ''}(${apiName});
+  // expect(res.statusCode).toBe(StatusCodes.OK);
+  done();
+});
+
+/*
+afterAll(async done => {
+  await mongoDao.closeConnection();
+  done();
+});
+*/
 `;
 
 const handlerTemplate = (hasPayload: boolean, vars: string[], authorizer: Authorizer): string => `import 'module-alias/register';
@@ -82,4 +107,5 @@ export {
   interfacesTemplate,
   exporterTemplate,
   validationsTemplate,
+  testTemplate,
 };
