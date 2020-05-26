@@ -44,6 +44,7 @@ interface RequestData {
   payload?: { [name: string]: string } | null,
   queryStringParameters?: { [name: string]: string } | null,
   pathParameters?: { [name: string]: string } | null,
+  headers?: { [name: string]: string },
 }
 
 type Lambda<TAuthorizerContext> = (
@@ -83,6 +84,7 @@ const apiCall = async<TAuthorizerContext>(
     body: data?.payload ? JSON.stringify(data.payload) : undefined,
     pathParameters: data?.pathParameters,
     queryStringParameters: data?.queryStringParameters,
+    headers: data?.headers,
   });
 
   const contextOptions: AWSLambda.Context = Object.assign({
