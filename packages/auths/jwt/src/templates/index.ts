@@ -17,7 +17,7 @@ const jwtSessionModelTemplate = (): string => `export default class JwtSession {
 
   static async deserialize(session: string): Promise<JwtSession> {
     const jwtSession = new JwtSession();
-    Object.assign(this, JSON.parse(session));
+    Object.assign(jwtSession, JSON.parse(session));
     return jwtSession;
   }
 };

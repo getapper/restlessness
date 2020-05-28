@@ -1,6 +1,6 @@
 import mongoDao, { MongoDao } from '../dao';
-import { ObjectId } from 'bson';
 import {
+  ObjectId,
   InsertOneWriteOpResult,
   UpdateWriteOpResult,
   FindOneOptions,
