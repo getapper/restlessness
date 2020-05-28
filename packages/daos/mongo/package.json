@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/dao-mongo",
-  "version": "0.0.9",
+  "version": "0.0.12",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -10,6 +10,7 @@
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "^2.1.0",
     "eslint": "6.8.0",
+    "rimraf": "3.0.2",
     "typescript": "3.8.3"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "url": "https://github.com/getapper/restlessness/tree/master/packages/daos/mongo"
   },
   "scripts": {
+    "prepublishOnly": "rimraf ./dist && tsc",
     "preinstall": "cross-env-shell node ./dist/hooks/pre-install/index.js $INIT_CWD",
     "postinstall": "cross-env-shell node ./dist/hooks/post-install/index.js $INIT_CWD",
     "npm:tag": "node ../../../scripts/git-packages-tagger.js"

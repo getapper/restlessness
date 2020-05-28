@@ -55,6 +55,7 @@ type Lambda<TAuthorizerContext> = (
 const apiCall = async<TAuthorizerContext>(
   apiName: string,
   data?: RequestData,
+  authorizer?: TAuthorizerContext,
   event?: TestAPIGatewayProxyEventBase<TAuthorizerContext>,
   context?: TestContext,
 ): Promise<Response> => {
@@ -67,6 +68,24 @@ const apiCall = async<TAuthorizerContext>(
   const jsonFunctions = require(path.join(process.cwd(), 'functions.json'));
   const endpoint: EndPoint = jsonFunctions.functions[apiName];
 
+  let requestContext: APIGatewayEventRequestContextWithAuthorizer<TAuthorizerContext> = null;
+  if (authorizer) {
+    requestContext = {
+      accountId: null,
+      apiId: null,
+      authorizer,
+      protocol: null,
+      httpMethod: null,
+      identity: null,
+      path: null,
+      stage: null,
+      requestId: null,
+      requestTime: null,
+      requestTimeEpoch: null,
+      resourceId: null,
+      resourcePath: null,
+    };
+  };
   const eventOptions: AWSLambda.APIGatewayProxyEventBase<TAuthorizerContext> = Object.assign({
     body: null,
     headers: null,
@@ -78,7 +97,7 @@ const apiCall = async<TAuthorizerContext>(
     queryStringParameters: null,
     multiValueQueryStringParameters: null,
     stageVariables: null,
-    requestContext: null,
+    requestContext,
     resource: null,
   }, event, {
     body: data?.payload ? JSON.stringify(data.payload) : undefined,

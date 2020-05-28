@@ -420,7 +420,6 @@ const validateJwt = async (event: AuthorizerEvent): Promise<AuthResult> => {
 const authorizer = async (event: AuthorizerEvent): Promise<string | AuthPolicyResponse> => {
   try {
     const authResult: AuthResult = await validateJwt(event);
-    console.log(authResult);
     if (authResult.granted) {
       const principalId: string = authResult.principalId;
 
@@ -489,9 +488,15 @@ const createToken = async(session: SessionModelInstance): Promise<string> => {
   }, jwtSecret);
 };
 
+const createAuthorizer = async(session: SessionModelInstance): Promise<AuthorizerContext> => ({
+  principalId: session.id,
+  serializedSession: await session.serialize(),
+});
+
 export {
   authorizer,
   createToken,
+  createAuthorizer,
 };
 
 export {
