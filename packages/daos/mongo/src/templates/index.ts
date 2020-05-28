@@ -1,7 +1,6 @@
 import pluralize from 'pluralize';
 
-const indexTemplate = (name: string): string => `import { ObjectId } from 'bson';
-import { MongoBase } from '@restlessness/dao-mongo';
+const indexTemplate = (name: string): string => `import { MongoBase, ObjectId } from '@restlessness/dao-mongo';
 
 export default class ${name} extends MongoBase {
   ['constructor']: typeof ${name}
