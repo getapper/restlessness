@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/auth-jwt",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -9,6 +9,7 @@
     "@types/jsonwebtoken": "8.3.9",
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "^2.1.0",
+    "cross-env": "7.0.2",
     "eslint": "6.8.0",
     "rimraf": "3.0.2",
     "typescript": "3.8.3"
@@ -23,7 +24,7 @@
   "scripts": {
     "prepublishOnly": "rimraf ./dist && tsc",
     "npm:tag": "node ../../../scripts/git-packages-tagger.js",
-    "preinstall": "node ./dist/hooks/pre-install/index.js $INIT_CWD",
-    "postinstall": "node ./dist/hooks/post-install/index.js $INIT_CWD"
+    "preinstall": "cross-env-shell node ./dist/hooks/pre-install/index.js $INIT_CWD",
+    "postinstall": "cross-env-shell node ./dist/hooks/post-install/index.js $INIT_CWD"
   }
 }
