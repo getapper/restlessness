@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
+process.GLOBAL = process.GLOBAL || {}
 process.GLOBAL.CWD = process.cwd()
 
 function copyFileSync( source, target ) {

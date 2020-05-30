@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getNodeModulesRoot, getPrjRoot } from 'root/services/path-resolver';
+import { getNodeModulesPath, getPrjPath } from 'root/services/path-resolver';
 
 interface JsonDao {
   id: string,
@@ -21,7 +21,7 @@ export default class Dao {
   module: Module
 
   static get daosJsonPath(): string {
-    return path.join(getPrjRoot(), 'daos.json');
+    return path.join(getPrjPath(), 'daos.json');
   }
 
   static async getList(withModule: boolean = false): Promise<Dao[]> {
@@ -33,7 +33,7 @@ export default class Dao {
       dao.name = jsonDao.name;
       dao.package = jsonDao.package;
       if (withModule) {
-        dao.module = require(path.join(getNodeModulesRoot(), dao.package));
+        dao.module = require(path.join(getNodeModulesPath(), dao.package));
       }
       return dao;
     });
@@ -44,7 +44,7 @@ export default class Dao {
     const dao = daos.find(d => d.id === daoId);
     if (dao) {
       Object.assign(this, { ...dao });
-      this.module = require(path.join(getNodeModulesRoot(), this.package));
+      this.module = require(path.join(getNodeModulesPath(), this.package));
       return true;
     } else {
       return false;

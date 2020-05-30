@@ -1,9 +1,9 @@
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
-import { getModelsRoot, getPrjRoot } from 'root/services/path-resolver';
+import { getModelsPath, getPrjPath } from 'root/services/path-resolver';
 import Dao from 'root/models/Dao';
 import { indexTemplate } from 'root/models/Model/templates';
-import { capitalize } from 'root/services/util';
+import { capitalize } from 'root/services/misc';
 
 interface JsonModel {
   id: number,
@@ -17,7 +17,7 @@ export default class Model {
   dao: Dao
 
   static get modelsJsonPath(): string {
-    return path.join(getPrjRoot(), 'models.json');
+    return path.join(getPrjPath(), 'models.json');
   }
 
   static async getList(): Promise<Model[]> {
@@ -52,10 +52,10 @@ export default class Model {
     models.push(this);
     await Model.saveList(models);
     const modelName = capitalize(name);
-    if (!fsSync.existsSync(getModelsRoot())) {
-      await fs.mkdir(getModelsRoot());
+    if (!fsSync.existsSync(getModelsPath())) {
+      await fs.mkdir(getModelsPath());
     }
-    const folderPath = path.join(getModelsRoot(), modelName);
+    const folderPath = path.join(getModelsPath(), modelName);
     await fs.mkdir(folderPath);
     if (!dao) {
       await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(modelName));

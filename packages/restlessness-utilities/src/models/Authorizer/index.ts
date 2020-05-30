@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getPrjRoot } from 'root/services/path-resolver';
+import { getPrjPath } from 'root/services/path-resolver';
 
 interface JsonAuthorizer {
   id: string,
@@ -20,7 +20,7 @@ export default class Authorizer {
   sessionModelName: string
 
   static get authorizersJsonPath(): string {
-    return path.join(getPrjRoot(), 'authorizers.json');
+    return path.join(getPrjPath(), 'authorizers.json');
   }
 
   static async getList(): Promise<Authorizer[]> {

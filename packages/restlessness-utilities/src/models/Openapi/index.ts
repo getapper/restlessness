@@ -1,13 +1,13 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getPrjRoot, getDistEndpointsRoot } from 'root/services/path-resolver';
+import { getPrjPath, getDistEndpointsPath } from 'root/services/path-resolver';
 import { Endpoint } from 'root/models';
 
 export default class Openapi {
   id: number
 
   static get openapiJsonPath(): string {
-    return path.join(getPrjRoot(), 'openapi.json');
+    return path.join(getPrjPath(), 'openapi.json');
   }
 
   static getParameters (fields, allKeys, inValue) {
@@ -111,7 +111,7 @@ export default class Openapi {
           },
         },
       };
-      const folderPath = path.join(getDistEndpointsRoot(), ep.method + '-' +  ep.route.folderName);
+      const folderPath = path.join(getDistEndpointsPath(), ep.method + '-' +  ep.route.folderName);
       const validationsRoutePath = path.join(folderPath, 'validations');
 
       try {

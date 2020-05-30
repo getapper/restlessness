@@ -1,8 +1,4 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-import { getPrjRoot, getEndpointsRoot } from 'root/services/path-resolver';
-import { handlerTemplate, indexTemplate, interfacesTemplate } from 'root/models/Endpoint/templates';
-import { capitalize, camelCaseToDash } from 'root/services/util';
+import { capitalize, camelCaseToDash } from 'root/services/misc';
 
 export default class Route {
   params: string[]
@@ -16,7 +12,7 @@ export default class Route {
         if (p[0] === '{') {
           return '{' + camelCaseToDash(p
             .replace('{', '')
-            .replace('}', '')
+            .replace('}', ''),
           ) + '}';
         }
         return p;
@@ -50,7 +46,7 @@ export default class Route {
       .map(p => p
         .split('-')
         .map(p => capitalize(p))
-        .join('')
+        .join(''),
       );
     const variables = params
       .filter(p => p[0] === '{')
@@ -59,7 +55,7 @@ export default class Route {
         .replace('}', '')
         .split('-')
         .map(p => capitalize(p))
-        .join('')
+        .join(''),
       );
     return `${models.join('')}${variables.length ? 'By' : ''}${variables.join('And')}`;
   }
@@ -99,7 +95,7 @@ export default class Route {
         .replace('}', '')
         .split('-')
         .map((p2, index) => !index ? p2 : capitalize(p2))
-        .join('')
+        .join(''),
       );
   }
 }

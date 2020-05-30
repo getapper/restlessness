@@ -1,27 +1,37 @@
 import path from 'path';
 
-const getPrjRoot = (): string => process.env['RLN_PROJECT_PATH'];
+const getPrjPath = (): string => process.env['RLN_PROJECT_PATH'];
 
-const getNodeModulesRoot = (): string => path.join(getPrjRoot(), 'node_modules');
+const getConfigsPath = (): string => path.join(getPrjPath(), 'configs');
 
-const getDistRoot = (): string => path.join(getPrjRoot(), 'dist');
+const getModelsConfigPath = (): string => path.join(getConfigsPath(), 'models.json');
 
-const getSrcRoot = (): string => path.join(getPrjRoot(), 'src');
+const getEndpointsConfigPath = (): string => path.join(getConfigsPath(), 'endpoints.json');
 
-const getEndpointsRoot = (): string => path.join(getSrcRoot(), 'endpoints');
+const getFunctionsConfigPath = (): string => path.join(getConfigsPath(), 'functions.json');
 
-const getDistEndpointsRoot = (): string => path.join(getDistRoot(), 'endpoints');
+const getNodeModulesPath = (): string => path.join(getPrjPath(), 'node_modules');
 
-const getModelsRoot = (): string => path.join(getSrcRoot(), 'models');
+const getDistPath = (): string => path.join(getPrjPath(), 'dist');
 
-const getAuthorizersRoot = (): string => path.join(getSrcRoot(), 'authorizers');
+const getSrcPath = (): string => path.join(getPrjPath(), 'src');
+
+const getEndpointsPath = (): string => path.join(getSrcPath(), 'endpoints');
+
+const getDistEndpointsPath = (): string => path.join(getDistPath(), 'endpoints');
+
+const getModelsPath = (): string => path.join(getSrcPath(), 'models');
+
+const getAuthorizersPath = (): string => path.join(getSrcPath(), 'authorizers');
 
 export {
-  getNodeModulesRoot,
-  getSrcRoot,
-  getPrjRoot,
-  getEndpointsRoot,
-  getModelsRoot,
-  getDistEndpointsRoot,
-  getAuthorizersRoot,
+  getNodeModulesPath,
+  getSrcPath,
+  getPrjPath,
+  getEndpointsPath,
+  getModelsPath,
+  getDistEndpointsPath,
+  getAuthorizersPath,
+  getEndpointsConfigPath,
+  getFunctionsConfigPath,
 };

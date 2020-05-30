@@ -1,5 +1,6 @@
 node_modules
 .serverless
+!.env.test
 
 # IntelliJ
 .idea
@@ -9,3 +10,6 @@ node_modules
 
 #TSC
 /dist
+
+#tests
+tmp

@@ -6,10 +6,14 @@
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "25.2.3",
     "@types/node": "13.7.1",
+    "@types/shelljs": "0.8.8",
     "@typescript-eslint/parser": "2.25.0",
     "eslint": "6.8.0",
+    "jest": "26.0.1",
     "rimraf": "3.0.2",
+    "shelljs": "0.8.4",
     "typescript": "3.7.5"
   },
   "repository": {
@@ -17,6 +21,14 @@
   },
   "scripts": {
     "prepublishOnly": "rimraf ./dist && tsc",
-    "npm:tag": "node ../../scripts/git-packages-tagger.js"
-  }
+    "npm:tag": "node ../../scripts/git-packages-tagger.js",
+    "test": "jest"
+  },
+  "jest": {
+    "rootDir": "dist",
+    "moduleNameMapper": {
+      "root/(.*)$": "<rootDir>/$1"
+    }
+  },
+  "dependencies": {}
 }
