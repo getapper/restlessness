@@ -1,9 +1,9 @@
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
-import { getModelsPath, getPrjPath } from 'root/services/path-resolver';
-import Dao from 'root/models/Dao';
-import { indexTemplate } from 'root/models/Model/templates';
-import { capitalize } from 'root/services/misc';
+import PathResolver from 'root/PathResolver';
+import Dao from 'root/Dao';
+import { indexTemplate } from 'root/Model/templates';
+import Misc from 'root/Misc';
 
 interface JsonModel {
   id: number,
@@ -17,7 +17,7 @@ export default class Model {
   dao: Dao
 
   static get modelsJsonPath(): string {
-    return path.join(getPrjPath(), 'models.json');
+    return path.join(PathResolver.getPrjPath, 'models.json');
   }
 
   static async getList(): Promise<Model[]> {
@@ -51,11 +51,11 @@ export default class Model {
       .reduce((max, curr) => Math.max(max, curr), 0) || 0) + 1;
     models.push(this);
     await Model.saveList(models);
-    const modelName = capitalize(name);
-    if (!fsSync.existsSync(getModelsPath())) {
-      await fs.mkdir(getModelsPath());
+    const modelName = Misc.capitalize(name);
+    if (!fsSync.existsSync(PathResolver.getModelsPath)) {
+      await fs.mkdir(PathResolver.getModelsPath);
     }
-    const folderPath = path.join(getModelsPath(), modelName);
+    const folderPath = path.join(PathResolver.getModelsPath, modelName);
     await fs.mkdir(folderPath);
     if (!dao) {
       await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(modelName));

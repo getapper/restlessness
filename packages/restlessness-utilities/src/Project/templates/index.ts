@@ -78,3 +78,9 @@ const generateGitIgnore = (): string => `node_modules
 #TSC
 /dist
 `;
+
+export {
+  generateGitIgnore,
+  generatePackageJson,
+  generateServerlessYaml,
+};

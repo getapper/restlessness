@@ -1,12 +1,6 @@
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
-import {
-  getPrjPath,
-  getEndpointsPath,
-  getSrcPath,
-  getEndpointsConfigPath,
-  getFunctionsConfigPath,
-} from 'root/services/path-resolver';
+import PathResolver from 'root/PathResolver';
 import {
   handlerTemplate,
   indexTemplate,
@@ -14,9 +8,9 @@ import {
   exporterTemplate,
   validationsTemplate,
   testTemplate,
-} from 'root/models/Endpoint/templates';
-import Route from 'root/models/Route';
-import { Authorizer } from 'root/models';
+} from 'root/Endpoint/templates';
+import Route from 'root/Route';
+import Authorizer from 'root/Authorizer';
 
 enum HttpMethod {
   GET = 'get',
@@ -44,7 +38,7 @@ export default class Endpoint {
   authorizer: Authorizer
 
   static async getList(): Promise<Endpoint[]> {
-    const file = await fs.readFile(getEndpointsConfigPath());
+    const file = await fs.readFile(PathResolver.getEndpointsConfigPath);
     const endpoints: JsonEndpoint[] = JSON.parse(file.toString());
     return endpoints.map(endpoint => {
       const ep = new Endpoint();
@@ -61,7 +55,7 @@ export default class Endpoint {
       route: ep.route.endpointRoute,
       authorizer: ep.authorizer?.id ?? null,
     }));
-    await fs.writeFile(getEndpointsConfigPath(), JSON.stringify(jsonEndpoints, null, 2));
+    await fs.writeFile(PathResolver.getEndpointsConfigPath, JSON.stringify(jsonEndpoints, null, 2));
   }
 
   async create(route: Route, method: HttpMethod, authorizerId?: string) {
@@ -79,12 +73,12 @@ export default class Endpoint {
       .reduce((max, curr) => Math.max(max, curr), 0) || 0) + 1;
     endpoints.push(this);
     await Endpoint.saveList(endpoints);
-    if (!fsSync.existsSync(getEndpointsPath())) {
-      await fs.mkdir(getEndpointsPath());
+    if (!fsSync.existsSync(PathResolver.getEndpointsPath)) {
+      await fs.mkdir(PathResolver.getEndpointsPath);
     }
     const routeVars = route.vars;
     const hasPayload = [HttpMethod.PATCH, HttpMethod.POST, HttpMethod.PUT].includes(this.method);
-    const folderPath = path.join(getEndpointsPath(), this.method + '-' + route.folderName);
+    const folderPath = path.join(PathResolver.getEndpointsPath, this.method + '-' + route.folderName);
     await fs.mkdir(folderPath);
     const functionName = this.method + route.functionName;
     await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(hasPayload, routeVars, this.authorizer));
@@ -92,7 +86,7 @@ export default class Endpoint {
     await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars, this.authorizer));
     await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars, this.authorizer));
     await fs.writeFile(path.join(folderPath, 'validations.ts'), validationsTemplate(hasPayload, routeVars));
-    await fs.writeFile(path.join(getSrcPath(), 'exporter.ts'), exporterTemplate(endpoints));
+    await fs.writeFile(path.join(PathResolver.getSrcPath, 'exporter.ts'), exporterTemplate(endpoints));
     const functions = await Endpoint.getFunctions();
 
     let endpointFunction = {
@@ -135,11 +129,11 @@ export default class Endpoint {
   }
 
   static async getFunctions(): Promise<any[]> {
-    const file = await fs.readFile(getFunctionsConfigPath());
+    const file = await fs.readFile(PathResolver.getFunctionsConfigPath);
     return JSON.parse(file.toString()).functions;
   }
 
   static async saveFunctions(functions) {
-    await fs.writeFile(getFunctionsConfigPath(), JSON.stringify({ functions }, null, 2));
+    await fs.writeFile(PathResolver.getFunctionsConfigPath, JSON.stringify({ functions }, null, 2));
   }
 }

@@ -1,4 +1,5 @@
-import { Authorizer, Endpoint } from 'root/models';
+import Authorizer from 'root/Authorizer';
+import Endpoint from 'root/Endpoint';
 
 const indexTemplate = (
   hasPayload: boolean,

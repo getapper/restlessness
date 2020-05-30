@@ -1,4 +1,4 @@
-import { capitalize, camelCaseToDash } from 'root/services/misc';
+import Misc from 'root/Misc';
 
 export default class Route {
   params: string[]
@@ -10,7 +10,7 @@ export default class Route {
       .filter(p => p !== '')
       .map(p => {
         if (p[0] === '{') {
-          return '{' + camelCaseToDash(p
+          return '{' + Misc.camelCaseToDash(p
             .replace('{', '')
             .replace('}', ''),
           ) + '}';
@@ -45,7 +45,7 @@ export default class Route {
       .filter(p => p[0] !== '{')
       .map(p => p
         .split('-')
-        .map(p => capitalize(p))
+        .map(p => Misc.capitalize(p))
         .join(''),
       );
     const variables = params
@@ -54,7 +54,7 @@ export default class Route {
         .replace('{', '')
         .replace('}', '')
         .split('-')
-        .map(p => capitalize(p))
+        .map(p => Misc.capitalize(p))
         .join(''),
       );
     return `${models.join('')}${variables.length ? 'By' : ''}${variables.join('And')}`;
@@ -71,7 +71,7 @@ export default class Route {
             .replace('{', '')
             .replace('}', '')
             .split('-')
-            .map((p2, index) => !index ? p2 : capitalize(p2))
+            .map((p2, index) => !index ? p2 : Misc.capitalize(p2))
             .join('')}}`;
         }
         return p;
@@ -94,7 +94,7 @@ export default class Route {
         .replace('{', '')
         .replace('}', '')
         .split('-')
-        .map((p2, index) => !index ? p2 : capitalize(p2))
+        .map((p2, index) => !index ? p2 : Misc.capitalize(p2))
         .join(''),
       );
   }

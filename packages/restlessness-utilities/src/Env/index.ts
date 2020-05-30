@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getPrjPath } from 'root/services/path-resolver';
-import { Dao } from 'root/models';
+import PathResolver from 'root/PathResolver';
+import Dao from 'root/Dao';
 
 export enum EnvType {
   TEST = 'test',
@@ -28,7 +28,7 @@ export default class Env {
   stage: EnvStage
 
   static get envsJsonPath(): string {
-    return path.join(getPrjPath(), 'envs.json');
+    return path.join(PathResolver.getPrjPath, 'envs.json');
   }
 
   static async getList(): Promise<Env[]> {
@@ -61,9 +61,9 @@ export default class Env {
       .reduce((max, curr) => Math.max(max, curr), 0) || 0) + 1;
     envs.push(this);
     await Env.saveList(envs);
-    const envPath = path.join(getPrjPath(), 'envs', `${name}.json`);
+    const envPath = path.join(PathResolver.getPrjPath, 'envs', `${name}.json`);
     await fs.writeFile(envPath, JSON.stringify({ name }, null, 2));
-    const packageJsonPath = path.join(getPrjPath(), 'package.json');
+    const packageJsonPath = path.join(PathResolver.getPrjPath, 'package.json');
     const packageJson = require(packageJsonPath);
     packageJson.scripts = packageJson?.scripts || {};
     if ((packageJson?.scripts?.[`DEV:${name}`] ?? null) === null) {
@@ -75,7 +75,7 @@ export default class Env {
     const daos = await Dao.getList(true);
     for (let dao of daos) {
       try {
-        await dao.module.postEnvCreated(getPrjPath(), name);
+        await dao.module.postEnvCreated(PathResolver.getPrjPath, name);
       } catch (e) {
         console.error(`Error when calling afterEnvCreated hook on dao: ${dao.name} (${dao.id})`, e);
       }
