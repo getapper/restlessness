@@ -62,7 +62,7 @@ export default class Endpoint {
     this.route = route;
     this.method = method;
     const endpoints = await Endpoint.getList();
-    const authorizers = await Authorizer.getList();
+    const authorizers = await Authorizer.getList<Authorizer>();
     if (authorizerId) {
       this.authorizer = authorizers.find(authorizer => authorizer.id === authorizerId);
     } else {

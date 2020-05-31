@@ -9,6 +9,10 @@ export default class PathResolver {
     return path.join(PathResolver.getPrjPath, 'configs');
   }
 
+  static get getAuthorizersConfigPath(): string {
+    return path.join(PathResolver.getConfigsPath, 'authorizers.json');
+  }
+
   static get getModelsConfigPath(): string {
     return path.join(PathResolver.getConfigsPath, 'models.json');
   }
