@@ -26,3 +26,8 @@ describe('Authorizer model', () => {
     done();
   });
 });
+
+afterAll(async (done) => {
+  await promisify(rimraf)(projectPath);
+  done();
+});
