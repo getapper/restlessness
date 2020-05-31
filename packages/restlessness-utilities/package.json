@@ -7,6 +7,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "25.2.3",
+    "@types/lodash.merge": "4.6.6",
     "@types/node": "13.7.1",
     "@types/rimraf": "3.0.0",
     "@types/shelljs": "0.8.8",
@@ -21,7 +22,9 @@
   "scripts": {
     "prepublishOnly": "rimraf ./dist && tsc",
     "npm:tag": "node ../../scripts/git-packages-tagger.js",
-    "test": "rimraf dist && tsc && jest"
+    "clean": "rimraf dist",
+    "tsc": "tsc -p tsconfig.json",
+    "test": "npm run clean && npm run tsc && jest"
   },
   "jest": {
     "rootDir": "dist",
@@ -30,6 +33,7 @@
     }
   },
   "dependencies": {
+    "lodash.merge": "4.6.2",
     "rimraf": "3.0.2",
     "shelljs": "0.8.4"
   }

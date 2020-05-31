@@ -4,7 +4,7 @@ import { promisify } from 'util';
 import { promises as fs } from 'fs';
 import Project from '.';
 
-const PROJECT_NAME = 'tmp';
+const PROJECT_NAME = 'tmp-project';
 
 const projectPath = path.join(process.cwd(), PROJECT_NAME);
 process.env['RLN_PROJECT_PATH'] = projectPath;

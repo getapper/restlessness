@@ -1,4 +1,4 @@
-import Authorizer from 'root/Authorizer';
+import Authorizer from 'root/JsonAuthorizer';
 import Endpoint from 'root/Endpoint';
 
 const indexTemplate = (

@@ -5,12 +5,24 @@ export default class PathResolver {
     return process.env['RLN_PROJECT_PATH'];
   }
 
+  static get getPackageJsonPath(): string {
+    return path.join(PathResolver.getPrjPath, 'package.json');
+  }
+
+  static get getEnvsPath(): string {
+    return path.join(PathResolver.getPrjPath, 'envs');
+  }
+
   static get getConfigsPath(): string {
     return path.join(PathResolver.getPrjPath, 'configs');
   }
 
   static get getAuthorizersConfigPath(): string {
     return path.join(PathResolver.getConfigsPath, 'authorizers.json');
+  }
+
+  static get getEnvsConfigPath(): string {
+    return path.join(PathResolver.getConfigsPath, 'envs.json');
   }
 
   static get getModelsConfigPath(): string {

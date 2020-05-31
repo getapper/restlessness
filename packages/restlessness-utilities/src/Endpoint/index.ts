@@ -10,7 +10,7 @@ import {
   testTemplate,
 } from 'root/Endpoint/templates';
 import Route from 'root/Route';
-import Authorizer from 'root/Authorizer';
+import Authorizer from 'root/JsonAuthorizer';
 
 enum HttpMethod {
   GET = 'get',

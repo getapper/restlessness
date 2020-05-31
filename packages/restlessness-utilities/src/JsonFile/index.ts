@@ -26,12 +26,18 @@ export default class JsonFile {
     });
   }
 
-  static async saveList(entries: []) {
+  static async saveList<T>(entries: T[]) {
     await fs.writeFile(this.jsonPath, JSON.stringify(entries, null, 2));
   }
 
   static async getById<T>(id: string): Promise<T> {
     const entries = await this.getList<T>();
     return entries.find(entry => entry['id'] === id);
+  }
+
+  static async addEntry<T>(entry: T): Promise<void> {
+    const entries: T[] = await this.getList<T>();
+    entries.push(entry);
+    await this.saveList<T>(entries);
   }
 }

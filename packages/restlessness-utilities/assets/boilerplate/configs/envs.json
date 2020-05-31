@@ -1,23 +1,19 @@
 [
   {
-    "id": 1,
-    "name": "locale",
+    "id": "locale",
     "type": "dev"
   },
   {
-    "id": 2,
-    "name": "test",
+    "id": "test",
     "type": "test"
   },
   {
-    "id": 3,
-    "name": "beta",
+    "id": "stage",
     "type": "deploy",
     "stage": "dev"
   },
   {
-    "id": 4,
-    "name": "production",
+    "id": "production",
     "type": "deploy",
     "stage": "deploy"
   }
