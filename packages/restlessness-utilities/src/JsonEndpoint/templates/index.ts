@@ -1,5 +1,5 @@
 import Authorizer from 'root/JsonAuthorizer';
-import Endpoint from 'root/Endpoint';
+import Route from 'root/Route';
 
 const indexTemplate = (
   hasPayload: boolean,
@@ -93,11 +93,14 @@ export default {
 
 `;
 
-const exporterTemplate = (endpoints: Endpoint[]) => `import 'module-alias/register';
-${endpoints.map(endpoint => `import ${endpoint.method}${endpoint.route.functionName} from 'root/endpoints/${endpoint.method}-${endpoint.route.folderName}';`).join('\n')}
+const exporterTemplate = (
+  methods: string[],
+  routes: Route[],
+) => `import 'module-alias/register';
+${methods.map((method, index) => `import ${method}${routes[index].functionName} from 'root/endpoints/${method}-${routes[index].folderName}';`).join('\n')}
 
 export {
-  ${endpoints.map(endpoint => `${endpoint.method}${endpoint.route.functionName},`).join('\n  ')}
+  ${methods.map((method, index) => `${method}${routes[index].functionName},`).join('\n  ')}
 };
 
 `;

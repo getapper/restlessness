@@ -59,4 +59,9 @@ export default class JsonEnv extends JsonFile {
     }
      */
   }
+
+  // @TODO
+  static async remove(id: string): Promise<void> {
+
+  }
 }

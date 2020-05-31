@@ -35,6 +35,10 @@ export default class JsonFile {
     return entries.find(entry => entry['id'] === id);
   }
 
+  /**
+   * Add a new entry and save the Json file
+   * @param entry
+   */
   static async addEntry<T>(entry: T): Promise<void> {
     const entries: T[] = await this.getList<T>();
     entries.push(entry);

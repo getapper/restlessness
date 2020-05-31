@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import PathResolver from 'root/PathResolver';
-import Endpoint from 'root/Endpoint';
+import Endpoint from 'root/JsonEndpoint';
 
 export default class Openapi {
   id: number
