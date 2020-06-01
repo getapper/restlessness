@@ -3,7 +3,7 @@ import rimraf from 'rimraf';
 import { promisify } from 'util';
 import { promises as fs } from 'fs';
 import Project from '../Project';
-import JsonEnv from '.';
+import JsonEnvs, { JsonEnvsEntry } from '.';
 import PackageJson from '../PackageJson';
 import PathResolver from '../PathResolver';
 
@@ -17,13 +17,14 @@ beforeAll(async (done) => {
   done();
 });
 
-describe('JsonEnv model', () => {
+describe('JsonEnvs model', () => {
   test('it should create default envs',  async (done) => {
     await Project.create(projectPath, {
       installNodemodules: false,
     });
     expect((await fs.lstat(projectPath)).isDirectory()).toBe(true);
-    const envs = await JsonEnv.getList<JsonEnv>();
+    await JsonEnvs.read();
+    const envs: JsonEnvsEntry[] = JsonEnvs.entries;
     expect(envs?.length).toBe(4);
     const envIds = envs.map(env => env.id);
     expect(envIds.includes('locale')).toBe(true);
@@ -35,8 +36,9 @@ describe('JsonEnv model', () => {
   });
 
   test('it should create a new env',  async (done) => {
-    await JsonEnv.create('locale2');
-    const envs = await JsonEnv.getList<JsonEnv>();
+    await JsonEnvs.create('locale2');
+    await JsonEnvs.read();
+    const envs: JsonEnvsEntry[] = JsonEnvs.entries;
     expect(envs?.length).toBe(5);
     const envIds = envs.map(env => env.id);
     expect(envIds.includes('locale2')).toBe(true);
@@ -46,11 +48,12 @@ describe('JsonEnv model', () => {
   });
 
   test('it should removed an env',  async (done) => {
-    let envs = await JsonEnv.getList<JsonEnv>();
+    await JsonEnvs.read();
+    let envs: JsonEnvsEntry[] = JsonEnvs.entries;
     expect(envs?.length).toBe(5);
     const envIds = envs.map(env => env.id);
     expect(envIds.includes('locale2')).toBe(true);
-    await JsonEnv.remove('locale2');
+    await JsonEnvs.removeById('locale2');
     expect((await fs.readdir(PathResolver.getEnvsPath)).length).toBe(4);
     expect((await fs.readdir(PathResolver.getEnvsPath)).includes('.env.locale2')).toBe(false);
     const packageJson = await PackageJson.read();

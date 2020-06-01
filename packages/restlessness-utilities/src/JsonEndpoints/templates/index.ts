@@ -1,10 +1,10 @@
-import Authorizer from '../../JsonAuthorizer';
+import { JsonAuthorizersEntry } from '../../JsonAuthorizers';
 import Route from '../../Route';
 
 const indexTemplate = (
   hasPayload: boolean,
   vars: string[],
-  authorizer: Authorizer,
+  authorizer: JsonAuthorizersEntry,
 ): string => `import 'module-alias/register';
 import handler from './handler';
 import { requestParser } from '@restlessness/core';
@@ -25,7 +25,7 @@ ${authorizer ? `  const session: ${authorizer.sessionModelName} = await sessionP
 
 const testTemplate = (
   apiName: string,
-  authorizer: Authorizer,
+  authorizer: JsonAuthorizersEntry,
 ): string => `import { StatusCodes, apiCall } from '@restlessness/core';
 ${authorizer ? `import { AuthorizerContext } from '${authorizer.package}';\nimport ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
 const ${apiName} = '${apiName}';
@@ -44,7 +44,7 @@ afterAll(async done => {
 */
 `;
 
-const handlerTemplate = (hasPayload: boolean, vars: string[], authorizer: Authorizer): string => `import 'module-alias/register';
+const handlerTemplate = (hasPayload: boolean, vars: string[], authorizer: JsonAuthorizersEntry): string => `import 'module-alias/register';
 import { res, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 
@@ -67,7 +67,7 @@ ${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n'
 };
 `;
 
-const interfacesTemplate = (hasPayload: boolean, vars: string[], authorizer: Authorizer): string => `import { ValidationResult } from '@restlessness/core';
+const interfacesTemplate = (hasPayload: boolean, vars: string[], authorizer: JsonAuthorizersEntry): string => `import { ValidationResult } from '@restlessness/core';
 ${authorizer ? `import ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
 export interface QueryStringParameters {}${hasPayload
   ? '\n\nexport interface Payload {}' : ''}${vars.length ? `\n\nexport interface PathParameters {

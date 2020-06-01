@@ -3,9 +3,10 @@ import path from 'path';
 import PathResolver from '../PathResolver';
 import PackageJson from '../PackageJson';
 import Dao from '../Dao';
-import JsonFile from '../JsonFile';
+import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
+import exp = require('constants');
 
 export enum EnvType {
   TEST = 'test',
@@ -18,20 +19,21 @@ export enum EnvStage {
   PRODUCTION = 'prod'
 }
 
-export default class JsonEnv extends JsonFile {
-  id: string
+export interface JsonEnvsEntry extends JsonConfigEntry {
   type: EnvType
-  stage: EnvStage
+  stage?: EnvStage
+}
 
-  static get jsonPath(): string {
+class JsonEnvs extends JsonConfigFile<JsonEnvsEntry> {
+  get jsonPath(): string {
     return PathResolver.getEnvsConfigPath;
   }
 
-  static async create(id: string) {
-    const jsonEnv = new JsonEnv();
-    jsonEnv.id = id;
-    jsonEnv.type = EnvType.DEV;
-    await JsonEnv.addEntry(jsonEnv);
+  async create(id: string) {
+    await this.addEntry({
+      id,
+      type: EnvType.DEV,
+    });
 
     /**
      * SIDE EFFECTS
@@ -62,18 +64,15 @@ export default class JsonEnv extends JsonFile {
      */
   }
 
-  // @TODO
-  static async remove(id: string): Promise<void> {
-    let jsonEnvs: JsonEnv[] = await JsonEnv.getList<JsonEnv>();
-    const jsonEnv = jsonEnvs.find(je => je.id === id);
-    if (!jsonEnv) {
+  async removeById(id: string): Promise<void> {
+    const jsonEnvsEntry: JsonEnvsEntry = await this.getEntryById(id);
+    if (!jsonEnvsEntry) {
       throw new Error('Env not found');
     }
-    if (jsonEnv.type !== EnvType.DEV) {
+    if (jsonEnvsEntry.type !== EnvType.DEV) {
       throw new Error('Only dev envs can be deleted');
     }
-    jsonEnvs = jsonEnvs.filter(je => je.id !== id);
-    await JsonEnv.saveList(jsonEnvs);
+    await this.removeEntryById(id);
 
     /**
      * SIDE EFFECTS
@@ -86,3 +85,5 @@ export default class JsonEnv extends JsonFile {
     await PackageJson.removeAtPath(`scripts.DEV:${id}`);
   }
 }
+
+export default new JsonEnvs();

@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import PathResolver from '../PathResolver';
-import { HttpMethod } from '../JsonEndpoint';
+import { HttpMethod } from '../JsonEndpoints';
+import _unset from 'lodash.unset';
 
 interface Functions {
   [key: string]: FunctionEndpoint
@@ -20,29 +21,29 @@ export interface FunctionEndpoint {
   events?: Event[],
 }
 
-export default class JsonFunction {
+class JsonFunctions {
   functions: Functions
 
-  static get jsonPath(): string {
+  get jsonPath(): string {
     return PathResolver.getFunctionsConfigPath;
   }
 
-  static async read(): Promise<JsonFunction> {
+  async read(): Promise<void> {
     const file = await fs.readFile(this.jsonPath);
-    return JSON.parse(file.toString());
+    Object.assign(this, JSON.parse(file.toString()));
   }
 
-  static async save(jsonFunction: JsonFunction): Promise<void> {
-    await fs.writeFile(this.jsonPath, JSON.stringify(jsonFunction, null, 2));
+  async save(): Promise<void> {
+    await fs.writeFile(this.jsonPath, JSON.stringify(this, null, 2));
   }
 
-  static async addEndpoint(
+  async addEndpoint(
     functionName: string,
     functionPath: string,
     method: HttpMethod,
     authorizerId?: string,
   ) {
-    const jsonFunction = await JsonFunction.read();
+    await this.read();
 
     const functionEndpoint: FunctionEndpoint = {
       handler: `dist/exporter.${functionName}`,
@@ -59,19 +60,27 @@ export default class JsonFunction {
     };
     if (authorizerId) {
       functionEndpoint.events[0].http.authorizer = authorizerId;
-      if (!jsonFunction.functions[authorizerId]) {
-        jsonFunction.functions[authorizerId] = {
+      if (!this.functions[authorizerId]) {
+        this.functions[authorizerId] = {
           handler: `dist/authorizers/${authorizerId}.handler`,
         };
       }
     }
-    jsonFunction.functions[functionName] = functionEndpoint;
-    await JsonFunction.save(jsonFunction);
+    this.functions[functionName] = functionEndpoint;
+    await this.save();
   }
 
-  static async getEndpoint(functionName: string): Promise<FunctionEndpoint> {
-    const jsonFunction = await JsonFunction.read();
-    const functionEndpoint: FunctionEndpoint = jsonFunction.functions[functionName];
+  async getEndpoint(functionName: string): Promise<FunctionEndpoint> {
+    await this.read();
+    const functionEndpoint: FunctionEndpoint = this.functions[functionName];
     return functionEndpoint;
   }
+
+  async removeEndpoint(functionName: string): Promise<void> {
+    await this.read();
+    _unset(this, `functions.${functionName}`);
+    await this.save();
+  }
 }
+
+export default new JsonFunctions();

@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import PathResolver from '../PathResolver';
-import JsonEndpoint from '../JsonEndpoint';
+import JsonEndpoints from '../JsonEndpoints';
 import Route from '../Route';
 
 export default class Openapi {
@@ -64,7 +64,8 @@ export default class Openapi {
   }
 
   async create() {
-    const endpoints = await JsonEndpoint.getList<JsonEndpoint>();
+    await JsonEndpoints.read();
+    const endpoints = JsonEndpoints.entries;
     const openapi = {
       openapi: '3.0.0',
       servers: [{

@@ -3,7 +3,7 @@ import rimraf from 'rimraf';
 import { promisify } from 'util';
 import { promises as fs } from 'fs';
 import Project from '../Project';
-import JsonAuthorizer from '.';
+import JsonAuthorizers from '.';
 
 const PROJECT_NAME = 'tmp-json-authorizer';
 
@@ -15,14 +15,14 @@ beforeAll(async (done) => {
   done();
 });
 
-describe('JsonAuthorizer model', () => {
+describe('JsonAuthorizers model', () => {
   test('it should create an empty list',  async (done) => {
     await Project.create(projectPath, {
       installNodemodules: false,
     });
     expect((await fs.lstat(projectPath)).isDirectory()).toBe(true);
-    const authorizers = await JsonAuthorizer.getList<JsonAuthorizer>();
-    expect(authorizers?.length).toBe(0);
+    await JsonAuthorizers.read();
+    expect(JsonAuthorizers.entries.length).toBe(0);
     done();
   });
 });
