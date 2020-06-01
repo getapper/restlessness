@@ -3,13 +3,6 @@ import path from 'path';
 import { getPrjRoot } from 'root/services/path-resolver';
 import { JsonAuthorizer } from '@restlessness/utilities';
 
-// interface JsonAuthorizer {
-//   id: string,
-//   name: string,
-//   package: string,
-//   sessionModelName: string
-// }
-
 interface Module {
   postEnvCreated: (projectPath: string, envName: string) => void,
 }

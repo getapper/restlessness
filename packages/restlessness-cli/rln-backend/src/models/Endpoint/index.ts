@@ -14,13 +14,6 @@ export {
   HttpMethod,
 };
 
-// interface JsonEndpoint {
-//   id: number,
-//   route: string,
-//   method: HttpMethod
-//   authorizer: string
-// }
-
 export default class Endpoint {
   id: number
   route: Route
