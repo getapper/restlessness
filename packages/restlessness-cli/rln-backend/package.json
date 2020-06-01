@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "@restlessness/core": "0.0.5",
+    "@restlessness/utilities": "file:../../restlessness-utilities",
     "@types/aws-lambda": "8.10.51",
     "module-alias": "2.2.0",
     "yup": "0.28.3"
