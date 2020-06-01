@@ -15,7 +15,7 @@ export {
 };
 
 export default class Endpoint {
-  id: number
+  id: string
   route: Route
   method: HttpMethod
   authorizer: Authorizer
@@ -24,7 +24,7 @@ export default class Endpoint {
     const endpoints: JsonEndpoint[] = await JsonEndpoint.getList<JsonEndpoint>();
     return endpoints.map(endpoint => {
       const ep = new Endpoint();
-      ep.id = +endpoint.id;
+      ep.id = endpoint.id;
       ep.route = Route.parseFromText(endpoint.route);
       ep.method = endpoint.method;
       return ep;
@@ -34,7 +34,6 @@ export default class Endpoint {
   static async saveList(endpoints: Endpoint[]) {
     const jsonEndpoints: JsonEndpoint[] = endpoints.map(ep => ({
       ...ep,
-      id: ep.id.toString(),
       route: ep.route.endpointRoute,
       authorizerId: ep.authorizer?.id ?? null,
     }));
