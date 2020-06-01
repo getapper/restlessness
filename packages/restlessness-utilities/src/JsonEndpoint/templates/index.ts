@@ -1,5 +1,5 @@
-import Authorizer from 'root/JsonAuthorizer';
-import Route from 'root/Route';
+import Authorizer from '../../JsonAuthorizer';
+import Route from '../../Route';
 
 const indexTemplate = (
   hasPayload: boolean,

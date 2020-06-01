@@ -1,6 +1,6 @@
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
-import PathResolver from 'root/PathResolver';
+import PathResolver from '../PathResolver';
 import {
   handlerTemplate,
   indexTemplate,
@@ -8,10 +8,11 @@ import {
   exporterTemplate,
   validationsTemplate,
   testTemplate,
-} from 'root/JsonEndpoint/templates';
-import Route from 'root/Route';
-import JsonAuthorizer from 'root/JsonAuthorizer';
-import JsonFile from 'root/JsonFile';
+} from '../JsonEndpoint/templates';
+import Route from '../Route';
+import JsonAuthorizer from '../JsonAuthorizer';
+import JsonFile from '../JsonFile';
+import JsonFunction from '../JsonFunction';
 
 enum HttpMethod {
   GET = 'get',
@@ -72,46 +73,9 @@ export default class JsonEndpoint extends JsonFile {
     const methods: string[] = jsonEndpoints.map(je => je.method);
     await fs.writeFile(path.join(PathResolver.getSrcPath, 'exporter.ts'), exporterTemplate(methods, routes));
 
-    // @TODO: Create new entry in functions.json file
-    const functions = await Endpoint.getFunctions();
-
-    let endpointFunction = {
-      handler: `dist/exporter.${functionName}`,
-      events: [
-        {
-          http: {
-            path: route.functionPath,
-            method: this.method,
-            cors: true,
-            authorizer: null,
-          },
-        },
-      ],
-    };
-    if (this.authorizer) {
-      endpointFunction.events[0].http.authorizer = this.authorizer.id;
-      if (!functions[this.authorizer.id]) {
-        functions[this.authorizer.id] = {
-          handler: `dist/authorizers/${this.authorizer.id}.handler`,
-        };
-      }
-    }
-    functions[functionName] = endpointFunction;
-    /*
-    functions[functionName] = {
-      handler: `dist/exporter.${functionName}`,
-      events: [
-        {
-          http: {
-            path: route.functionPath,
-            method: this.method,
-            cors: true,
-          },
-        },
-      ],
-    };
-    */
-    await Endpoint.saveFunctions(functions);
+    // Add e new function handler in functions.json read by serverless.yml
+    // It also adds the authorizer handler, if it doesn't exist yet
+    await JsonFunction.addEndpoint(functionName, route.functionPath, method, authorizerId);
   }
 
   static async getFunctions(): Promise<any[]> {

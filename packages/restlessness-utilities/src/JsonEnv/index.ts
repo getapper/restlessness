@@ -1,9 +1,11 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import PathResolver from 'root/PathResolver';
-import PackageJson from 'root/PackageJson';
-import Dao from 'root/Dao';
-import JsonFile from 'root/JsonFile';
+import PathResolver from '../PathResolver';
+import PackageJson from '../PackageJson';
+import Dao from '../Dao';
+import JsonFile from '../JsonFile';
+import { promisify } from 'util';
+import rimraf from 'rimraf';
 
 export enum EnvType {
   TEST = 'test',
@@ -62,6 +64,25 @@ export default class JsonEnv extends JsonFile {
 
   // @TODO
   static async remove(id: string): Promise<void> {
+    let jsonEnvs: JsonEnv[] = await JsonEnv.getList<JsonEnv>();
+    const jsonEnv = jsonEnvs.find(je => je.id === id);
+    if (!jsonEnv) {
+      throw new Error('Env not found');
+    }
+    if (jsonEnv.type !== EnvType.DEV) {
+      throw new Error('Only dev envs can be deleted');
+    }
+    jsonEnvs = jsonEnvs.filter(je => je.id !== id);
+    await JsonEnv.saveList(jsonEnvs);
 
+    /**
+     * SIDE EFFECTS
+     */
+
+      // Delete .env.{envId} file
+    await promisify(rimraf)(path.join(PathResolver.getEnvsPath, `.env.${id}`));
+
+    // Remove DEV:{envId} entry in packageJson.scripts
+    await PackageJson.removeAtPath(`scripts.DEV:${id}`);
   }
 }

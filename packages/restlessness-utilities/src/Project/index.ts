@@ -2,7 +2,7 @@ import { promises as fs, existsSync } from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import rimraf from 'rimraf';
-import Misc from 'root/Misc';
+import Misc from '../Misc';
 import { generateServerlessYaml, generatePackageJson, generateGitIgnore } from './templates';
 import { promisify } from 'util';
 

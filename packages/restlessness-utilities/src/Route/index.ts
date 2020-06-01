@@ -1,4 +1,4 @@
-import Misc from 'root/Misc';
+import Misc from '../Misc';
 
 export default class Route {
   params: string[]

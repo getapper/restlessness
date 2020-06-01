@@ -1,7 +1,8 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import PathResolver from 'root/PathResolver';
-import Endpoint from 'root/JsonEndpoint';
+import PathResolver from '../PathResolver';
+import JsonEndpoint from '../JsonEndpoint';
+import Route from '../Route';
 
 export default class Openapi {
   id: number
@@ -63,7 +64,7 @@ export default class Openapi {
   }
 
   async create() {
-    const endpoints = await Endpoint.getList();
+    const endpoints = await JsonEndpoint.getList<JsonEndpoint>();
     const openapi = {
       openapi: '3.0.0',
       servers: [{
@@ -90,7 +91,8 @@ export default class Openapi {
     };
 
     for (let ep of endpoints){
-      const routeName = ep.route.endpointRoute;
+      const route: Route = Route.parseFromText(ep.route)
+      const routeName = route.endpointRoute;
       const routeMethod = ep.method;
       if (!openapi.paths[routeName]) {
         openapi.paths[routeName] = {};
@@ -111,7 +113,7 @@ export default class Openapi {
           },
         },
       };
-      const folderPath = path.join(PathResolver.getDistEndpointsPath, ep.method + '-' +  ep.route.folderName);
+      const folderPath = path.join(PathResolver.getDistEndpointsPath, ep.method + '-' +  route.folderName);
       const validationsRoutePath = path.join(folderPath, 'validations');
 
       try {

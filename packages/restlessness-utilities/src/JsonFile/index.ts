@@ -1,9 +1,4 @@
-import fsSync, { promises as fs } from 'fs';
-import path from 'path';
-import PathResolver from 'root/PathResolver';
-import Dao from 'root/Dao';
-import { indexTemplate } from 'root/Model/templates';
-import Misc from 'root/Misc';
+import { promises as fs } from 'fs';
 
 export default class JsonFile {
   id: string

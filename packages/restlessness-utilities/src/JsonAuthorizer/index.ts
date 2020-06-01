@@ -1,5 +1,5 @@
-import PathResolver from 'root/PathResolver';
-import JsonFile from 'root/JsonFile';
+import PathResolver from '../PathResolver';
+import JsonFile from '../JsonFile';
 
 export default class JsonAuthorizer extends JsonFile {
   name: string

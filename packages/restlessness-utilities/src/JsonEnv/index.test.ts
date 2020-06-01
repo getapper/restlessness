@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import { promises as fs } from 'fs';
 import Project from '../Project';
 import JsonEnv from '.';
+import PackageJson from '../PackageJson';
 import PathResolver from '../PathResolver';
 
 const PROJECT_NAME = 'tmp-json-env';
@@ -41,6 +42,19 @@ describe('JsonEnv model', () => {
     expect(envIds.includes('locale2')).toBe(true);
     expect((await fs.readdir(PathResolver.getEnvsPath)).length).toBe(5);
     expect((await fs.readdir(PathResolver.getEnvsPath)).includes('.env.locale2')).toBe(true);
+    done();
+  });
+
+  test('it should removed an env',  async (done) => {
+    let envs = await JsonEnv.getList<JsonEnv>();
+    expect(envs?.length).toBe(5);
+    const envIds = envs.map(env => env.id);
+    expect(envIds.includes('locale2')).toBe(true);
+    await JsonEnv.remove('locale2');
+    expect((await fs.readdir(PathResolver.getEnvsPath)).length).toBe(4);
+    expect((await fs.readdir(PathResolver.getEnvsPath)).includes('.env.locale2')).toBe(false);
+    const packageJson = await PackageJson.read();
+    expect(packageJson?.scripts?.['DEV:locale2'] ?? null).toBe(null);
     done();
   });
 });
