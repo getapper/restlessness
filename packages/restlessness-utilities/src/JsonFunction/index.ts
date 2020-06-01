@@ -3,7 +3,21 @@ import PathResolver from '../PathResolver';
 import { HttpMethod } from '../JsonEndpoint';
 
 interface Functions {
-  [key: string]: any
+  [key: string]: FunctionEndpoint
+}
+
+interface Event {
+  http: {
+    path: string,
+    method: HttpMethod,
+    cors: boolean,
+    authorizer?: string
+  }
+}
+
+export interface FunctionEndpoint {
+  handler: string,
+  events?: Event[],
 }
 
 export default class JsonFunction {
@@ -30,7 +44,7 @@ export default class JsonFunction {
   ) {
     const jsonFunction = await JsonFunction.read();
 
-    const endpointFunction = {
+    const functionEndpoint: FunctionEndpoint = {
       handler: `dist/exporter.${functionName}`,
       events: [
         {
@@ -44,14 +58,20 @@ export default class JsonFunction {
       ],
     };
     if (authorizerId) {
-      endpointFunction.events[0].http.authorizer = authorizerId;
+      functionEndpoint.events[0].http.authorizer = authorizerId;
       if (!jsonFunction.functions[authorizerId]) {
         jsonFunction.functions[authorizerId] = {
           handler: `dist/authorizers/${authorizerId}.handler`,
         };
       }
     }
-    jsonFunction.functions[functionName] = endpointFunction;
+    jsonFunction.functions[functionName] = functionEndpoint;
     await JsonFunction.save(jsonFunction);
+  }
+
+  static async getEndpoint(functionName: string): Promise<FunctionEndpoint> {
+    const jsonFunction = await JsonFunction.read();
+    const functionEndpoint: FunctionEndpoint = jsonFunction.functions[functionName];
+    return functionEndpoint;
   }
 }

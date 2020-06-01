@@ -12,7 +12,7 @@ import {
 import Route from '../Route';
 import JsonAuthorizer from '../JsonAuthorizer';
 import JsonFile from '../JsonFile';
-import JsonFunction from '../JsonFunction';
+import JsonFunction, { FunctionEndpoint } from '../JsonFunction';
 
 enum HttpMethod {
   GET = 'get',
@@ -78,12 +78,11 @@ export default class JsonEndpoint extends JsonFile {
     await JsonFunction.addEndpoint(functionName, route.functionPath, method, authorizerId);
   }
 
-  static async getFunctions(): Promise<any[]> {
-    const file = await fs.readFile(PathResolver.getFunctionsConfigPath);
-    return JSON.parse(file.toString()).functions;
-  }
+  static async remote(functionName: string) {
+    const functionEndpoint: FunctionEndpoint = await JsonFunction.getEndpoint(functionName);
+    if (!functionEndpoint) {
+      throw new Error('Endpoint not found in functions.js');
+    }
 
-  static async saveFunctions(functions) {
-    await fs.writeFile(PathResolver.getFunctionsConfigPath, JSON.stringify({ functions }, null, 2));
   }
 }
