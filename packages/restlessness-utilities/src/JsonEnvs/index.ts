@@ -2,7 +2,8 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import PathResolver from '../PathResolver';
 import PackageJson from '../PackageJson';
-import Dao from '../DaoPackage';
+import JsonDaos from '../JsonDaos';
+import DaoPackage from '../DaoPackage';
 import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
@@ -51,17 +52,15 @@ class JsonEnvs extends JsonConfigFile<JsonEnvsEntry> {
     });
 
     // Call DAOs postEnvCreated hook
-    // @TODO: think about this is smart enough
-    /*
-    const daos = await Dao.getList(true);
-    for (let dao of daos) {
+    await JsonDaos.read();
+    for (const jsonDaosEntry of JsonDaos.entries) {
       try {
-        await dao.module.postEnvCreated(PathResolver.getPrjPath, name);
+        const daoPackage: DaoPackage = DaoPackage.load(jsonDaosEntry.package);
+        await daoPackage.postEnvCreated(PathResolver.getPrjPath, name);
       } catch (e) {
-        console.error(`Error when calling afterEnvCreated hook on dao: ${dao.name} (${dao.id})`, e);
+        console.error(`Error when calling afterEnvCreated hook on dao: ${jsonDaosEntry.name} (${jsonDaosEntry.id})`, e);
       }
     }
-     */
   }
 
   async removeById(id: string): Promise<void> {

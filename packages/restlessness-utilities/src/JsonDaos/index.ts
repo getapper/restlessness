@@ -2,6 +2,7 @@ import PathResolver from '../PathResolver';
 import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
 
 export interface JsonDaosEntry extends JsonConfigEntry {
+  name: string
   package: string
   sessionModelName: string
 }

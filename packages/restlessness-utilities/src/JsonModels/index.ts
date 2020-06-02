@@ -16,7 +16,12 @@ class JsonModel extends JsonConfigFile<JsonModelsEntry> {
     return PathResolver.getModelsConfigPath;
   }
 
-  async create(id: string, daoId: string): Promise<void> {
+  async create(id: string, daoId?: string): Promise<void> {
+    if (daoId) {
+      if (!(await JsonDaos.getEntryById(daoId))) {
+        throw new Error('Dao with this id not found in daos json config file');
+      }
+    }
     this.addEntry({
       id,
       daoId,
