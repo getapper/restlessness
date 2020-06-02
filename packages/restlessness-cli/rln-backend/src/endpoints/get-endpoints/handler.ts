@@ -7,7 +7,7 @@ import Endpoint from 'root/models/Endpoint';
 
 export default async (req: Request) => {
   try {
-    const endpoints: Endpoint[] = await Endpoint.getList();
+    const endpoints = await Endpoint.getList();
     return res(
       endpoints, StatusCodes.OK, {
         headers: {

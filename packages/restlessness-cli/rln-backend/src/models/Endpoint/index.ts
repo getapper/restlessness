@@ -1,6 +1,8 @@
 import Route from 'root/models/Route';
 import { Authorizer } from 'root/models';
-import { JsonEndpoint } from '@restlessness/utilities';
+import { JsonEndpoints, JsonEndpointsEntry } from '@restlessness/utilities';
+import {AuthorizerEntry} from 'root/models/Authorizer';
+import UiModel from 'root/models/UiModel'
 
 enum HttpMethod {
   GET = 'get',
@@ -14,41 +16,44 @@ export {
   HttpMethod,
 };
 
-export default class Endpoint {
+export interface EndpointEntry {
   id: string
   route: Route
   method: HttpMethod
-  authorizer: Authorizer
-
-  static async getList(): Promise<Endpoint[]> {
-    const endpoints: JsonEndpoint[] = await JsonEndpoint.getList<JsonEndpoint>();
-    return endpoints.map(endpoint => {
-      const ep = new Endpoint();
-      ep.id = endpoint.id;
-      ep.route = Route.parseFromText(endpoint.route);
-      ep.method = endpoint.method;
-      return ep;
-    });
-  }
-
-  static async saveList(endpoints: Endpoint[]) {
-    const jsonEndpoints: JsonEndpoint[] = endpoints.map(ep => ({
-      ...ep,
-      route: ep.route.endpointRoute,
-      authorizerId: ep.authorizer?.id ?? null,
-    }));
-    await JsonEndpoint.saveList<JsonEndpoint>(jsonEndpoints);
-  }
-
-  async create(route: Route, method: HttpMethod, authorizerId?: string) {
-    await JsonEndpoint.create(route.endpointRoute, method, authorizerId);
-  }
-
-  static async getFunctions(): Promise<any[]> {
-    return await JsonEndpoint.getFunctions();
-  }
-
-  static async saveFunctions(functions) {
-    await JsonEndpoint.saveFunctions(functions);
-  }
+  authorizer: AuthorizerEntry
 }
+
+class Endpoint extends UiModel<typeof JsonEndpoints, JsonEndpointsEntry, EndpointEntry>{
+
+  protected async mapModelToUi(entry: JsonEndpointsEntry): Promise<EndpointEntry> {
+    return {
+      id: entry.id,
+      route: Route.parseFromText(entry.route),
+      method: entry.method,
+      authorizer: await Authorizer.getById(entry.authorizerId),
+    };
+  }
+
+  protected async mapUiToModel(entry: EndpointEntry): Promise<JsonEndpointsEntry> {
+    return {
+      id: entry.id,
+      route: entry.route.endpointRoute,
+      method: entry.method,
+      authorizerId: entry.authorizer?.id,
+    };
+  }
+
+  async create(route: Route, method: HttpMethod, authorizerId?: string): Promise<EndpointEntry> {
+    return await this.mapModelToUi(await this.model.create(route.endpointRoute, method, authorizerId));
+  }
+
+  // static async getFunctions(): Promise<any[]> {
+  //   return await JsonEndpoint.getFunctions();
+  // }
+  //
+  // static async saveFunctions(functions) {
+  //   await JsonEndpoint.saveFunctions(functions);
+  // }
+}
+
+export default new Endpoint(JsonEndpoints);

@@ -35,7 +35,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     return PathResolver.getEndpointsConfigPath;
   }
 
-  async create(routePath: string, method: HttpMethod, authorizerId?: string): Promise<void> {
+  async create(routePath: string, method: HttpMethod, authorizerId?: string): Promise<JsonEndpointsEntry> {
     const route = Route.parseFromText(routePath);
     const jsonEndpointsEntry: JsonEndpointsEntry = {
       id: method + route.functionName,
@@ -76,6 +76,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     // Add e new function handler in functions.json read by serverless.yml
     // It also adds the authorizer handler, if it doesn't exist yet
     await JsonFunctions.addEndpoint(functionName, route.functionPath, method, authorizerId);
+    return jsonEndpointsEntry;
   }
 
   async removeById(id: string) {

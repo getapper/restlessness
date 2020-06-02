@@ -10,10 +10,12 @@ export default async (req: Request) => {
     } = req;
 
     const authorizers = await Authorizer.getList();
-    const emptyAuthorizer = new Authorizer();
-    emptyAuthorizer.id = 'null';
-    emptyAuthorizer.name = 'None';
-    authorizers.push(emptyAuthorizer);
+    authorizers.push({
+      id: 'null',
+      name: 'None',
+      package: 'null',
+      sessionModelName: 'null',
+    });
     return res(authorizers, 200, {
       headers: {
         'Access-Control-Expose-Headers': 'content-range',

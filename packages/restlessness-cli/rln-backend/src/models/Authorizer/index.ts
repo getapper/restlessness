@@ -1,37 +1,44 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getPrjRoot } from 'root/services/path-resolver';
-import { JsonAuthorizer } from '@restlessness/utilities';
+import { JsonAuthorizers } from '@restlessness/utilities';
 
 interface Module {
   postEnvCreated: (projectPath: string, envName: string) => void,
 }
 
-export default class Authorizer {
+export interface AuthorizerEntry {
   id: string
   name: string
   package: string
   sessionModelName: string
+}
 
-  static async getList(): Promise<Authorizer[]> {
-    const jsonAuthorizers: JsonAuthorizer[] = await JsonAuthorizer.getList<JsonAuthorizer>();
-    return jsonAuthorizers.map(jsonAuthorizer => {
-      const authorizer = new Authorizer();
-      authorizer.id = jsonAuthorizer.id;
-      authorizer.name = jsonAuthorizer.name;
-      authorizer.package = jsonAuthorizer.package;
-      authorizer.sessionModelName = jsonAuthorizer.sessionModelName;
-      return authorizer;
-    });
+class Authorizer {
+
+  async getList(): Promise<AuthorizerEntry[]> {
+    // await JsonAuthorizers.read();
+    // return JsonAuthorizers.entries.map(jsonAuthorizer => {
+    //   const authorizer = new Authorizer();
+    //   authorizer.id = jsonAuthorizer.id;
+    //   authorizer.name = jsonAuthorizer.name;
+    //   authorizer.package = jsonAuthorizer.package;
+    //   authorizer.sessionModelName = jsonAuthorizer.sessionModelName;
+    //   return authorizer;
+    // });
+    return [];
   }
 
-  async getById(authorizerId: string): Promise<boolean> {
-    const authorizer = await JsonAuthorizer.getById<JsonAuthorizer>(authorizerId);
-    if (authorizer) {
-      Object.assign(this, { ...authorizer });
-      return true;
-    } else {
-      return false;
-    }
+  async getById(authorizerId: string): Promise<AuthorizerEntry> {
+    // const authorizer = await JsonAuthorizer.getById<JsonAuthorizer>(authorizerId);
+    // if (authorizer) {
+    //   Object.assign(this, { ...authorizer });
+    //   return true;
+    // } else {
+    //   return false;
+    // }
+    return null;
   }
 }
+
+export default new Authorizer();

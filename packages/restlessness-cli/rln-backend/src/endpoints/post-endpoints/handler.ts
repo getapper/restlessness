@@ -22,7 +22,6 @@ export default async (req: Request) => {
   if (~endpoints.findIndex(ep => ep.route.endpointRoute === route.endpointRoute && ep.method === method)) {
     return res({ message: 'Route already exists' }, 400);
   }
-  const endpoint = new Endpoint();
-  await endpoint.create(route, method, authorizerId);
+  const endpoint = await Endpoint.create(route, method, authorizerId);
   return res(endpoint);
 };
