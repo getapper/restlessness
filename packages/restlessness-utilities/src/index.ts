@@ -1,3 +1,3 @@
 export * from './config-files-handler';
-export { default as JsonAuthorizer } from './JsonAuthorizer';
-export { default as JsonEndpoint } from './JsonEndpoint';
+export { default as JsonAuthorizers } from './JsonAuthorizers';
+export { default as JsonEndpoints } from './JsonEndpoints';

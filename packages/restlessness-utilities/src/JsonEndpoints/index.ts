@@ -35,6 +35,10 @@ export interface JsonEndpointsEntry extends JsonConfigEntry {
 }
 
 class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
+  get jsonPath(): string {
+    return PathResolver.getEndpointsConfigPath;
+  }
+
   async create(routePath: string, method: HttpMethod, authorizerId?: string): Promise<void> {
     const route = Route.parseFromText(routePath);
     const jsonEndpointsEntry: JsonEndpointsEntry = {
