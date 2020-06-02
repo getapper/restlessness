@@ -16,17 +16,13 @@ import JsonFunctions, { FunctionEndpoint } from '../JsonFunctions';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
 
-enum HttpMethod {
+export enum HttpMethod {
   GET = 'get',
   POST = 'post',
   DELETE = 'delete',
   PUT = 'put',
   PATCH = 'patch'
 }
-
-export {
-  HttpMethod,
-};
 
 export interface JsonEndpointsEntry extends JsonConfigEntry {
   route: string

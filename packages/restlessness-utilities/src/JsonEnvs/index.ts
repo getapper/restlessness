@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import PathResolver from '../PathResolver';
 import PackageJson from '../PackageJson';
-import Dao from '../Dao';
+import Dao from '../DaoPackage';
 import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
