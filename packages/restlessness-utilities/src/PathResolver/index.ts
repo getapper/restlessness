@@ -9,6 +9,10 @@ export default class PathResolver {
     return path.join(PathResolver.getPrjPath, 'package.json');
   }
 
+  static get getServerlessYmlPath(): string {
+    return path.join(PathResolver.getPrjPath, 'serverless.yml');
+  }
+
   static get getEnvsPath(): string {
     return path.join(PathResolver.getPrjPath, 'envs');
   }
@@ -43,6 +47,10 @@ export default class PathResolver {
 
   static get getDistPath(): string {
     return path.join(PathResolver.getPrjPath, 'dist');
+  }
+
+  static get getDeployPath(): string {
+    return path.join(PathResolver.getPrjPath, 'deploy');
   }
 
   static get getSrcPath(): string {

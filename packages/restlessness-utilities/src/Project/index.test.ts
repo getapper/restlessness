@@ -22,6 +22,14 @@ describe('Project model', () => {
     expect((await fs.lstat(projectPath)).isDirectory()).toBe(true);
     done();
   });
+
+  /*
+  test('Build project',  async (done) => {
+    await Project.build();
+    // expect((await fs.lstat(projectPath)).isDirectory()).toBe(true);
+    done();
+  });
+   */
 });
 
 afterAll(async (done) => {

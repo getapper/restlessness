@@ -1,10 +1,11 @@
-import { promises as fs, existsSync } from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import rimraf from 'rimraf';
 import Misc from '../Misc';
 import { generateServerlessYaml, generatePackageJson, generateGitIgnore } from './templates';
 import { promisify } from 'util';
+import PathResolver from '../PathResolver';
 
 interface CreateOptions {
   installNodemodules?: boolean
@@ -44,11 +45,30 @@ export default class Project {
         });
       }
     } catch (err) {
+      console.log(err);
       try {
         await promisify(rimraf)(projectPath);
       } catch (e) {}
       throw err;
     }
+  }
+
+  static async build(): Promise<void> {
+    execSync('npm run tsc', {
+      cwd: PathResolver.getPrjPath,
+      stdio: 'inherit',
+    });
+    await promisify(rimraf)(PathResolver.getDeployPath);
+    await fs.mkdir(PathResolver.getDeployPath);
+    await Misc.copyFolderRecursive(PathResolver.getDistPath, PathResolver.getDeployPath);
+    await Misc.copyFolderRecursive(PathResolver.getConfigsPath, PathResolver.getDeployPath);
+    await Misc.copyFolderRecursive(PathResolver.getEnvsPath, PathResolver.getDeployPath);
+    await Misc.copyFile(path.join(PathResolver.getServerlessYmlPath), PathResolver.getDeployPath);
+    await Misc.copyFile(PathResolver.getPackageJsonPath, PathResolver.getDeployPath);
+    execSync('npm i --production', {
+      cwd: PathResolver.getDeployPath,
+      stdio: 'inherit',
+    });
   }
 }
 

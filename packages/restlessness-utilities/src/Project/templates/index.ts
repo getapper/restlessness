@@ -35,7 +35,8 @@ const generatePackageJson = (name: string) => `{
     "DEPLOY:production": "cp envs/production.json env.json && tsc && serverless deploy --stage deploy --verbose",
     "REMOVE:production": "serverless remove --stage production",
     "test": "cp envs/test.json env.json && jest",
-    "test:ci": "cp envs/test.json env.json && tsc && jest"
+    "test:ci": "cp envs/test.json env.json && tsc && jest",
+    "tsc": "rimraf dist && tsc -p tsconfig.json"
   },
   "dependencies": {
     "module-alias": "2.2.0"
