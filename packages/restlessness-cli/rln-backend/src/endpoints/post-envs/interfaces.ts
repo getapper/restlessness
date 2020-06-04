@@ -1,4 +1,4 @@
-import { EnvType, EnvStage } from 'root/models/Env';
+import { EnvType, EnvStage } from '@restlessness/utilities';
 
 export interface QueryStringParameters {}
 

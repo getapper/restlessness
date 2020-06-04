@@ -1,4 +1,4 @@
-import { HttpMethod } from 'root/models/Endpoint';
+import { HttpMethod } from '@restlessness/utilities';
 
 export interface Payload {
   route: string,
