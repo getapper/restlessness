@@ -1,3 +1,4 @@
+import BaseModel from 'root/models/BaseModel';
 import Endpoint from 'root/models/Endpoint';
 import Route from 'root/models/Route';
 import Dao from 'root/models/Dao';
@@ -8,6 +9,7 @@ import Authorizer from 'root/models/Authorizer';
 import Openapi from 'root/models/Openapi';
 
 export {
+  BaseModel,
   Authorizer,
   Endpoint,
   Route,
