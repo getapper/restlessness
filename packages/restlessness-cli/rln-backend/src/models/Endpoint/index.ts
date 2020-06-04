@@ -1,54 +1,34 @@
-import Route from 'root/models/Route';
-import { Authorizer } from 'root/models';
-import { JsonEndpoint } from '@restlessness/utilities';
+import { Authorizer, BaseModel, Route } from 'root/models';
+import { JsonEndpoints, JsonEndpointsEntry, HttpMethod } from '@restlessness/utilities';
 
-enum HttpMethod {
-  GET = 'get',
-  POST = 'post',
-  DELETE = 'delete',
-  PUT = 'put',
-  PATCH = 'patch'
-}
-
-export {
-  HttpMethod,
-};
-
-export default class Endpoint {
+export default class Endpoint extends BaseModel {
   id: string
   route: Route
   method: HttpMethod
   authorizer: Authorizer
 
-  static async getList(): Promise<Endpoint[]> {
-    const endpoints: JsonEndpoint[] = await JsonEndpoint.getList<JsonEndpoint>();
-    return endpoints.map(endpoint => {
-      const ep = new Endpoint();
-      ep.id = endpoint.id;
-      ep.route = Route.parseFromText(endpoint.route);
-      ep.method = endpoint.method;
-      return ep;
-    });
+  static get model() {
+    return JsonEndpoints;
   }
 
-  static async saveList(endpoints: Endpoint[]) {
-    const jsonEndpoints: JsonEndpoint[] = endpoints.map(ep => ({
-      ...ep,
-      route: ep.route.endpointRoute,
-      authorizerId: ep.authorizer?.id ?? null,
-    }));
-    await JsonEndpoint.saveList<JsonEndpoint>(jsonEndpoints);
+  protected async fromConfigEntry(entry: JsonEndpointsEntry): Promise<void> {
+      this.id = entry.id;
+      this.route = Route.parseFromText(entry.route);
+      this.method = entry.method;
+      this.authorizer = await Authorizer.getById(entry.authorizerId);
+  }
+
+  protected async toConfigEntry(): Promise<JsonEndpointsEntry> {
+    return {
+      id: this.id,
+      route: this.route.endpointRoute,
+      method: this.method,
+      authorizerId: this.authorizer?.id,
+    };
   }
 
   async create(route: Route, method: HttpMethod, authorizerId?: string) {
-    await JsonEndpoint.create(route.endpointRoute, method, authorizerId);
-  }
-
-  static async getFunctions(): Promise<any[]> {
-    return await JsonEndpoint.getFunctions();
-  }
-
-  static async saveFunctions(functions) {
-    await JsonEndpoint.saveFunctions(functions);
+    const entry = await JsonEndpoints.create(route.endpointRoute, method, authorizerId);
+    await this.fromConfigEntry(entry);
   }
 }
