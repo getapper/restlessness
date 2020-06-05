@@ -79,9 +79,9 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     return jsonEndpointsEntry;
   }
 
-  async removeById(id: string) {
+  async removeEntryById(id: string) {
     const jsonEndpointsEntry: JsonEndpointsEntry = await this.getEntryById(id);
-    await this.removeEntryById(id);
+    await super.removeEntryById(id);
 
     /**
      * SIDE EFFECTS

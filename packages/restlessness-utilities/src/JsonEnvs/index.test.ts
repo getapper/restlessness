@@ -53,7 +53,7 @@ describe('JsonEnvs model', () => {
     expect(envs?.length).toBe(5);
     const envIds = envs.map(env => env.id);
     expect(envIds.includes('locale2')).toBe(true);
-    await JsonEnvs.removeById('locale2');
+    await JsonEnvs.removeEntryById('locale2');
     expect((await fs.readdir(PathResolver.getEnvsPath)).length).toBe(4);
     expect((await fs.readdir(PathResolver.getEnvsPath)).includes('.env.locale2')).toBe(false);
     const packageJson = await PackageJson.read();

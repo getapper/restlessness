@@ -41,7 +41,7 @@ describe('JsonEndpoints model', () => {
   test('it should removed an endpoint',  async (done) => {
     await JsonEndpoints.read();
     expect(JsonEndpoints.entries.length).toBe(1);
-    await JsonEndpoints.removeById('getTests');
+    await JsonEndpoints.removeEntryById('getTests');
     await JsonEndpoints.read();
     expect(JsonEndpoints.entries.length).toBe(0);
     done();

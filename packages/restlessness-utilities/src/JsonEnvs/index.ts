@@ -66,7 +66,7 @@ class JsonEnvs extends JsonConfigFile<JsonEnvsEntry> {
     return jsonEnvsEntry;
   }
 
-  async removeById(id: string): Promise<void> {
+  async removeEntryById(id: string): Promise<void> {
     const jsonEnvsEntry: JsonEnvsEntry = await this.getEntryById(id);
     if (!jsonEnvsEntry) {
       throw new Error('Env not found');
@@ -74,7 +74,7 @@ class JsonEnvs extends JsonConfigFile<JsonEnvsEntry> {
     if (jsonEnvsEntry.type !== EnvType.DEV) {
       throw new Error('Only dev envs can be deleted');
     }
-    await this.removeEntryById(id);
+    await super.removeEntryById(id);
 
     /**
      * SIDE EFFECTS
