@@ -30,11 +30,12 @@ class JsonEnvs extends JsonConfigFile<JsonEnvsEntry> {
     return PathResolver.getEnvsConfigPath;
   }
 
-  async create(id: string) {
-    await this.addEntry({
+  async create(id: string): Promise<JsonEnvsEntry> {
+    const jsonEnvsEntry: JsonEnvsEntry = {
       id,
       type: EnvType.DEV,
-    });
+    };
+    await this.addEntry(jsonEnvsEntry);
 
     /**
      * SIDE EFFECTS
@@ -61,9 +62,11 @@ class JsonEnvs extends JsonConfigFile<JsonEnvsEntry> {
         console.error(`Error when calling afterEnvCreated hook on dao: ${jsonDaosEntry.name} (${jsonDaosEntry.id})`, e);
       }
     }
+
+    return jsonEnvsEntry;
   }
 
-  async removeById(id: string): Promise<void> {
+  async removeEntryById(id: string): Promise<void> {
     const jsonEnvsEntry: JsonEnvsEntry = await this.getEntryById(id);
     if (!jsonEnvsEntry) {
       throw new Error('Env not found');
@@ -71,7 +74,7 @@ class JsonEnvs extends JsonConfigFile<JsonEnvsEntry> {
     if (jsonEnvsEntry.type !== EnvType.DEV) {
       throw new Error('Only dev envs can be deleted');
     }
-    await this.removeEntryById(id);
+    await super.removeEntryById(id);
 
     /**
      * SIDE EFFECTS

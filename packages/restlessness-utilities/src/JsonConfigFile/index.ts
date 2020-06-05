@@ -4,12 +4,10 @@ export interface JsonConfigEntry {
   id: string
 }
 
-export default class JsonConfigFile<T> {
+export default abstract class JsonConfigFile<T> {
   entries: T[]
 
-  get jsonPath(): string {
-    return '';
-  }
+  abstract get jsonPath(): string;
 
   async read(): Promise<void> {
     const file = await fs.readFile(this.jsonPath);

@@ -35,7 +35,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     return PathResolver.getEndpointsConfigPath;
   }
 
-  async create(routePath: string, method: HttpMethod, authorizerId?: string): Promise<void> {
+  async create(routePath: string, method: HttpMethod, authorizerId?: string): Promise<JsonEndpointsEntry> {
     const route = Route.parseFromText(routePath);
     const jsonEndpointsEntry: JsonEndpointsEntry = {
       id: method + route.functionName,
@@ -76,11 +76,12 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     // Add e new function handler in functions.json read by serverless.yml
     // It also adds the authorizer handler, if it doesn't exist yet
     await JsonFunctions.addEndpoint(functionName, route.functionPath, method, authorizerId);
+    return jsonEndpointsEntry;
   }
 
-  async removeById(id: string) {
+  async removeEntryById(id: string) {
     const jsonEndpointsEntry: JsonEndpointsEntry = await this.getEntryById(id);
-    await this.removeEntryById(id);
+    await super.removeEntryById(id);
 
     /**
      * SIDE EFFECTS
@@ -98,7 +99,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     await JsonFunctions.removeEndpoint(id);
   }
 
-  async generateExporter(): Promise<void> {
+  private async generateExporter(): Promise<void> {
     await this.read();
     const routes: Route[] = this.entries.sort().map(je => Route.parseFromText(je.route));
     const methods: string[] = this.entries.map(je => je.method);
