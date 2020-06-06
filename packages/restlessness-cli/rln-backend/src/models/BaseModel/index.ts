@@ -4,15 +4,15 @@ export default class BaseModel implements JsonConfigEntry {
   id: string;
 
   protected static get model(): JsonConfigFile<JsonConfigEntry> {
-    throw 'Not implemented!';
+    throw new Error('BaseModel "static get model()" not implemented!');
   }
 
   protected async toConfigEntry(): Promise<JsonConfigEntry> {
-    throw 'Not implemented!';
+    throw new Error('BaseModel "async toConfigEntry()" not implemented!');
   }
 
   protected async fromConfigEntry(entry: JsonConfigEntry): Promise<void> {
-    throw 'Not implemented!';
+    throw new Error('BaseModel "async fromConfigEntry(entry)" not implemented!');
   }
 
   private static async _fromConfigEntry<T extends typeof BaseModel>(this: T, entry: JsonConfigEntry): Promise<InstanceType<T>> {
@@ -22,7 +22,11 @@ export default class BaseModel implements JsonConfigEntry {
   }
 
   public static async getById<T extends typeof BaseModel>(this: T, id: string): Promise<InstanceType<T>> {
-    return !!id ? await this._fromConfigEntry(await this.model.getEntryById(id)) : null;
+    if (!id) {
+      return null;
+    }
+    const entry = await this.model.getEntryById(id);
+    return !!entry ? await this._fromConfigEntry(entry) : null;
   }
 
   public static async getList<T extends typeof BaseModel>(this: T): Promise<Array<InstanceType<T>>> {
