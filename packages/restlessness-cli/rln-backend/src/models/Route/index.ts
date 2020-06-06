@@ -1,7 +1,3 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-import { getPrjRoot, getEndpointsRoot } from 'root/services/path-resolver';
-import { handlerTemplate, indexTemplate, interfacesTemplate } from 'root/models/Endpoint/templates';
 import { capitalize, camelCaseToDash } from 'root/services/util';
 
 export default class Route {
