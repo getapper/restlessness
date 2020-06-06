@@ -2,7 +2,7 @@ import fsSync, { promises as fs } from 'fs';
 import path from 'path';
 import PathResolver from '../PathResolver';
 import DaoPackage from '../DaoPackage';
-import { indexTemplate } from './/templates';
+import { indexTemplate } from './templates';
 import Misc from '../Misc';
 import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
 import JsonDaos, { JsonDaosEntry } from '../JsonDaos';
@@ -16,16 +16,19 @@ class JsonModel extends JsonConfigFile<JsonModelsEntry> {
     return PathResolver.getModelsConfigPath;
   }
 
-  async create(id: string, daoId?: string): Promise<void> {
+  async create(id: string, daoId?: string): Promise<JsonModelsEntry> {
+    const jsonModelsEntry = {
+      id,
+      daoId: null,
+    };
     if (daoId) {
       if (!(await JsonDaos.getEntryById(daoId))) {
         throw new Error('Dao with this id not found in daos json config file');
+      } else {
+        jsonModelsEntry.daoId = daoId;
       }
     }
-    this.addEntry({
-      id,
-      daoId,
-    });
+    await this.addEntry(jsonModelsEntry);
 
     /**
      * SIDE EFFECTS
@@ -47,6 +50,8 @@ class JsonModel extends JsonConfigFile<JsonModelsEntry> {
       const daoPackage = DaoPackage.load(jsonDaosEntry.package);
       await fs.writeFile(path.join(folderPath, 'index.ts'), daoPackage.indexTemplate(modelName));
     }
+
+    return jsonModelsEntry;
   }
 }
 

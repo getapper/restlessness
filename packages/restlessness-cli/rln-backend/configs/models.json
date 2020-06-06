@@ -1,0 +1,18 @@
+[
+  {
+    "id": "Model",
+    "daoId": null
+  },
+  {
+    "id": "Endpoint",
+    "daoId": null
+  },
+  {
+    "id": "Dao",
+    "daoId": null
+  },
+  {
+    "id": "Plugin",
+    "daoId": null
+  }
+]

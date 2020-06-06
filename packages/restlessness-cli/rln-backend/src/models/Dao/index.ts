@@ -1,53 +1,23 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-import { getNodeModulesRoot, getPrjRoot } from 'root/services/path-resolver';
+import { BaseModel } from 'root/models';
+import { JsonDaos, JsonDaosEntry } from '@restlessness/utilities';
 
-interface JsonDao {
-  id: string,
-  name: string,
-  package: string,
-}
-
-interface Module {
-  indexTemplate: (name: string) => string,
-  baseModelTemplate: () => string,
-  postEnvCreated: (projectPath: string, envName: string) => void,
-}
-
-export default class Dao {
+export default class Dao extends BaseModel {
   id: string
   name: string
   package: string
-  module: Module
 
-  static get daosJsonPath(): string {
-    return path.join(getPrjRoot(), 'daos.json');
+  static get model() {
+    return JsonDaos;
   }
 
-  static async getList(withModule: boolean = false): Promise<Dao[]> {
-    const file = await fs.readFile(Dao.daosJsonPath);
-    const jsonDaos: JsonDao[] = JSON.parse(file.toString());
-    return jsonDaos.map(jsonDao => {
-      const dao = new Dao();
-      dao.id = jsonDao.id;
-      dao.name = jsonDao.name;
-      dao.package = jsonDao.package;
-      if (withModule) {
-        dao.module = require(path.join(getNodeModulesRoot(), dao.package));
-      }
-      return dao;
-    });
+  protected async fromConfigEntry(entry: JsonDaosEntry): Promise<void> {
+    const { id, name, package: pkg } = entry;
+    this.id = id;
+    this.name = name;
+    this.package = pkg;
   }
 
-  async getById(daoId: string): Promise<boolean> {
-    const daos = await Dao.getList();
-    const dao = daos.find(d => d.id === daoId);
-    if (dao) {
-      Object.assign(this, { ...dao });
-      this.module = require(path.join(getNodeModulesRoot(), this.package));
-      return true;
-    } else {
-      return false;
-    }
+  protected async toConfigEntry(): Promise<JsonDaosEntry> {
+    return { ...this };
   }
 }

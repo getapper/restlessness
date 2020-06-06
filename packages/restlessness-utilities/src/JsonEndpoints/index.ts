@@ -41,6 +41,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       id: method + route.functionName,
       route: routePath,
       method: method,
+      authorizerId: null,
     };
     const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
     if (authorizerId) {
