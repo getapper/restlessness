@@ -3,7 +3,6 @@ import { JsonEnvs, JsonEnvsEntry, EnvStage, EnvType } from '@restlessness/utilit
 
 export default class Env extends BaseModel {
   id: string
-  name: string // @TODO useful?
   type: EnvType
   stage: EnvStage
 

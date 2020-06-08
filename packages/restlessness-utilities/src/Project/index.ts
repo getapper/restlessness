@@ -26,6 +26,7 @@ export default class Project {
         await fs.lstat(projectPath);
         throw new Error('Project path specified is not empty');
       } catch(e) {}
+      const name = path.normalize(projectPath).split(path.sep).pop();
       await Misc.copyFolderRecursive(path.join(__dirname, '..', '..', 'assets', 'boilerplate'), projectPath, true);
       await fs.writeFile(path.join(projectPath, 'serverless.yml'), generateServerlessYaml(name));
       await fs.writeFile(path.join(projectPath, 'package.json'), generatePackageJson(name));

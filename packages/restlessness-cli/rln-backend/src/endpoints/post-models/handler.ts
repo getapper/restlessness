@@ -15,18 +15,17 @@ export default async (req: Request) => {
     } = payload;
     let dao: Dao;
 
-    if (daoId === 'null') {
+    if (!daoId || daoId === 'null') {
       dao = null;
     } else {
-      dao = new Dao();
-      const exists = await dao.getById(daoId);
-      if (!exists) {
+      const dao = await Dao.getById(daoId);
+      if (!dao) {
         return res({ message: 'Dao not found' }, 404);
       }
     }
     const model = new Model();
     // @TODO: Check it doesn't already exist in models.json file
-    await model.create(dao, name);
+    await model.create(name, dao);
 
     return res(model);
   } catch (e) {
