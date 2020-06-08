@@ -8,7 +8,7 @@
     "type": "test"
   },
   {
-    "id": "stage",
+    "id": "staging",
     "type": "deploy",
     "stage": "dev"
   },

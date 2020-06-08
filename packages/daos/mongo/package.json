@@ -6,10 +6,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/aws-lambda": "8.10.50",
+    "@types/jest": "25.2.3",
     "@types/mongodb": "3.5.9",
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "^2.1.0",
     "eslint": "6.8.0",
+    "jest": "26.0.1",
     "rimraf": "3.0.2",
     "typescript": "3.8.3"
   },
@@ -24,6 +26,12 @@
   },
   "scripts": {
     "prepublishOnly": "rimraf ./dist && tsc",
-    "npm:tag": "node ../../../scripts/git-packages-tagger.js"
+    "npm:tag": "node ../../../scripts/git-packages-tagger.js",
+    "clean": "rimraf dist",
+    "tsc": "tsc -p tsconfig.json",
+    "test": "npm run clean && npm run tsc && jest"
+  },
+  "jest": {
+    "rootDir": "dist"
   }
 }
