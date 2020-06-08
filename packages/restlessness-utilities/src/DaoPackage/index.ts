@@ -1,14 +1,9 @@
 import path from 'path';
 import PathResolver from '../PathResolver';
+import AddOnPackage from '../AddOnPackage';
 
-export default class DaoPackage {
-  indexTemplate: (name: string) => string
-  baseModelTemplate: () => string
-  postEnvCreated: (projectPath: string, envName: string) => void
-
-  static load(daoPackageName: string): DaoPackage {
-    const daoPackage = new DaoPackage();
-    Object.assign(this, require(path.join(PathResolver.getNodeModulesPath, daoPackageName)));
-    return daoPackage;
+export default class DaoPackage extends AddOnPackage{
+  public modelTemplate(modelName: string): string {
+    return '';
   }
 }

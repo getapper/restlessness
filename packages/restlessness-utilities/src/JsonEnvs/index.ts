@@ -57,7 +57,7 @@ class JsonEnvs extends JsonConfigFile<JsonEnvsEntry> {
     for (const jsonDaosEntry of JsonDaos.entries) {
       try {
         const daoPackage: DaoPackage = DaoPackage.load(jsonDaosEntry.package);
-        await daoPackage.postEnvCreated(PathResolver.getPrjPath, name);
+        await daoPackage.postEnvCreated(id);
       } catch (e) {
         console.error(`Error when calling afterEnvCreated hook on dao: ${jsonDaosEntry.name} (${jsonDaosEntry.id})`, e);
       }

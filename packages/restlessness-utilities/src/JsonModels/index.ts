@@ -47,8 +47,8 @@ class JsonModel extends JsonConfigFile<JsonModelsEntry> {
       await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(modelName));
     } else {
       const jsonDaosEntry: JsonDaosEntry = await JsonDaos.getEntryById(daoId);
-      const daoPackage = DaoPackage.load(jsonDaosEntry.package);
-      await fs.writeFile(path.join(folderPath, 'index.ts'), daoPackage.indexTemplate(modelName));
+      const daoPackage: DaoPackage = DaoPackage.load(jsonDaosEntry.package);
+      await fs.writeFile(path.join(folderPath, 'index.ts'), daoPackage.modelTemplate(modelName));
     }
 
     return jsonModelsEntry;

@@ -14,28 +14,16 @@ plugins:
 functions: \${file(./configs/serverless.json):functions}
 `;
 
-/*
- * @TODO: refactoring:
- * DEV:locale => "restlessness dev locale" (it will launch web interface and project API as well)
- * DEV:restlessness => to be remove
- * BUILD:stage => "restlessness build stage" (it will build a deploy folder containing all necessary to be deployed in stage and install packages with "npm i --production")
- * BUILD:production => "restlessness build production" (it will build a deploy folder containing all necessary to be deployed in production and install packages with "npm i --production")
- * DEPLOY:stage => "restlessness deploy stage" (it will call BUILD:stage, run the tests inside this folder and will run "serverless deploy --stage dev -v" inside the same folder)
- * DEPLOY:production => "restlessness deploy production" (it will call BUILD:production, run the tests inside this folder and will run "serverless deploy --stage deploy -v" inside the same folder)
- * TEST:unit => "jest" (it will launch jest tests)
- */
 const generatePackageJson = (name: string) => `{
   "name": "${name}",
   "version": "0.0.0",
   "scripts": {
-    "DEV:locale": "cp envs/locale.json env.json && tsc && RLN_ENV=locale serverless offline --host 0.0.0.0 --port 4000",
-    "DEV:restlessness": "npx @restlessness/cli run",
-    "DEPLOY:beta": "cp envs/beta.json env.json && tsc && serverless deploy --stage dev --verbose",
-    "REMOVE:beta": "serverless remove --stage dev",
-    "DEPLOY:production": "cp envs/production.json env.json && tsc && serverless deploy --stage deploy --verbose",
+    "DEV:locale": "restlessness dev locale",
+    "DEPLOY:staging": "npm run tsc && restlessness create-env beta && serverless deploy --stage dev --verbose",
+    "REMOVE:staging": "serverless remove --stage dev",
+    "DEPLOY:production": "npm run tsc && restlessness create-env production && serverless deploy --stage deploy --verbose",
     "REMOVE:production": "serverless remove --stage production",
-    "test": "cp envs/test.json env.json && jest",
-    "test:ci": "cp envs/test.json env.json && tsc && jest",
+    "test": "restlessness create-env test && jest",
     "tsc": "rimraf dist && tsc -p tsconfig.json"
   },
   "dependencies": {
