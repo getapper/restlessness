@@ -42,7 +42,7 @@ export default class PathResolver {
   }
 
   static get getFunctionsConfigPath(): string {
-    return path.join(PathResolver.getConfigsPath, 'functions.json');
+    return path.join(PathResolver.getConfigsPath, 'serverless.json');
   }
 
   static get getNodeModulesPath(): string {

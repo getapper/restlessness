@@ -21,7 +21,7 @@ export interface FunctionEndpoint {
   events?: Event[],
 }
 
-class JsonFunctions {
+class JsonServerless {
   functions: Functions
 
   get jsonPath(): string {
@@ -83,4 +83,4 @@ class JsonFunctions {
   }
 }
 
-export default new JsonFunctions();
+export default new JsonServerless();

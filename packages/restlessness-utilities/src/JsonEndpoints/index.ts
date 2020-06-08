@@ -12,7 +12,7 @@ import {
 import Route from '../Route';
 import JsonAuthorizers from '../JsonAuthorizers';
 import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
-import JsonFunctions, { FunctionEndpoint } from '../JsonFunctions';
+import JsonServerless, { FunctionEndpoint } from '../JsonServerless';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
 
@@ -74,9 +74,9 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     // Re-generate exporter file with considering the new endpoint
     await this.generateExporter();
 
-    // Add e new function handler in functions.json read by serverless.yml
+    // Add e new function handler in serverless.json read by serverless.yml
     // It also adds the authorizer handler, if it doesn't exist yet
-    await JsonFunctions.addEndpoint(functionName, route.functionPath, method, authorizerId);
+    await JsonServerless.addEndpoint(functionName, route.functionPath, method, authorizerId);
     return jsonEndpointsEntry;
   }
 
@@ -96,8 +96,8 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     // Re-generate exporter file with considering the new endpoint
     await this.generateExporter();
 
-    // Renove function handler in functions.json read by serverless.yml
-    await JsonFunctions.removeEndpoint(id);
+    // Renove function handler in serverless.json read by serverless.yml
+    await JsonServerless.removeEndpoint(id);
   }
 
   private async generateExporter(): Promise<void> {

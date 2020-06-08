@@ -11,7 +11,7 @@ provider:
 plugins:
   - serverless-offline
 
-functions: \${file(./configs/functions.json):functions}
+functions: \${file(./configs/serverless.json):functions}
 `;
 
 /*
