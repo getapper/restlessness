@@ -5,7 +5,7 @@ import {
   MongoClient,
   UpdateWriteOpResult,
   FindOneOptions,
-  DeleteWriteOpResultObject, FilterQuery
+  DeleteWriteOpResultObject,
 } from 'mongodb';
 
 class MongoDao {
