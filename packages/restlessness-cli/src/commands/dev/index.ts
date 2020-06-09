@@ -8,12 +8,12 @@ export default async (argv: minimist.ParsedArgs) => {
   if (majorVersion < 12) {
     throw new Error('Run command requires node version >= 12.x');
   }
-
-  const backend = spawn('serverless', ['offline', '--port', '4123'], {
+  
+  const backend = spawn('serverless', ['offline', '--port', "4123"], {
     cwd: path.join(__dirname, '..', '..', 'assets', 'backend'),
     env: {
       ...process.env,
-      PRJ_PATH: process.cwd(),
+      RLN_PROJECT_PATH: process.cwd(),
     },
     stdio: 'inherit',
     shell: true,
@@ -21,8 +21,16 @@ export default async (argv: minimist.ParsedArgs) => {
   backend.on('error', console.log);
   const frontend = spawn('serve', [], {
     cwd: path.join(__dirname, '..', '..', 'assets', 'frontend', 'build'),
-    stdio: 'inherit',
     shell: true,
+  });
+  frontend.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
+  frontend.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+  frontend.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
   });
   frontend.on('error', err => {
     console.log('Error while starting frontend with serve. Maybe you forgot to install it with: npm i serve -g');

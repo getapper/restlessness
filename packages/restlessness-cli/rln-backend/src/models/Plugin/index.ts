@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getNodeModulesRoot, getPrjRoot } from 'root/services/path-resolver';
+import { PathResolver } from '@restlessness/utilities';
 
 interface JsonPlugin {
   id: string,
@@ -19,7 +19,7 @@ export default class Plugin {
   module: Module
 
   static get pluginsJsonPath(): string {
-    return path.join(getPrjRoot(), 'plugins.json');
+    return path.join(PathResolver.getPrjPath, 'plugins.json');
   }
 
   static async getList(withModule: boolean = false): Promise<Plugin[]> {
@@ -31,7 +31,7 @@ export default class Plugin {
       plugin.name = jsonPlugin.name;
       plugin.package = jsonPlugin.package;
       if (withModule) {
-        plugin.module = require(path.join(getNodeModulesRoot(), plugin.package));
+        plugin.module = require(path.join(PathResolver.getNodeModulesPath, plugin.package));
       }
       return plugin;
     });
@@ -42,7 +42,7 @@ export default class Plugin {
     const plugin = plugins.find(d => d.id === pluginId);
     if (plugin) {
       Object.assign(this, { ...plugin });
-      this.module = require(path.join(getNodeModulesRoot(), this.package));
+      this.module = require(path.join(PathResolver.getNodeModulesPath, this.package));
       return true;
     } else {
       return false;
