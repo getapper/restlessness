@@ -2,26 +2,23 @@
   "name": "restlessness-rest-api",
   "version": "0.0.0",
   "scripts": {
-    "dev:server": "tsc && cross-env IS_DEV=1 serverless offline --port 4123"
+    "dev:server": "npm run tsc && serverless offline --port 4123",
+    "tsc": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@restlessness/core": "0.0.5",
     "@restlessness/utilities": "file:../../restlessness-utilities",
-    "@types/aws-lambda": "8.10.51",
     "module-alias": "2.2.0",
     "yup": "0.28.3"
   },
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
+    "@types/aws-lambda": "8.10.51",
     "@types/node": "12.7.2",
     "@typescript-eslint/parser": "2.1.0",
-    "cross-env": "^7.0.2",
     "eslint": "6.8.0",
     "serverless-offline": "5.12.1",
     "typescript": "3.8.3"
-  },
-  "_moduleAliases": {
-    "root": "dist"
   }
 }
