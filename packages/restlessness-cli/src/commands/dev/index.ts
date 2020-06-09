@@ -20,7 +20,7 @@ export default async (argv: minimist.ParsedArgs) => {
   });
   backend.on('error', console.log);
   const frontend = spawn('serve', [], {
-    cwd: path.join(__dirname, '..', '..', 'assets', 'frontend', 'build'),
+    cwd: path.join(__dirname, '..', '..', '..', 'lib', 'assets', 'frontend', 'build'),
     shell: true,
   });
   frontend.stdout.on('data', (data) => {
