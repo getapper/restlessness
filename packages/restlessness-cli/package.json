@@ -1,8 +1,8 @@
 {
   "name": "@restlessness/cli",
-  "version": "0.0.24",
+  "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build-backend": "cd rln-backend && tsc",
     "build-frontend": "cd rln-frontend && npm run build",
@@ -11,7 +11,7 @@
     "npm:tag": "node ../../scripts/git-packages-tagger.js"
   },
   "bin": {
-    "restlessness": "./index.js"
+    "restlessness": "./dist/index.js"
   },
   "keywords": [
     "restlessness",
@@ -32,6 +32,9 @@
     "yup": "0.28.3"
   },
   "devDependencies": {
+    "@types/chalk": "2.2.0",
+    "@types/minimist": "1.2.0",
+    "@types/node": "12.12.45",
     "rimraf": "3.0.2",
     "typescript": "3.7.5"
   },

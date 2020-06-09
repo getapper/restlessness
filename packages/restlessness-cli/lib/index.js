@@ -3,11 +3,11 @@ module.exports = () => {
   const chalk = require('chalk')
 
   switch(argv._[0]) {
-    case 'init':
-      require('./commands/init')(argv)
+    case 'new':
+      require('./commands/new')(argv)
       break
-    case 'run':
-      require('./commands/run')(argv)
+    case 'dev':
+      require('./commands/dev')(argv)
       break
     default:
       console.log(chalk.red('Wrong invocation of RLN'))
