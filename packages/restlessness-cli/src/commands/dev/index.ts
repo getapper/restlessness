@@ -10,7 +10,7 @@ export default async (argv: minimist.ParsedArgs) => {
   }
 
   const backend = spawn('serverless', ['offline', '--port', '4123'], {
-    cwd: path.join(__dirname, '..', '..', '..', 'lib', 'assets', 'backend'),
+    cwd: path.join(__dirname, '..', '..', 'assets', 'backend'),
     env: {
       ...process.env,
       RLN_PROJECT_PATH: process.cwd(),
