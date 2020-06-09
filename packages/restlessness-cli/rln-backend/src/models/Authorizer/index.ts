@@ -1,49 +1,25 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-import { getPrjRoot } from 'root/services/path-resolver';
+import { JsonAuthorizers, JsonAuthorizersEntry } from '@restlessness/utilities';
+import BaseModel from 'root/models/BaseModel';
 
-interface JsonAuthorizer {
-  id: string,
-  name: string,
-  package: string,
-  sessionModelName: string
-}
-
-interface Module {
-  postEnvCreated: (projectPath: string, envName: string) => void,
-}
-
-export default class Authorizer {
+export default class Authorizer extends BaseModel {
   id: string
   name: string
   package: string
   sessionModelName: string
 
-  static get authorizersJsonPath(): string {
-    return path.join(getPrjRoot(), 'authorizers.json');
+  static get model() {
+    return JsonAuthorizers;
   }
 
-  static async getList(): Promise<Authorizer[]> {
-    const file = await fs.readFile(Authorizer.authorizersJsonPath);
-    const jsonAuthorizers: JsonAuthorizer[] = JSON.parse(file.toString());
-    return jsonAuthorizers.map(jsonAuthorizer => {
-      const authorizer = new Authorizer();
-      authorizer.id = jsonAuthorizer.id;
-      authorizer.name = jsonAuthorizer.name;
-      authorizer.package = jsonAuthorizer.package;
-      authorizer.sessionModelName = jsonAuthorizer.sessionModelName;
-      return authorizer;
-    });
+  protected async fromConfigEntry(entry: JsonAuthorizersEntry): Promise<void> {
+    const { id, name, package: pkg, sessionModelName } = entry;
+    this.id = id;
+    this.name = name;
+    this.package = pkg;
+    this.sessionModelName = sessionModelName;
   }
 
-  async getById(authorizerId: string): Promise<boolean> {
-    const authorizers = await Authorizer.getList();
-    const authorizer = authorizers.find(d => d.id === authorizerId);
-    if (authorizer) {
-      Object.assign(this, { ...authorizer });
-      return true;
-    } else {
-      return false;
-    }
+  protected async toConfigEntry(): Promise<JsonAuthorizersEntry> {
+    return { ...this };
   }
 }

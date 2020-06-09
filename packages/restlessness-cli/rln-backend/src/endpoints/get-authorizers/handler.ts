@@ -11,7 +11,7 @@ export default async (req: Request) => {
 
     const authorizers = await Authorizer.getList();
     const emptyAuthorizer = new Authorizer();
-    emptyAuthorizer.id = 'null';
+    emptyAuthorizer.id = null;
     emptyAuthorizer.name = 'None';
     authorizers.push(emptyAuthorizer);
     return res(authorizers, 200, {

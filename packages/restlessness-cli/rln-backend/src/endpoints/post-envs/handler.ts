@@ -15,7 +15,7 @@ export default async (req: Request) => {
 
     const parsedName = name.trim().replace(/ /g, '').toLowerCase();
     const envs = await Env.getList();
-    if (~envs.findIndex(env => env.name === parsedName)) {
+    if (~envs.findIndex(env => env.id === parsedName)) {
       return res({ message: 'Env already exists' }, 400);
     }
     const env = new Env();

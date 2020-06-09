@@ -1,9 +1,10 @@
-import { Authorizer, Endpoint } from 'root/models';
+import { JsonAuthorizersEntry } from '../../JsonAuthorizers';
+import Route from '../../Route';
 
 const indexTemplate = (
   hasPayload: boolean,
   vars: string[],
-  authorizer: Authorizer,
+  authorizer: JsonAuthorizersEntry,
 ): string => `import 'module-alias/register';
 import handler from './handler';
 import { requestParser } from '@restlessness/core';
@@ -24,7 +25,7 @@ ${authorizer ? `  const session: ${authorizer.sessionModelName} = await sessionP
 
 const testTemplate = (
   apiName: string,
-  authorizer: Authorizer,
+  authorizer: JsonAuthorizersEntry,
 ): string => `import { StatusCodes, apiCall } from '@restlessness/core';
 ${authorizer ? `import { AuthorizerContext } from '${authorizer.package}';\nimport ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
 const ${apiName} = '${apiName}';
@@ -43,7 +44,7 @@ afterAll(async done => {
 */
 `;
 
-const handlerTemplate = (hasPayload: boolean, vars: string[], authorizer: Authorizer): string => `import 'module-alias/register';
+const handlerTemplate = (hasPayload: boolean, vars: string[], authorizer: JsonAuthorizersEntry): string => `import 'module-alias/register';
 import { res, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 
@@ -66,7 +67,7 @@ ${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n'
 };
 `;
 
-const interfacesTemplate = (hasPayload: boolean, vars: string[], authorizer: Authorizer): string => `import { ValidationResult } from '@restlessness/core';
+const interfacesTemplate = (hasPayload: boolean, vars: string[], authorizer: JsonAuthorizersEntry): string => `import { ValidationResult } from '@restlessness/core';
 ${authorizer ? `import ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
 export interface QueryStringParameters {}${hasPayload
   ? '\n\nexport interface Payload {}' : ''}${vars.length ? `\n\nexport interface PathParameters {
@@ -92,11 +93,14 @@ export default {
 
 `;
 
-const exporterTemplate = (endpoints: Endpoint[]) => `import 'module-alias/register';
-${endpoints.map(endpoint => `import ${endpoint.method}${endpoint.route.functionName} from 'root/endpoints/${endpoint.method}-${endpoint.route.folderName}';`).join('\n')}
+const exporterTemplate = (
+  methods: string[],
+  routes: Route[],
+) => `import 'module-alias/register';
+${methods.map((method, index) => `import ${method}${routes[index].functionName} from 'root/endpoints/${method}-${routes[index].folderName}';`).join('\n')}
 
 export {
-  ${endpoints.map(endpoint => `${endpoint.method}${endpoint.route.functionName},`).join('\n  ')}
+  ${methods.map((method, index) => `${method}${routes[index].functionName},`).join('\n  ')}
 };
 
 `;

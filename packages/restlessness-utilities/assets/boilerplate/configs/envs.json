@@ -1,0 +1,20 @@
+[
+  {
+    "id": "locale",
+    "type": "dev"
+  },
+  {
+    "id": "test",
+    "type": "test"
+  },
+  {
+    "id": "staging",
+    "type": "deploy",
+    "stage": "dev"
+  },
+  {
+    "id": "production",
+    "type": "deploy",
+    "stage": "deploy"
+  }
+]
