@@ -9,3 +9,4 @@ export { default as EnvFile } from './EnvFile';
 export { default as JsonModels, JsonModelsEntry } from './JsonModels';
 export { default as JsonDaos, JsonDaosEntry } from './JsonDaos';
 export { default as Project } from './Project';
+export { default as EnvFile } from './EnvFile';

@@ -1,7 +1,8 @@
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import path from 'path';
 import PathResolver from '../PathResolver';
-import { parse } from 'dotenv';
+import { parse, config } from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
 
 export default class EnvFile {
   private static get envsPath(): string {
@@ -17,6 +18,9 @@ export default class EnvFile {
   }
 
   constructor(private envName: string) {
+    if (!existsSync(this.currentEnvPath)) {
+      throw new Error(`Environment ${envName} does not exist`);
+    }
   }
 
   private async readEnv(): Promise<{ [key: string]: string }> {
@@ -68,7 +72,8 @@ export default class EnvFile {
   }
 
   async generate(): Promise<void> {
-    const env = await this.readEnv();
+    let env = await this.readEnv();
+    env = dotenvExpand({ parsed: env }).parsed;
     await EnvFile.write(EnvFile.generatedEnvPath, env);
   }
 }
