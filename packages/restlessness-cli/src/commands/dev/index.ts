@@ -1,5 +1,7 @@
 import minimist from 'minimist';
 import serve from 'serve-handler';
+import path from 'path';
+import { spawn } from 'child_process';
 
 export default async (argv: minimist.ParsedArgs) => {
   const majorVersion: number = parseInt((/^(\d+)(\.\d+){0,2}$/.exec(process.versions.node))[1], 10);
@@ -7,11 +9,11 @@ export default async (argv: minimist.ParsedArgs) => {
     throw new Error('Run command requires node version >= 12.x');
   }
 
-  const backend = spawn('serverless', ['offline', '--port', 4123], {
+  const backend = spawn('serverless', ['offline', '--port', '4123'], {
     cwd: path.join(__dirname, '..', '..', 'assets', 'backend'),
     env: {
       ...process.env,
-      PRJ_PATH: process.GLOBAL.CWD,
+      PRJ_PATH: process.cwd(),
     },
     stdio: 'inherit',
     shell: true,
