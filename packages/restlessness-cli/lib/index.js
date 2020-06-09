@@ -9,6 +9,9 @@ module.exports = () => {
     case 'dev':
       require('./commands/dev')(argv)
       break
+    case 'create-env':
+      require('./commands/create-env')(argv)
+      break
     default:
       console.log(chalk.red('Wrong invocation of RLN'))
       break
