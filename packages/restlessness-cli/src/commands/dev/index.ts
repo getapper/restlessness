@@ -8,7 +8,7 @@ export default async (argv: minimist.ParsedArgs) => {
   if (majorVersion < 12) {
     throw new Error('Run command requires node version >= 12.x');
   }
-
+  
   const backend = spawn('serverless', ['offline', '--port', "4123"], {
     cwd: path.join(__dirname, '..', '..', 'assets', 'backend'),
     env: {
