@@ -32,7 +32,7 @@ export default class EnvFile {
     await fs.writeFile(filePath, output);
   }
 
-  private async writeCurrentEnv(env: { [key: string]: string }) {
+  private async writeCurrentEnv(env: { [key: string]: string }): Promise<void> {
     await EnvFile.write(this.currentEnvPath, env);
   }
 
@@ -41,10 +41,30 @@ export default class EnvFile {
     return env[key];
   }
 
-  async setValue(key: string, value: string) {
+  /**
+   * Given a key and a value creates a new line entry as:
+   * key=value
+   *
+   * @param key
+   * @param value
+   */
+  async setValue(key: string, value: string, overwrite: boolean = false): Promise<void> {
     const env = await this.readEnv();
+    if (!overwrite && typeof env[key] !== 'undefined') {
+      throw new Error('Key already exists');
+    }
     env[key] = value;
     await this.writeCurrentEnv(env);
+  }
+
+  /**
+   * Given a key name creates a new line entry as:
+   * key={key_ENVNAME}
+   *
+   * @param key
+   */
+  async setParametricValue(key: string): Promise<void> {
+    await this.setValue(key, `\${${key}_${this.envName.toUpperCase()}}`);
   }
 
   async generate(): Promise<void> {

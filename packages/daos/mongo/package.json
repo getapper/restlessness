@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@restlessness/utilities": "file:../../restlessness-utilities",
-    "bson": "4.0.3",
     "mongodb": "3.5.5",
     "pluralize": "8.0.0"
   },

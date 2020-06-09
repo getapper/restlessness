@@ -15,7 +15,7 @@ beforeAll(async (done) => {
   done();
 });
 
-describe('MongoDaoPackage hooks', () => {
+describe('Mongo Dao Package hooks', () => {
   test('New project post install',  async (done) => {
     await Project.create(projectPath, {
       installNodemodules: false,
@@ -25,6 +25,12 @@ describe('MongoDaoPackage hooks', () => {
     await JsonDaos.read();
     const jsonDaosEntry = await JsonDaos.getEntryById('dao-mongo');
     expect(jsonDaosEntry.package).toBe('@restlessness/dao-mongo');
+    await expect(MongoDaoPackage.postInstall()).rejects.toEqual(new Error('Key already exists'));
     done();
   });
+});
+
+afterAll(async (done) => {
+  await promisify(rimraf)(projectPath);
+  done();
 });

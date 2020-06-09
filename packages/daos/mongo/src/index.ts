@@ -3,13 +3,7 @@ import mongoDao from './dao';
 import { ObjectId } from 'mongodb';
 import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/utilities';
 
-export * from './hooks';
-export * from './templates';
-export {
-  MongoBase,
-  mongoDao,
-  ObjectId,
-};
+import { modelTemplate } from './templates';
 
 class MongoDaoPackage extends DaoPackage {
   async postInstall(): Promise<void> {
@@ -21,18 +15,28 @@ class MongoDaoPackage extends DaoPackage {
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(async jsonEnvsEntry => {
       const envFile = new EnvFile(jsonEnvsEntry.id);
-      await envFile.setValue('RLN_MONGO_DAO_URI', `{RLN_MONGO_DAO_URI_${jsonEnvsEntry.id.toUpperCase()}}`);
+      await envFile.setParametricValue('RLN_MONGO_DAO_URI');
     }));
   }
 
   async postEnvCreated(envName: string): Promise<void> {
     const envFile = new EnvFile(envName);
-    await envFile.setValue('RLN_MONGO_DAO_URI', `{RLN_MONGO_DAO_URI_${envName.toUpperCase()}}`);
+    await envFile.setParametricValue('RLN_MONGO_DAO_URI');
   }
 
-  async beforeLambda(): Promise<void> {
-    // @TODO: open connection
+  async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
+    await mongoDao.openConnection(context);
+  }
+
+  modelTemplate(modelName: string): string {
+    return modelTemplate(modelName);
   }
 }
 
 export default new MongoDaoPackage();
+
+export {
+  MongoBase,
+  mongoDao,
+  ObjectId,
+};

@@ -8,6 +8,8 @@ export default abstract class AddOnPackage {
   }
 
   abstract async postInstall(): Promise<void>
+
   abstract async postEnvCreated(envName: string): Promise<void>
-  abstract async beforeLambda(): Promise<void>
+
+  abstract async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void>
 }
