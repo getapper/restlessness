@@ -24,7 +24,7 @@ const cli = async () => {
   }
 };
 
-cli().then(() => process.exit(0)).catch(e => {
+cli().then().catch(e => {
   console.error(chalk.red(e));
   process.exit(1);
 });
