@@ -1,10 +1,10 @@
 import path from 'path';
 import PathResolver from '../PathResolver';
+import AWSLambda from 'aws-lambda';
 
 export default abstract class AddOnPackage {
   static load<T>(packageName: string): T {
-    const pkg: T = require(path.join(PathResolver.getNodeModulesPath, packageName));
-    return pkg;
+    return require(path.join(PathResolver.getNodeModulesPath, packageName));
   }
 
   abstract async postInstall(): Promise<void>
