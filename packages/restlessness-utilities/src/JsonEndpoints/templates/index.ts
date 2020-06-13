@@ -23,6 +23,14 @@ ${authorizer ? `  const session: ${authorizer.sessionModelName} = await sessionP
 };
 `;
 
+const newIndexTemplate = () => `
+import { lambdaHandler } from '@restlessness/core';
+import handler from './handler';
+import validations from './validations';
+  
+return lambdaHandler.bind(this, handler, validations);
+`
+
 const testTemplate = (
   apiName: string,
   authorizer: JsonAuthorizersEntry,

@@ -22,11 +22,10 @@
     "url": "https://github.com/getapper/restlessness/tree/master/packages/restlessness-utilities"
   },
   "scripts": {
-    "prepublishOnly": "rimraf ./dist && tsc",
+    "prepublishOnly": "npm run tsc",
     "npm:tag": "node ../../scripts/git-packages-tagger.js",
-    "clean": "rimraf dist",
-    "tsc": "tsc -p tsconfig.json",
-    "test": "npm run clean && npm run tsc && jest"
+    "tsc": "rimraf dist && tsc -p tsconfig.json",
+    "test": "npm run tsc && jest"
   },
   "jest": {
     "rootDir": "dist"
