@@ -2,7 +2,7 @@
 
 import minimist from 'minimist';
 import chalk from 'chalk';
-import newProject from './commands/newProject';
+import newProject from './commands/new-project';
 import dev from './commands/dev';
 import createEnv from './commands/create-env';
 
