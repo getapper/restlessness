@@ -1,94 +1,131 @@
 import minimist from 'minimist';
 import path from 'path';
-import { spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import chalk from 'chalk';
 
-const printProcessData = (procName, color, data) => {
-  process.stdout.write(`${color(procName)}: ${data.toString()}`);
+const printRestlessnessData = d => {
+  process.stdout.write(`${chalk.blue('RESTLESSNESS')}: ${d.toString()}`);
 };
-const printProcessError = (procName, err) => {
-  process.stderr.write(`${chalk.red(procName)}: ${err.toString()}`);
+const printRestlessnessError = e => {
+  process.stderr.write(chalk.red(`RESTLESSNESS error:\n${e.toString()}`));
 };
 
-function spawnProject(name) {
-  const proc = spawn('serverless', ['offline', '--port', '4000'], {
-    shell: true,
-  });
-  proc.stdout.on('data', d => {
-    printProcessData(name, chalk.green, d);
-  });
-  proc.stderr.on('data', e => {
-    printProcessError(name, e);
-  });
-  proc.on('close', (code) => {
-    console.log(`Frontend process exited with code ${code}`);
-  });
-  proc.on('error', console.error);
-  return proc;
-}
-
-export default async (argv: minimist.ParsedArgs) => {
-  const majorVersion: number = parseInt((/^(\d+)(\.\d+){0,2}$/.exec(process.versions.node))[1], 10);
-  if (majorVersion < 12) {
-    throw new Error('Run command requires node version >= 12.x');
-  }
-
-  let projectName;
-  let projectProc;
+function getProjectName() {
   try {
-    projectName = require(path.join(process.cwd(), 'package.json')).name;
+    return require(path.join(process.cwd(), 'package.json')).name;
   } catch {
     console.log(chalk.red('Cannot find package.json. Are you on the root folder?'));
     process.exit(1);
   }
+}
 
-  const backend = spawn('serverless', ['offline', '--port', '4123'], {
-    cwd: path.join(__dirname, '..', '..', '..', 'lib', 'assets', 'backend'),
-    env: {
-      ...process.env,
-      RLN_PROJECT_PATH: process.cwd(),
-    },
-    stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-    shell: true,
-  });
-  backend.stdout.on('data', d => {
-    printProcessData('rln-backend', chalk.yellow, d);
-  });
-  backend.stderr.on('data', e => {
-    printProcessError('rln-backend', e);
-  });
-  backend.on('error', console.error);
-  backend.on('close', (code) => {
-    console.log(`Backend process exited with code ${code}`);
-    process.exit(1);
-  });
-  backend.on('message', message => {
-    if (message === 'RESTART_PROJECT') {
-      if (projectProc) {
-        projectProc.kill();
+function spawnBackend(): Promise<ChildProcess> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn('serverless', ['offline', '--port', '4123'], {
+      cwd: path.join(__dirname, '..', '..', '..', 'lib', 'assets', 'backend'),
+      env: {
+        ...process.env,
+        RLN_PROJECT_PATH: process.cwd(),
+      },
+      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+      shell: true,
+    });
+    proc.stdout.on('data', d => {
+      let data = d.toString();
+      if (data.indexOf('Serverless: Offline [HTTP] listening on') !== -1) {
+        resolve(proc);
       }
-      console.log('Restarting severless...');
-      projectProc = spawnProject(projectName);
-    }
+
+      let trimmed = data.trim();
+      if (trimmed && !trimmed.startsWith('Serverless:')) {
+        printRestlessnessData(data);
+      }
+    });
+    proc.stderr.on('data', printRestlessnessError);
+    proc.on('error', reject);
+  });
+}
+
+function spawnFrontend(): Promise<ChildProcess> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn('serve', [], {
+      cwd: path.join(__dirname, '..', '..', '..', 'lib', 'assets', 'frontend', 'build'),
+      shell: true,
+    });
+    proc.stdout.on('data', d => {
+      if (d.toString().indexOf('Accepting connections at') !== -1) {
+        resolve(proc);
+      }
+    });
+    proc.stderr.on('data', printRestlessnessError);
+    proc.on('error', reject);
+  });
+}
+
+function spawnProject(name): Promise<ChildProcess> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn('serverless', ['offline', '--port', '4000'], {
+      shell: true,
+    });
+    proc.stdout.on('data', d => {
+      if (d.toString().indexOf('Serverless: Offline [HTTP] listening on') !== -1) {
+        resolve(proc);
+      }
+      process.stdout.write(`${chalk.green(name)}: ${d.toString()}`);
+    });
+    proc.stderr.on('data', d => {
+      process.stderr.write(chalk.red(`${name}: ${d.toString()}`));
+    });
+    proc.on('error', reject);
+  });
+}
+
+export default async (argv: minimist.ParsedArgs) => {
+  const projectName = getProjectName();
+
+  let projectProc;
+  let frontendProc;
+  let backendProc;
+
+  const terminate = () => {
+    projectProc?.kill();
+    frontendProc?.kill();
+    backendProc?.kill();
+  };
+  process.on('SIGINT', () => {
+    console.log('\nShutting down...');
+    terminate();
   });
 
-  const frontend = spawn('serve', [], {
-    cwd: path.join(__dirname, '..', '..', '..', 'lib', 'assets', 'frontend', 'build'),
-    shell: true,
-  });
-  frontend.stdout.on('data', d => {
-    printProcessData('rln-frontend', chalk.blue, d);
-  });
-  frontend.stderr.on('data', e => {
-    printProcessError('rln-frontend', e);
-  });
-  frontend.on('close', (code) => {
-    console.log(`Frontend process exited with code ${code}`);
-  });
-  frontend.on('error', err => {
-    console.log('Error while starting frontend with serve. Maybe you forgot to install it with: npm i serve -g');
-    process.exit(1);
-  });
+  try {
+    backendProc = await spawnBackend();
+    backendProc.on('message', async message => {
+      if (message === 'RESTART_PROJECT') {
+        projectProc?.kill();
+        console.log(`Restarting project ${projectName}...`);
+        projectProc = await spawnProject(projectName);
+      }
+    });
+  } catch (e) {
+    console.error(chalk.red('Error while starting serverless. Maybe you forgot to install it with: npm i serverless -g'));
+    console.error(e);
+    terminate();
+  }
 
-  projectProc = spawnProject(projectName);
+  try {
+    frontendProc = await spawnFrontend();
+    printRestlessnessData('Running on http://localhost:5000\n');
+  } catch (e) {
+    console.error(chalk.red('Error while starting serve. Maybe you forgot to install it with: npm i serve -g'));
+    console.error(e);
+    terminate();
+  }
+
+  try {
+    projectProc = await spawnProject(projectName);
+  } catch (e) {
+    console.error(chalk.red('Error while starting serverless. Maybe you forgot to install it with: npm i serverless -g'));
+    console.error(e);
+    terminate();
+  }
 };
