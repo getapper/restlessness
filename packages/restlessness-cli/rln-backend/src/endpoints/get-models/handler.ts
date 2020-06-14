@@ -1,5 +1,4 @@
-require('module-alias/register');
-import res from 'root/services/response-handler';
+import res from '../../services/response-handler';
 import { Request } from './interfaces';
 import { Model } from 'root/models';
 

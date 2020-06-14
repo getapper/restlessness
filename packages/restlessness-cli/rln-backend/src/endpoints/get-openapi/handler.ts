@@ -1,6 +1,4 @@
 import { Openapi } from 'root/models';
-
-require('module-alias/register');
 import { promises as fs } from 'fs';
 
 import res from 'root/services/response-handler';

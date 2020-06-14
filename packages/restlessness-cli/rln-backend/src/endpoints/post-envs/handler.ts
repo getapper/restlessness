@@ -1,7 +1,6 @@
-require('module-alias/register');
-import res from 'root/services/response-handler';
+import res from '../../services/response-handler';
 import { Request } from './interfaces';
-import { Env } from 'root/models';
+import { Env } from '../../models';
 
 export default async (req: Request) => {
   try {

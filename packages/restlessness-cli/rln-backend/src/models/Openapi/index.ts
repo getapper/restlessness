@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { PathResolver } from '@restlessness/utilities';
-import { Endpoint } from 'root/models';
+import { Endpoint } from '../';
 
 export default class Openapi {
   id: number

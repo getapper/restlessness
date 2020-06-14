@@ -8,13 +8,14 @@ import ModelsList from './models/list'
 import SwaggerList from './swagger/list'
 import EnvsCreate from './envs/create'
 import EndpointsCreate from './endpoints/create'
+import EndpointsUpdate from './endpoints/update'
 import ModelsCreate from './models/create'
 
 function App() {
   return (
     <Admin dataProvider={restProvider('http://localhost:4123')}>
       <Resource name="envs" list={EnvsList} create={EnvsCreate}/>
-      <Resource name="endpoints" list={EndpointsList} create={EndpointsCreate}/>
+      <Resource name="endpoints" list={EndpointsList} create={EndpointsCreate} edit={EndpointsUpdate}/>
       <Resource name="models" list={ModelsList} create={ModelsCreate}/>
       <Resource name="daos" list={ListGuesser} />
       <Resource name="plugins" list={ListGuesser} />

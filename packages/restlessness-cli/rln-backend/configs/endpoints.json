@@ -48,5 +48,11 @@
     "route": "/authorizers",
     "method": "get",
     "id": 10
+  },
+  {
+    "id": "getEndpointsById",
+    "route": "/endpoints/{id}",
+    "method": "get",
+    "authorizerId": null
   }
 ]
