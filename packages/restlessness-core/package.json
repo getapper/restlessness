@@ -17,6 +17,7 @@
     "yup": "^0.28.3"
   },
   "scripts": {
+    "tsc": "rimraf dist && tsc -p tsconfig.json",
     "prepublishOnly": "rimraf ./dist && tsc",
     "npm:tag": "node ../../scripts/git-packages-tagger.js"
   },
