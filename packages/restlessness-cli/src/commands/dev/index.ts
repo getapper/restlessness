@@ -27,6 +27,17 @@ function spawnBackend(): Promise<ChildProcess> {
         ...process.env,
         RLN_PROJECT_PATH: process.cwd(),
       },
+      /*
+      First 3 value corresponds to stdin/stdout/stderr.
+      'pipe' value creates a pipe between the child process and the parent process.
+      The parent can then access the pipe through a property on the child_process object (subprocess.stdio[fd]).
+      Pipes created for fds 0, 1, and 2 are also available as subprocess.stdin, subprocess.stdout and
+      subprocess.stderr, respectively.
+      'ipc' value creates an Inter Process Communication channel for passing messages between parent and child.
+      Setting this option enable the send() method (process.send() for the child, child_process.send()
+      for the parent) as well as the 'message' event.
+      see https://nodejs.org/api/child_process.html#child_process_options_stdio for a detailed description.
+      */
       stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
       shell: true,
     });
