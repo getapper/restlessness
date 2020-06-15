@@ -6,8 +6,8 @@
     "tsc": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@restlessness/core": "file:../../restlessness-core",
-    "@restlessness/utilities": "file:../../restlessness-utilities",
+    "@restlessness/core": "0.1.0",
+    "@restlessness/utilities": "0.1.0",
     "jest": "26.0.1",
     "yup": "0.28.3"
   },

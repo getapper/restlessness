@@ -1,12 +1,11 @@
 {
   "name": "@restlessness/utilities",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
-    "@types/aws-lambda": "8.10.53",
     "@types/jest": "25.2.3",
     "@types/lodash.merge": "4.6.6",
     "@types/lodash.unset": "4.5.6",
@@ -31,6 +30,7 @@
     "rootDir": "dist"
   },
   "dependencies": {
+    "@types/aws-lambda": "8.10.53",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "lodash.merge": "4.6.2",

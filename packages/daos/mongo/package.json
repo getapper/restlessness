@@ -1,13 +1,11 @@
 {
   "name": "@restlessness/dao-mongo",
-  "version": "0.0.12",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
-    "@types/aws-lambda": "8.10.50",
     "@types/jest": "25.2.3",
-    "@types/mongodb": "3.5.9",
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "^2.1.0",
     "eslint": "6.8.0",
@@ -16,7 +14,9 @@
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "@restlessness/utilities": "file:../../restlessness-utilities",
+    "@types/aws-lambda": "8.10.50",
+    "@types/mongodb": "3.5.9",
+    "@restlessness/utilities": "0.1.1",
     "mongodb": "3.5.5",
     "pluralize": "8.0.0"
   },
@@ -24,11 +24,11 @@
     "url": "https://github.com/getapper/restlessness/tree/master/packages/daos/mongo"
   },
   "scripts": {
-    "prepublishOnly": "rimraf ./dist && tsc",
+    "prepublishOnly": "npm run test",
     "npm:tag": "node ../../../scripts/git-packages-tagger.js",
     "clean": "rimraf dist",
-    "tsc": "tsc -p tsconfig.json",
-    "test": "npm run clean && npm run tsc && jest"
+    "tsc": "npm run clean && tsc -p tsconfig.json",
+    "test": "npm run tsc && jest"
   },
   "jest": {
     "rootDir": "dist"
