@@ -3,8 +3,11 @@ import path from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import chalk from 'chalk';
 
-const printRestlessnessData = d => {
-  process.stdout.write(`${chalk.blue('RESTLESSNESS')}: ${d.toString()}`);
+const printRestlessnessData = (d, newlineAtStart = false) => {
+  const data = d.toString();
+  const nl = data.endsWith('\n') ? '' : '\n';
+  const nlStart = newlineAtStart ? '\n' : '';
+  process.stdout.write(`${nlStart}${chalk.blue('RESTLESSNESS')}: ${data}${nl}`);
 };
 const printRestlessnessError = e => {
   process.stderr.write(chalk.red(`RESTLESSNESS error:\n${e.toString()}`));
@@ -104,7 +107,7 @@ export default async (argv: minimist.ParsedArgs) => {
     backendProc?.kill();
   };
   process.on('SIGINT', () => {
-    console.log('\nShutting down...');
+    printRestlessnessData('Shutting down...', true);
     terminate();
   });
 
@@ -113,7 +116,7 @@ export default async (argv: minimist.ParsedArgs) => {
     backendProc.on('message', async message => {
       if (message === 'RESTART_PROJECT') {
         projectProc?.kill();
-        console.log(`Restarting project ${projectName}...`);
+        printRestlessnessData(`Restarting project ${projectName}...`);
         projectProc = await spawnProject(projectName);
       }
     });
