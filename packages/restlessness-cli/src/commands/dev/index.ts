@@ -42,12 +42,12 @@ function spawnBackend(): Promise<ChildProcess> {
       shell: true,
     });
     proc.stdout.on('data', d => {
-      let data = d.toString();
+      const data = d.toString();
       if (data.indexOf('Serverless: Offline [HTTP] listening on') !== -1) {
         resolve(proc);
       }
 
-      let trimmed = data.trim();
+      const trimmed = data.trim();
       if (trimmed && !trimmed.startsWith('Serverless:')) {
         printRestlessnessData(data);
       }
