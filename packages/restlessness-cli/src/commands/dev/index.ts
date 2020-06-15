@@ -3,8 +3,11 @@ import path from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import chalk from 'chalk';
 
-const printRestlessnessData = d => {
-  process.stdout.write(`${chalk.blue('RESTLESSNESS')}: ${d.toString()}`);
+const printRestlessnessData = (d, newlineAtStart = false) => {
+  const data = d.toString();
+  const nl = data.endsWith('\n') ? '' : '\n';
+  const nlStart = newlineAtStart ? '\n' : '';
+  process.stdout.write(`${nlStart}${chalk.blue('RESTLESSNESS')}: ${data}${nl}`);
 };
 const printRestlessnessError = e => {
   process.stderr.write(chalk.red(`RESTLESSNESS error:\n${e.toString()}`));
@@ -27,16 +30,27 @@ function spawnBackend(): Promise<ChildProcess> {
         ...process.env,
         RLN_PROJECT_PATH: process.cwd(),
       },
+      /*
+      First 3 value corresponds to stdin/stdout/stderr.
+      'pipe' value creates a pipe between the child process and the parent process.
+      The parent can then access the pipe through a property on the child_process object (subprocess.stdio[fd]).
+      Pipes created for fds 0, 1, and 2 are also available as subprocess.stdin, subprocess.stdout and
+      subprocess.stderr, respectively.
+      'ipc' value creates an Inter Process Communication channel for passing messages between parent and child.
+      Setting this option enable the send() method (process.send() for the child, child_process.send()
+      for the parent) as well as the 'message' event.
+      see https://nodejs.org/api/child_process.html#child_process_options_stdio for a detailed description.
+      */
       stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
       shell: true,
     });
     proc.stdout.on('data', d => {
-      let data = d.toString();
+      const data = d.toString();
       if (data.indexOf('Serverless: Offline [HTTP] listening on') !== -1) {
         resolve(proc);
       }
 
-      let trimmed = data.trim();
+      const trimmed = data.trim();
       if (trimmed && !trimmed.startsWith('Serverless:')) {
         printRestlessnessData(data);
       }
@@ -93,7 +107,7 @@ export default async (argv: minimist.ParsedArgs) => {
     backendProc?.kill();
   };
   process.on('SIGINT', () => {
-    console.log('\nShutting down...');
+    printRestlessnessData('Shutting down...', true);
     terminate();
   });
 
@@ -102,7 +116,7 @@ export default async (argv: minimist.ParsedArgs) => {
     backendProc.on('message', async message => {
       if (message === 'RESTART_PROJECT') {
         projectProc?.kill();
-        console.log(`Restarting project ${projectName}...`);
+        printRestlessnessData(`Restarting project ${projectName}...`);
         projectProc = await spawnProject(projectName);
       }
     });
