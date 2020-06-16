@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  rln-utilities-deps:
+  rln-utilities-deps-and-tests:
     docker:
       - image: circleci/ruby:2.4-node
     steps:
@@ -9,6 +9,10 @@ jobs:
       - run:
           command: npm i
           working_directory: packages/restlessness-utilities
+      - run:
+          command: npm test
+          working_directory: packages/restlessness-utilities
+
 workflows:
     rln-utilities:
       jobs:
