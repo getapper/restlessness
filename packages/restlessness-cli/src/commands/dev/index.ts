@@ -31,6 +31,14 @@ function checkPeerDependencies() {
   }
 }
 
+/*
+spawnBackend, spawnFrontend, spawnProject functions spawns the homonym processes.
+The ChildProcess object is returned through a promise, with some callbacks already defined:
+- stdout/err data event: check the output and resolve the promise if the server starts successfully
+- exit event: reject the promise if the process exit with an error code. This event can then be overridden
+- error event: reject the promise if the process cannot be spawned
+*/
+
 function spawnBackend(): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
     const proc = spawn('serverless', ['offline', '--port', '4123'], {
@@ -66,6 +74,9 @@ function spawnBackend(): Promise<ChildProcess> {
     });
     proc.stderr.on('data', printRestlessnessError);
     proc.on('error', reject);
+    proc.on('exit', code => {
+      reject(`Restlessness backend process exited with status code ${code}`);
+    });
   });
 }
 
@@ -82,6 +93,9 @@ function spawnFrontend(): Promise<ChildProcess> {
     });
     proc.stderr.on('data', printRestlessnessError);
     proc.on('error', reject);
+    proc.on('exit', code => {
+      reject(`Restlessness frontend process exited with status code ${code}`);
+    });
   });
 }
 
@@ -100,6 +114,9 @@ function spawnProject(name): Promise<ChildProcess> {
       process.stderr.write(chalk.red(`${name}: ${d.toString()}`));
     });
     proc.on('error', reject);
+    proc.on('exit', code => {
+      reject(`${name} process exited with status code ${code}`);
+    });
   });
 }
 
@@ -111,14 +128,24 @@ export default async (argv: minimist.ParsedArgs) => {
   let frontendProc;
   let backendProc;
 
-  const terminate = () => {
+  const terminateChildren = () => {
     projectProc?.kill();
     frontendProc?.kill();
     backendProc?.kill();
   };
+
+  /*
+  If any of the processes exit prematurely with an error code all other
+  processes are killed, since the 3 processes are dependents
+  */
+  const terminateOnExit = returnCode => {
+    if (returnCode !== 0) {
+      terminateChildren();
+    }
+  };
   process.on('SIGINT', () => {
     printRestlessnessData('Shutting down...', true);
-    terminate();
+    terminateChildren();
   });
 
   try {
@@ -130,26 +157,26 @@ export default async (argv: minimist.ParsedArgs) => {
         projectProc = await spawnProject(projectName);
       }
     });
+    backendProc.on('exit', terminateOnExit);
   } catch (e) {
-    console.error(chalk.red('Error while starting serverless. Maybe you forgot to install it with: npm i serverless -g'));
-    console.error(e);
-    terminate();
+    terminateChildren();
+    throw e;
   }
 
   try {
     frontendProc = await spawnFrontend();
+    frontendProc.on('exit', terminateOnExit);
     printRestlessnessData('Running on http://localhost:5000\n');
   } catch (e) {
-    console.error(chalk.red('Error while starting serve. Maybe you forgot to install it with: npm i serve -g'));
-    console.error(e);
-    terminate();
+    terminateChildren();
+    throw e;
   }
 
   try {
     projectProc = await spawnProject(projectName);
+    projectProc.on('exit', terminateOnExit);
   } catch (e) {
-    console.error(chalk.red('Error while starting serverless. Maybe you forgot to install it with: npm i serverless -g'));
-    console.error(e);
-    terminate();
+    terminateChildren();
+    throw e;
   }
 };
