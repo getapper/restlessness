@@ -2,6 +2,7 @@ import minimist from 'minimist';
 import path from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import chalk from 'chalk';
+import { which } from 'shelljs';
 
 const printRestlessnessData = (d, newlineAtStart = false) => {
   const data = d.toString();
@@ -17,8 +18,16 @@ function getProjectName() {
   try {
     return require(path.join(process.cwd(), 'package.json')).name;
   } catch {
-    console.log(chalk.red('Cannot find package.json. Are you on the root folder?'));
-    process.exit(1);
+    throw 'Cannot find package.json. Are you on the root folder?';
+  }
+}
+
+function checkPeerDependencies() {
+  const deps = ['serve', 'serverless'];
+  for (const dep of deps) {
+    if (!which(dep)) {
+      throw `Cannot find ${dep}. Maybe you forgot to install it with: npm i ${dep} -g`;
+    }
   }
 }
 
@@ -95,6 +104,7 @@ function spawnProject(name): Promise<ChildProcess> {
 }
 
 export default async (argv: minimist.ParsedArgs) => {
+  checkPeerDependencies();
   const projectName = getProjectName();
 
   let projectProc;

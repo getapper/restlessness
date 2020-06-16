@@ -29,6 +29,7 @@
     "minimist": "1.2.3",
     "module-alias": "2.2.0",
     "serverless-offline": "5.12.1",
+    "shelljs": "0.8.4",
     "yup": "0.28.3"
   },
   "devDependencies": {
