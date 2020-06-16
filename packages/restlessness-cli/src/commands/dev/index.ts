@@ -2,6 +2,7 @@ import minimist from 'minimist';
 import path from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import chalk from 'chalk';
+import { which } from 'shelljs';
 
 const printRestlessnessData = (d, newlineAtStart = false) => {
   const data = d.toString();
@@ -17,10 +18,26 @@ function getProjectName() {
   try {
     return require(path.join(process.cwd(), 'package.json')).name;
   } catch {
-    console.log(chalk.red('Cannot find package.json. Are you on the root folder?'));
-    process.exit(1);
+    throw 'Cannot find package.json. Are you on the root folder?';
   }
 }
+
+function checkPeerDependencies() {
+  const deps = ['serve', 'serverless'];
+  for (const dep of deps) {
+    if (!which(dep)) {
+      throw `Cannot find ${dep}. Maybe you forgot to install it with: npm i ${dep} -g`;
+    }
+  }
+}
+
+/*
+spawnBackend, spawnFrontend, spawnProject functions spawns the homonym processes.
+The ChildProcess object is returned through a promise, with some callbacks already defined:
+- stdout/err data event: check the output and resolve the promise if the server starts successfully
+- exit event: reject the promise if the process exit with an error code. This event can then be overridden
+- error event: reject the promise if the process cannot be spawned
+*/
 
 function spawnBackend(): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
@@ -57,6 +74,9 @@ function spawnBackend(): Promise<ChildProcess> {
     });
     proc.stderr.on('data', printRestlessnessError);
     proc.on('error', reject);
+    proc.on('exit', code => {
+      reject(`Restlessness backend process exited with status code ${code}`);
+    });
   });
 }
 
@@ -73,6 +93,9 @@ function spawnFrontend(): Promise<ChildProcess> {
     });
     proc.stderr.on('data', printRestlessnessError);
     proc.on('error', reject);
+    proc.on('exit', code => {
+      reject(`Restlessness frontend process exited with status code ${code}`);
+    });
   });
 }
 
@@ -91,24 +114,38 @@ function spawnProject(name): Promise<ChildProcess> {
       process.stderr.write(chalk.red(`${name}: ${d.toString()}`));
     });
     proc.on('error', reject);
+    proc.on('exit', code => {
+      reject(`${name} process exited with status code ${code}`);
+    });
   });
 }
 
 export default async (argv: minimist.ParsedArgs) => {
+  checkPeerDependencies();
   const projectName = getProjectName();
 
   let projectProc;
   let frontendProc;
   let backendProc;
 
-  const terminate = () => {
+  const terminateChildren = () => {
     projectProc?.kill();
     frontendProc?.kill();
     backendProc?.kill();
   };
+
+  /*
+  If any of the processes exit prematurely with an error code all other
+  processes are killed, since the 3 processes are dependents
+  */
+  const terminateOnExit = returnCode => {
+    if (returnCode !== 0) {
+      terminateChildren();
+    }
+  };
   process.on('SIGINT', () => {
     printRestlessnessData('Shutting down...', true);
-    terminate();
+    terminateChildren();
   });
 
   try {
@@ -120,26 +157,26 @@ export default async (argv: minimist.ParsedArgs) => {
         projectProc = await spawnProject(projectName);
       }
     });
+    backendProc.on('exit', terminateOnExit);
   } catch (e) {
-    console.error(chalk.red('Error while starting serverless. Maybe you forgot to install it with: npm i serverless -g'));
-    console.error(e);
-    terminate();
+    terminateChildren();
+    throw e;
   }
 
   try {
     frontendProc = await spawnFrontend();
+    frontendProc.on('exit', terminateOnExit);
     printRestlessnessData('Running on http://localhost:5000\n');
   } catch (e) {
-    console.error(chalk.red('Error while starting serve. Maybe you forgot to install it with: npm i serve -g'));
-    console.error(e);
-    terminate();
+    terminateChildren();
+    throw e;
   }
 
   try {
     projectProc = await spawnProject(projectName);
+    projectProc.on('exit', terminateOnExit);
   } catch (e) {
-    console.error(chalk.red('Error while starting serverless. Maybe you forgot to install it with: npm i serverless -g'));
-    console.error(e);
-    terminate();
+    terminateChildren();
+    throw e;
   }
 };
