@@ -12,22 +12,27 @@ export default LambdaHandler.bind(this, handler, validations);
 const testTemplate = (
   apiName: string,
   authorizer: JsonAuthorizersEntry,
-): string => `import { StatusCodes, apiCall } from '@restlessness/core';
+): string => `import { StatusCodes, TestHandler } from '@restlessness/core';
 ${authorizer ? `import { AuthorizerContext } from '${authorizer.package}';\nimport ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
 const ${apiName} = '${apiName}';
 
-test('', async (done) => {
-  const res = await apiCall${authorizer ? '<AuthorizerContext>' : ''}(${apiName});
-  // expect(res.statusCode).toBe(StatusCodes.OK);
+beforeAll(async done => {
+  await TestHandler.beforeAll();
   done();
 });
 
-/*
+describe('${apiName} API', () => {
+  test('', async (done) => {
+    const res = await TestHandler.invokeLambda${authorizer ? '<AuthorizerContext>' : ''}(${apiName});
+    // expect(res.statusCode).toBe(StatusCodes.OK);
+    done();
+  });
+});
+
 afterAll(async done => {
-  await mongoDao.closeConnection();
+  await TestHandler.afterAll();
   done();
 });
-*/
 `;
 
 const handlerTemplate = (
