@@ -1,4 +1,4 @@
-export * from './request-parser';
+export * from './LambdaHandler';
 export * from './response-handler';
 export * from './environment';
-export * from './testing';
+export * from './TestHandler';

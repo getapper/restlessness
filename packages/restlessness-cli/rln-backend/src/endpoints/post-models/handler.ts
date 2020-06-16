@@ -1,6 +1,5 @@
-require('module-alias/register');
-import res from 'root/services/response-handler';
-import { Dao, Model } from 'root/models';
+import res from '../../services/response-handler';
+import { Dao, Model } from '../../models';
 import { Request } from './interfaces';
 
 export default async (req: Request) => {

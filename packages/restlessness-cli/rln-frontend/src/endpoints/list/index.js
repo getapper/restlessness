@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, TextField } from 'react-admin';
+import { List, Datagrid, TextField, EditButton } from 'react-admin';
 
 const EndpointsList = (props) => (
   <List {...props}>
@@ -8,6 +8,7 @@ const EndpointsList = (props) => (
       <TextField source="route" />
       <TextField source="method" />
       <TextField source="authorizer" />
+      <EditButton />
     </Datagrid>
   </List>
 );

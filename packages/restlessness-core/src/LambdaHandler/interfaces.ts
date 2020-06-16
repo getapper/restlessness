@@ -11,8 +11,16 @@ export interface ValidationResult {
   queryStringParametersErrors?: yup.ValidationError,
   payloadErrors?: yup.ValidationError,
   pathParametersErrors?: yup.ValidationError,
+  message?: string,
 }
 
 export type YupShapeByInterface<T> = {
   [K in keyof T]: any;
+}
+
+export interface RequestI<Q, P, PP> {
+  validationResult: ValidationResult,
+  queryStringParameters: Q,
+  payload: P,
+  pathParameters: PP,
 }

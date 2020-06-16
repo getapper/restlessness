@@ -1,8 +1,13 @@
-import { ValidationObjects, ValidationResult } from './interfaces';
+import { ValidationObjects, ValidationResult, RequestI } from './interfaces';
 
 export * from './interfaces';
 
-export const requestParser = async<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context, validations: ValidationObjects) => {
+export const LambdaHandler = async <T, Q, P, PP>(
+  handler: (req: RequestI<Q, P, PP>) => any,
+  validations: ValidationObjects,
+  event: AWSLambda.APIGatewayProxyEventBase<T>,
+  context: AWSLambda.Context,
+) => {
   let queryStringParameters: any = event.queryStringParameters || {};
   let payload = JSON.parse(event.body || '{}');
   let pathParameters: any = event.pathParameters || {};
@@ -17,6 +22,7 @@ export const requestParser = async<T>(event: AWSLambda.APIGatewayProxyEventBase<
       validationResult.isValid = false;
       validationResult.queryStringParametersErrors = e;
       queryStringParameters = validationResult.queryStringParametersErrors.value;
+      validationResult.message = e.message;
     }
   }
   if (validations.payload) {
@@ -26,6 +32,7 @@ export const requestParser = async<T>(event: AWSLambda.APIGatewayProxyEventBase<
       validationResult.isValid = false;
       validationResult.payloadErrors = e;
       payload = validationResult.payloadErrors.value;
+      validationResult.message = e.message;
     }
   }
   if (validations.pathParameters) {
@@ -35,13 +42,16 @@ export const requestParser = async<T>(event: AWSLambda.APIGatewayProxyEventBase<
       validationResult.isValid = false;
       validationResult.pathParametersErrors = e;
       pathParameters = validationResult.pathParametersErrors.value;
+      validationResult.message = e.message;
     }
   }
 
-  return {
+  // @TODO: Check DAOs and Plugins beforeLambdas hooks
+
+  return await handler({
     validationResult,
     queryStringParameters,
     payload,
     pathParameters,
-  };
+  });
 };

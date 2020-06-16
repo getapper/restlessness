@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const rimraf = require("rimraf");
+const rimraf = require('rimraf');
 
 function copyFileSync( source, target ) {
 
@@ -38,10 +38,10 @@ function copyFolderRecursiveSync( source, target ) {
   }
 }
 
-const backendRoot = path.join(__dirname, '..', 'lib', 'assets', 'backend')
-const frontendRoot = path.join(__dirname, '..', 'lib', 'assets', 'frontend')
-const sourceBackendRoot = path.join(__dirname, '..', 'rln-backend')
-const sourceFrontendRoot = path.join(__dirname, '..', 'rln-frontend')
+const backendRoot = path.join(__dirname, '..', 'lib', 'assets', 'backend');
+const frontendRoot = path.join(__dirname, '..', 'lib', 'assets', 'frontend');
+const sourceBackendRoot = path.join(__dirname, '..', 'rln-backend');
+const sourceFrontendRoot = path.join(__dirname, '..', 'rln-frontend');
 
 const exec = async () => {
   rimraf.sync(backendRoot);
@@ -52,11 +52,10 @@ const exec = async () => {
   if (!fs.existsSync(frontendRoot)){
     fs.mkdirSync(frontendRoot);
   }
-  copyFolderRecursiveSync(path.join(sourceBackendRoot, 'dist'), backendRoot)
-  copyFileSync(path.join(sourceBackendRoot, 'endpoints.json'), backendRoot)
-  copyFileSync(path.join(sourceBackendRoot, 'functions.json'), backendRoot)
-  copyFileSync(path.join(sourceBackendRoot, 'serverless.yml'), backendRoot)
-  copyFolderRecursiveSync(path.join(sourceFrontendRoot, 'build'), frontendRoot)
-}
+  copyFolderRecursiveSync(path.join(sourceBackendRoot, 'dist'), backendRoot);
+  copyFolderRecursiveSync(path.join(sourceBackendRoot, 'configs'), backendRoot);
+  copyFileSync(path.join(sourceBackendRoot, 'serverless.yml'), backendRoot);
+  copyFolderRecursiveSync(path.join(sourceFrontendRoot, 'build'), frontendRoot);
+};
 
-exec().then().catch(console.error)
+exec().then().catch(console.error);

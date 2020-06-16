@@ -1,4 +1,4 @@
-import { BaseModel } from 'root/models';
+import { BaseModel } from '../';
 import { JsonDaos, JsonDaosEntry } from '@restlessness/utilities';
 
 export default class Dao extends BaseModel {

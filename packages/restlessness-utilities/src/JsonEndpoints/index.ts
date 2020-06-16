@@ -65,7 +65,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     const folderPath = path.join(PathResolver.getEndpointsPath, method + '-' + route.folderName);
     await fs.mkdir(folderPath);
     const functionName = method + route.functionName;
-    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(hasPayload, routeVars, jsonAuthorizersEntry));
+    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate());
     await fs.writeFile(path.join(folderPath, 'index.test.ts'), testTemplate(functionName, jsonAuthorizersEntry));
     await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars, jsonAuthorizersEntry));
     await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars, jsonAuthorizersEntry));

@@ -119,6 +119,19 @@
           }
         }
       ]
+    },
+    "getEndpointsById": {
+      "handler": "dist/exporter.getEndpointsById",
+      "events": [
+        {
+          "http": {
+            "path": "endpoints/{id}",
+            "method": "get",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ]
     }
   }
 }

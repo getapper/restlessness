@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/core",
-  "version": "0.0.16",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -17,7 +17,11 @@
     "yup": "^0.28.3"
   },
   "scripts": {
+    "tsc": "rimraf dist && tsc -p tsconfig.json",
     "prepublishOnly": "rimraf ./dist && tsc",
     "npm:tag": "node ../../scripts/git-packages-tagger.js"
+  },
+  "dependencies": {
+    "dotenv": "8.2.0"
   }
 }

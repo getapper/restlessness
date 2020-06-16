@@ -1,7 +1,6 @@
-import 'module-alias/register';
 import { res, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
-import { Plugin } from 'root/models';
+import { Plugin } from '../../models';
 
 export default async (req: Request) => {
   try {

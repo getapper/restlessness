@@ -1,50 +1,45 @@
 import { JsonAuthorizersEntry } from '../../JsonAuthorizers';
 import Route from '../../Route';
 
-const indexTemplate = (
-  hasPayload: boolean,
-  vars: string[],
-  authorizer: JsonAuthorizersEntry,
-): string => `import 'module-alias/register';
+const indexTemplate = () => `import 'module-alias/register';
+import { LambdaHandler } from '@restlessness/core';
 import handler from './handler';
-import { requestParser } from '@restlessness/core';
 import validations from './validations';
-${authorizer ? `import { AuthorizerContext, sessionParser } from '${authorizer.package}';\nimport ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
-export default async (event: AWSLambda.APIGatewayProxyEventBase<${authorizer ? 'AuthorizerContext' : 'null'}>, context: AWSLambda.Context) => {
-  const {
-    validationResult,
-    queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}
-  } = await requestParser<${authorizer ? 'AuthorizerContext' : 'null'}>(event, context, validations);
-${authorizer ? `  const session: ${authorizer.sessionModelName} = await sessionParser<${authorizer.sessionModelName}>(${authorizer.sessionModelName}, event, context);\n` : ''}
-  return await handler({
-    validationResult,
-    queryStringParameters,${hasPayload ? '\n    payload,' : ''}${vars.length ? '\n    pathParameters,' : ''}${authorizer ? '\n    session,' : ''}
-  });
-};
-`;
+
+export default LambdaHandler.bind(this, handler, validations);
+`
 
 const testTemplate = (
   apiName: string,
   authorizer: JsonAuthorizersEntry,
-): string => `import { StatusCodes, apiCall } from '@restlessness/core';
+): string => `import { StatusCodes, TestHandler } from '@restlessness/core';
 ${authorizer ? `import { AuthorizerContext } from '${authorizer.package}';\nimport ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
 const ${apiName} = '${apiName}';
 
-test('', async (done) => {
-  const res = await apiCall${authorizer ? '<AuthorizerContext>' : ''}(${apiName});
-  // expect(res.statusCode).toBe(StatusCodes.OK);
+beforeAll(async done => {
+  await TestHandler.beforeAll();
   done();
 });
 
-/*
+describe('${apiName} API', () => {
+  test('', async (done) => {
+    const res = await TestHandler.invokeLambda${authorizer ? '<AuthorizerContext>' : ''}(${apiName});
+    // expect(res.statusCode).toBe(StatusCodes.OK);
+    done();
+  });
+});
+
 afterAll(async done => {
-  await mongoDao.closeConnection();
+  await TestHandler.afterAll();
   done();
 });
-*/
 `;
 
-const handlerTemplate = (hasPayload: boolean, vars: string[], authorizer: JsonAuthorizersEntry): string => `import 'module-alias/register';
+const handlerTemplate = (
+  hasPayload: boolean,
+  vars: string[],
+  authorizer: JsonAuthorizersEntry
+): string => `import 'module-alias/register';
 import { res, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 
@@ -54,20 +49,23 @@ export default async (req: Request) => {
       validationResult,
 ${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n' : ''}${authorizer ? '      session,\n' : ''}    } = req;
 
-    /*
     if (!validationResult.isValid) {
       return res({ message: validationResult.message }, StatusCodes.BadRequest);
     }
-    */
     
     return res({});
   } catch (e) {
+    console.error(e);
     return res({}, StatusCodes.InternalServerError);
   }
 };
 `;
 
-const interfacesTemplate = (hasPayload: boolean, vars: string[], authorizer: JsonAuthorizersEntry): string => `import { ValidationResult } from '@restlessness/core';
+const interfacesTemplate = (
+  hasPayload: boolean,
+  vars: string[],
+  authorizer: JsonAuthorizersEntry
+): string => `import { RequestI } from '@restlessness/core';
 ${authorizer ? `import ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
 export interface QueryStringParameters {}${hasPayload
   ? '\n\nexport interface Payload {}' : ''}${vars.length ? `\n\nexport interface PathParameters {
@@ -75,10 +73,7 @@ ${vars.map(v => `  ${v}: string,`).join('\n')}
 }`
   : ''}
 
-export interface Request {
-  validationResult: ValidationResult,
-  queryStringParameters: QueryStringParameters,${hasPayload ? '\n  payload: Payload,' : ''}${vars.length ? '\n  pathParameters: PathParameters,' : ''}${authorizer ? `\n  session: ${authorizer.sessionModelName},` : ''}
-}
+export interface Request extends RequestI<QueryStringParameters, ${hasPayload ? 'Payload' : 'null'}, ${vars.length ? 'PathParameters' : 'null'}> {${authorizer ? `\n  session: ${authorizer.sessionModelName},\n` : ''}};
 `;
 
 const validationsTemplate = (hasPayload: boolean, vars: string[]): string => `import * as yup from 'yup';

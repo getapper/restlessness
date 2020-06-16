@@ -29,7 +29,7 @@ describe('JsonEnvs model', () => {
     const envIds = envs.map(env => env.id);
     expect(envIds.includes('locale')).toBe(true);
     expect(envIds.includes('test')).toBe(true);
-    expect(envIds.includes('stage')).toBe(true);
+    expect(envIds.includes('staging')).toBe(true);
     expect(envIds.includes('production')).toBe(true);
     expect((await fs.readdir(PathResolver.getEnvsPath)).length).toBe(4);
     done();

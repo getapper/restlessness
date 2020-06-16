@@ -1,4 +1,4 @@
-import { Authorizer, BaseModel, Route } from 'root/models';
+import { Authorizer, BaseModel, Route } from '../';
 import { JsonEndpoints, JsonEndpointsEntry, HttpMethod } from '@restlessness/utilities';
 
 export default class Endpoint extends BaseModel {
