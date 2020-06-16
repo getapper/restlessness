@@ -16,4 +16,4 @@ jobs:
 workflows:
     rln-utilities:
       jobs:
-        - rln-utilities-deps
+        - rln-utilities-deps-and-tests
