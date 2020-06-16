@@ -46,6 +46,30 @@ export default class Openapi {
           properties: {},
         };
         Openapi.getPropertiesRequestBody(fields[fieldKey].fields, allKeys[fieldKey].properties);
+      } else if (fields[fieldKey]._type === 'array') {
+        allKeys[fieldKey] = {
+          type: 'array',
+          items: {},
+        };
+        if (fields[fieldKey]._subType._type === 'object') {
+          allKeys[fieldKey].items = {
+              type: 'object',
+              properties: {},
+            };
+          Openapi.getPropertiesRequestBody(fields[fieldKey]._subType.fields, allKeys[fieldKey].items.properties);
+        } else {
+          let type = fields[fieldKey]._subType._type;
+          if (fields[fieldKey]._subType._type === 'number') {
+            if (fields[fieldKey]._exclusive.integer !== 'undefined') {
+              type = 'integer';
+            } else {
+              type = 'number';
+            }
+          }
+          allKeys[fieldKey].items = {
+            type: type,
+          };
+        }
       } else {
         let type = fields[fieldKey]._type;
         if (fields[fieldKey]._type === 'number') {
