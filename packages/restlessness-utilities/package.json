@@ -1,14 +1,14 @@
 {
   "name": "@restlessness/utilities",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "13.7.1",
-    "@typescript-eslint/parser": "^2.1.0",
-    "eslint": "6.3.0",
+    "@typescript-eslint/parser": "2.25.0",
+    "eslint": "6.8.0",
     "typescript": "3.7.5"
   },
   "repository": {

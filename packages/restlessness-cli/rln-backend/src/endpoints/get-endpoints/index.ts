@@ -1,9 +1,11 @@
 require('module-alias/register');
 import handler from './handler';
+import validations from './validations';
+import { requestParser } from '@restlessness/core';
 
 export default async (event, context) => {
-  // @TODO: Add lib request parser
-  // @TODO: Add payload Joi validator
-  const payload = JSON.parse(event.body);
+  const {
+    payload,
+  } = await requestParser(event, context, validations);
   return await handler({ payload });
 };
