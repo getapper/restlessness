@@ -19,7 +19,7 @@ const generatePackageJson = (name: string) => `{
   "version": "0.0.0",
   "scripts": {
     "DEV:locale": "restlessness dev locale",
-    "DEPLOY:staging": "npm run tsc && restlessness create-env beta && serverless deploy --stage dev --verbose",
+    "DEPLOY:staging": "npm run tsc && restlessness create-env staging && serverless deploy --stage dev --verbose",
     "REMOVE:staging": "serverless remove --stage dev",
     "DEPLOY:production": "npm run tsc && restlessness create-env production && serverless deploy --stage deploy --verbose",
     "REMOVE:production": "serverless remove --stage production",

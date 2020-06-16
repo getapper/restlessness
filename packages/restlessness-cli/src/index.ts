@@ -12,6 +12,8 @@ const cli = async () => {
     throw new Error('Restlessness cli requires node version >= 12.x');
   }
 
+  process.env['RLN_PROJECT_PATH'] = process.env['RLN_PROJECT_PATH'] || process.cwd();
+
   const argv = minimist(process.argv.slice(2));
   switch(argv._[0]) {
     case 'new':

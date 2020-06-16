@@ -1,4 +1,5 @@
 import path from 'path';
+import { JsonServerless, PathResolver } from '@restlessness/utilities';
 import { Response } from '../response-handler';
 import { APIGatewayEventRequestContextWithAuthorizer, ClientContext, CognitoIdentity } from 'aws-lambda';
 
@@ -64,14 +65,13 @@ export class TestHandler {
     event?: TestAPIGatewayProxyEventBase<TAuthorizerContext>,
     context?: TestContext,
   ): Promise<Response> {
-    const exporter = require(path.join(process.cwd(), 'dist', 'exporter.js'));
+    const exporter = require(path.join(PathResolver.getDistPath, 'exporter.js'));
     const lambda: Lambda<TAuthorizerContext> = exporter[apiName];
     if (typeof lambda !== 'function') {
       throw new Error(`Wrong api name: ${apiName}. Supported api names: ${Object.keys(exporter)}`);
     }
 
-    const jsonFunctions = require(path.join(process.cwd(), 'functions.json'));
-    const endpoint: EndPoint = jsonFunctions.functions[apiName];
+    const endpoint = await JsonServerless.getEndpoint(apiName);
 
     let requestContext: APIGatewayEventRequestContextWithAuthorizer<TAuthorizerContext> = null;
     if (authorizer) {

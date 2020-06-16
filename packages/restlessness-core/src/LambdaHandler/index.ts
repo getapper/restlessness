@@ -1,5 +1,5 @@
 import { ValidationObjects, ValidationResult, RequestI } from './interfaces';
-
+import AWSLambda from 'aws-lambda';
 export * from './interfaces';
 
 export const LambdaHandler = async <T, Q, P, PP>(
