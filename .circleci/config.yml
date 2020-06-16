@@ -1,17 +1,15 @@
 version: 2.1
-orbs:
-  node: circleci/node@1.1.6
+
 jobs:
-  build-and-test:
-    executor:
-      name: node/default
+  rln-utilities-deps:
+    docker:
+      - image: circleci/ruby:2.4-node
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm test
+      - run:
+          command: npm i
+          working_directory: packages/restlessness-utilities
 workflows:
-    build-and-test:
+    rln-utilities:
       jobs:
-        - build-and-test
+        - rln-utilities-deps
