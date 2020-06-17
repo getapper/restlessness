@@ -1,53 +1,53 @@
 [
   {
-    "id": 1,
+    "id": "postEndpoints",
     "route": "/endpoints",
     "method": "post"
   },
   {
-    "id": 2,
+    "id": "getEndpoints",
     "route": "/endpoints",
     "method": "get"
   },
   {
-    "id": 3,
+    "id": "postModels",
     "route": "/models",
     "method": "post"
   },
   {
-    "id": 4,
+    "id": "getModels",
     "route": "/models",
     "method": "get"
   },
   {
-    "id": 5,
+    "id": "getDaos",
     "route": "/daos",
     "method": "get"
   },
   {
-    "id": 6,
+    "id": "getEnvs",
     "route": "/envs",
     "method": "get"
   },
   {
-    "id": 7,
+    "id": "postEnvs",
     "route": "/envs",
     "method": "post"
   },
   {
-    "id": 8,
+    "id": "getOpenapi",
     "route": "/openapi",
     "method": "get"
   },
   {
     "route": "/plugins",
     "method": "get",
-    "id": 9
+    "id": "getPlugins"
   },
   {
     "route": "/authorizers",
     "method": "get",
-    "id": 10
+    "id": "getAuthorizers"
   },
   {
     "id": "getEndpointsById",
