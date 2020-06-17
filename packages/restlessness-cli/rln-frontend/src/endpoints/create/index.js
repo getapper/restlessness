@@ -1,5 +1,7 @@
-import React from 'react';
-import { Create, SimpleForm, TextInput, SelectInput, ReferenceInput } from 'react-admin';
+import React from 'react'
+import {
+  CheckboxGroupInput, Create, ReferenceArrayInput, ReferenceInput, SelectInput, SimpleForm, TextInput
+} from 'react-admin'
 
 const EndpointsCreate = (props) => (
   <Create {...props}>
@@ -15,6 +17,9 @@ const EndpointsCreate = (props) => (
       <ReferenceInput label="Authorizer" source="authorizerId" reference="authorizers">
         <SelectInput />
       </ReferenceInput>
+      <ReferenceArrayInput label="Daos" source="daoIds" reference="daos">
+        <CheckboxGroupInput />
+      </ReferenceArrayInput>
     </SimpleForm>
   </Create>
 );
