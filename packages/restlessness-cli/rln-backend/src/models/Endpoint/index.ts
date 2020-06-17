@@ -3,6 +3,7 @@ import { JsonEndpoints, JsonEndpointsEntry, HttpMethod } from '@restlessness/uti
 
 export default class Endpoint extends BaseModel {
   id: string
+  safeFunctionName: string
   route: Route
   method: HttpMethod
   authorizer: Authorizer
@@ -14,6 +15,7 @@ export default class Endpoint extends BaseModel {
 
   protected async fromConfigEntry(entry: JsonEndpointsEntry): Promise<void> {
       this.id = entry.id;
+      this.safeFunctionName = entry.safeFunctionName;
       this.route = Route.parseFromText(entry.route);
       this.method = entry.method;
       this.authorizer = await Authorizer.getById(entry.authorizerId);
@@ -24,6 +26,7 @@ export default class Endpoint extends BaseModel {
   protected async toConfigEntry(): Promise<JsonEndpointsEntry> {
     return {
       id: this.id,
+      safeFunctionName: this.safeFunctionName,
       route: this.route.endpointRoute,
       method: this.method,
       authorizerId: this.authorizer?.id,

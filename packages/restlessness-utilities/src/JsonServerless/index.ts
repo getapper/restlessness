@@ -22,6 +22,7 @@ export interface FunctionEndpoint {
 }
 
 class JsonServerless {
+  service: string
   functions: Functions
 
   get jsonPath(): string {
@@ -38,7 +39,7 @@ class JsonServerless {
   }
 
   async addEndpoint(
-    functionName: string,
+    safeFunctionName: string,
     functionPath: string,
     method: HttpMethod,
     authorizerId?: string,
@@ -46,7 +47,7 @@ class JsonServerless {
     await this.read();
 
     const functionEndpoint: FunctionEndpoint = {
-      handler: `dist/exporter.${functionName}`,
+      handler: `dist/exporter.${safeFunctionName}`,
       events: [
         {
           http: {
@@ -66,7 +67,7 @@ class JsonServerless {
         };
       }
     }
-    this.functions[functionName] = functionEndpoint;
+    this.functions[safeFunctionName] = functionEndpoint;
     await this.save();
   }
 

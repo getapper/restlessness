@@ -35,15 +35,24 @@ describe('JsonEndpoints model', () => {
     expect(endpoints?.length).toBe(1);
     expect((await fs.lstat(path.join(PathResolver.getEndpointsPath, 'get-tests'))).isDirectory()).toBe(true);
     expect((await fs.lstat(path.join(PathResolver.getEndpointsPath, 'get-tests', 'index.ts'))).isFile()).toBe(true);
+    const jsonEndpointEntry = await JsonEndpoints.getEntryById('getTests');
+    expect(jsonEndpointEntry.id).toBe(jsonEndpointEntry.safeFunctionName);
+    done();
+  });
+
+  test('it should create a new long endpoint',  async (done) => {
+    await JsonEndpoints.create('/really/long/api/with/a/lot/of/params/that/triggers/aws/checks/and/fails', HttpMethod.GET);
+    const jsonEndpointEntry = await JsonEndpoints.getEntryById('getReallyLongApiWithALotOfParamsThatTriggersAwsChecksAndFails');
+    expect(jsonEndpointEntry.id).not.toBe(jsonEndpointEntry.safeFunctionName);
     done();
   });
 
   test('it should removed an endpoint',  async (done) => {
     await JsonEndpoints.read();
-    expect(JsonEndpoints.entries.length).toBe(1);
+    expect(JsonEndpoints.entries.length).toBe(2);
     await JsonEndpoints.removeEntryById('getTests');
     await JsonEndpoints.read();
-    expect(JsonEndpoints.entries.length).toBe(0);
+    expect(JsonEndpoints.entries.length).toBe(1);
     done();
   });
 });

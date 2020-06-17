@@ -1,5 +1,6 @@
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import PathResolver from '../PathResolver';
 import {
   handlerTemplate,
@@ -27,6 +28,7 @@ export enum HttpMethod {
 
 export interface JsonEndpointsEntry extends JsonConfigEntry {
   route: string
+  safeFunctionName: string
   method: HttpMethod
   authorizerId?: string
   daoIds?: string[]
@@ -39,8 +41,24 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
 
   async create(routePath: string, method: HttpMethod, authorizerId?: string, daos?: JsonDaosEntry[]): Promise<JsonEndpointsEntry> {
     const route = Route.parseFromText(routePath);
+
+    const id = method + route.functionName;
+
+    /**
+     * The 4 xxxx stand for "dev" or "prod", based on which stage deployment will be selected
+     * We use 4 x for worst case scenario, that is "prod", since we need to check this string length
+     * and to avoid it will reach 64 chars, since AWS complains about that
+     */
+    const awsLambdaName: string = `${id}LambdaFunction`;
+    let safeFunctionName: string = id;
+    if (awsLambdaName.length > 63) {
+      const hash = crypto.createHash('md5').update(id).digest('hex');
+      safeFunctionName = `${id.substring(0, 21)}${hash.substring(0, 3)}${id.substring(id.length - 21)}`;
+    }
+
     const jsonEndpointsEntry: JsonEndpointsEntry = {
       id: method + route.functionName,
+      safeFunctionName,
       route: routePath,
       method: method,
       authorizerId: null,
@@ -77,9 +95,8 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     const hasPayload = [HttpMethod.PATCH, HttpMethod.POST, HttpMethod.PUT].includes(method);
     const folderPath = path.join(PathResolver.getEndpointsPath, method + '-' + route.folderName);
     await fs.mkdir(folderPath);
-    const functionName = method + route.functionName;
-    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(jsonEndpointsEntry.id));
-    await fs.writeFile(path.join(folderPath, 'index.test.ts'), testTemplate(functionName, jsonAuthorizersEntry));
+    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(jsonEndpointsEntry));
+    await fs.writeFile(path.join(folderPath, 'index.test.ts'), testTemplate(jsonEndpointsEntry, jsonAuthorizersEntry));
     await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars, jsonAuthorizersEntry));
     await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars, jsonAuthorizersEntry));
     await fs.writeFile(path.join(folderPath, 'validations.ts'), validationsTemplate(hasPayload, routeVars));
@@ -89,7 +106,12 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
 
     // Add e new function handler in serverless.json read by serverless.yml
     // It also adds the authorizer handler, if it doesn't exist yet
-    await JsonServerless.addEndpoint(functionName, route.functionPath, method, authorizerId);
+    await JsonServerless.addEndpoint(
+      jsonEndpointsEntry.safeFunctionName,
+      route.functionPath,
+      method,
+      authorizerId,
+    );
     return jsonEndpointsEntry;
   }
 
@@ -117,7 +139,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     await this.read();
     const routes: Route[] = this.entries.sort().map(je => Route.parseFromText(je.route));
     const methods: string[] = this.entries.map(je => je.method);
-    await fs.writeFile(path.join(PathResolver.getSrcPath, 'exporter.ts'), exporterTemplate(methods, routes));
+    await fs.writeFile(path.join(PathResolver.getSrcPath, 'exporter.ts'), exporterTemplate(this.entries, methods, routes));
   }
 }
 
