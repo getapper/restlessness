@@ -54,5 +54,11 @@
     "route": "/endpoints/{id}",
     "method": "get",
     "authorizerId": null
+  },
+  {
+    "id": "deleteEndpointsById",
+    "route": "/endpoints/{id}",
+    "method": "delete",
+    "authorizerId": null
   }
 ]

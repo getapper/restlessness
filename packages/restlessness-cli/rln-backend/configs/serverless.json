@@ -132,6 +132,19 @@
           }
         }
       ]
+    },
+    "deleteEndpointsById": {
+      "handler": "dist/exporter.deleteEndpointsById",
+      "events": [
+        {
+          "http": {
+            "path": "endpoints/{id}",
+            "method": "delete",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ]
     }
   }
 }
