@@ -10,6 +10,7 @@ import getOpenapi from './endpoints/get-openapi';
 import getPlugins from './endpoints/get-plugins';
 import getAuthorizers from './endpoints/get-authorizers';
 import getEndpointsById from './endpoints/get-endpoints-by-id';
+import deleteEndpointsById from './endpoints/delete-endpoints-by-id';
 
 export {
   postEndpoints,
@@ -23,5 +24,6 @@ export {
   getPlugins,
   getAuthorizers,
   getEndpointsById,
+  deleteEndpointsById,
 };
 
