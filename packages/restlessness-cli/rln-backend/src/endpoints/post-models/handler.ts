@@ -17,7 +17,7 @@ export default async (req: Request) => {
     if (!daoId || daoId === 'null') {
       dao = null;
     } else {
-      const dao = await Dao.getById(daoId);
+      dao = await Dao.getById(daoId);
       if (!dao) {
         return res({ message: 'Dao not found' }, 404);
       }
