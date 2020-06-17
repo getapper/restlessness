@@ -3,4 +3,4 @@ import { LambdaHandler } from '@restlessness/core';
 import handler from './handler';
 import validations from './validations';
 
-export default LambdaHandler.bind(this, handler, validations);
+export default LambdaHandler.bind(this, handler, validations, 'getEndpoints');

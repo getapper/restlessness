@@ -1,4 +1,4 @@
-import { Authorizer, BaseModel, Route } from '../';
+import { Authorizer, BaseModel, Route, Dao } from '../';
 import { JsonEndpoints, JsonEndpointsEntry, HttpMethod } from '@restlessness/utilities';
 
 export default class Endpoint extends BaseModel {
@@ -6,6 +6,7 @@ export default class Endpoint extends BaseModel {
   route: Route
   method: HttpMethod
   authorizer: Authorizer
+  daos: Dao[]
 
   static get model() {
     return JsonEndpoints;
@@ -16,6 +17,8 @@ export default class Endpoint extends BaseModel {
       this.route = Route.parseFromText(entry.route);
       this.method = entry.method;
       this.authorizer = await Authorizer.getById(entry.authorizerId);
+      const daos = entry.daoIds?.map(id => Dao.getById(id));
+      this.daos = daos ? await Promise.all(daos) : [];
   }
 
   protected async toConfigEntry(): Promise<JsonEndpointsEntry> {
@@ -24,6 +27,7 @@ export default class Endpoint extends BaseModel {
       route: this.route.endpointRoute,
       method: this.method,
       authorizerId: this.authorizer?.id,
+      daoIds: this.daos.map(dao => dao.id),
     };
   }
 
