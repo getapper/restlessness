@@ -71,15 +71,15 @@ class JsonServerless {
     await this.save();
   }
 
-  async getEndpoint(functionName: string): Promise<FunctionEndpoint> {
+  async getEndpoint(safeFunctionName: string): Promise<FunctionEndpoint> {
     await this.read();
-    const functionEndpoint: FunctionEndpoint = this.functions[functionName];
+    const functionEndpoint: FunctionEndpoint = this.functions[safeFunctionName];
     return functionEndpoint;
   }
 
-  async removeEndpoint(functionName: string): Promise<void> {
+  async removeEndpoint(safeFunctionName: string): Promise<void> {
     await this.read();
-    _unset(this, `functions.${functionName}`);
+    _unset(this, `functions.${safeFunctionName}`);
     await this.save();
   }
 }

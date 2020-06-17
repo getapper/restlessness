@@ -31,7 +31,7 @@ export default class EnvFile {
   private static async write(filePath: string, env: { [key: string]: string }) {
     let output = '';
     for (let key in env) {
-      output += `${key}='${env[key]}'\n`;
+      output += `${key}=${env[key]}\n`;
     }
     await fs.writeFile(filePath, output);
   }

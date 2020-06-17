@@ -134,11 +134,11 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     const folderPath = path.join(PathResolver.getEndpointsPath, jsonEndpointsEntry.method + '-' + route.folderName);
     await promisify(rimraf)(folderPath);
 
-    // Re-generate exporter file with considering the new endpoint
+    // Re-generate exporter file after removing the endpoint
     await this.generateExporter();
 
     // Renove function handler in serverless.json read by serverless.yml
-    await JsonServerless.removeEndpoint(id);
+    await JsonServerless.removeEndpoint(jsonEndpointsEntry.safeFunctionName);
   }
 
   private async generateExporter(): Promise<void> {
