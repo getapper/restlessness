@@ -37,12 +37,7 @@ class MongoDao {
       this.checkConnection();
       return this.mongoClient;
     } catch (e) {
-      const config = require(path.join(process.cwd(), 'env.json'));
-      const uri = config?.mongo?.uri ?? null;
-      if (uri === null) {
-        throw new Error('No mongo configuration found in env.json');
-      }
-      this.mongoClient = await MongoClient.connect(config.mongo.uri);
+      this.mongoClient = await MongoClient.connect(process.env['RLN_MONGO_DAO_URI']);
       this.db = this.mongoClient.db();
     }
   }

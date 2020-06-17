@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/cli",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -9,7 +9,9 @@
     "build": "npm run tsc && npm run build-backend && npm run build-frontend && node scripts/copy-files.js",
     "tsc": "rimraf dist && tsc -p tsconfig.json",
     "prepublishOnly": "npm run build",
-    "npm:tag": "node ../../scripts/git-packages-tagger.js"
+    "npm:tag": "node ../../scripts/git-packages-tagger.js",
+    "update-deps": "npm i @restlessness/utilities@latest -S -E && npm i @restlessness/core@latest -S -E && npm run update-backend-deps",
+    "update-backend-deps": "cd rln-backend && npm run update-deps"
   },
   "bin": {
     "restlessness": "./dist/index.js"
@@ -24,8 +26,8 @@
   "author": "Getapper",
   "license": "ISC",
   "dependencies": {
-    "@restlessness/core": "0.1.1",
-    "@restlessness/utilities": "0.1.3",
+    "@restlessness/core": "0.1.3",
+    "@restlessness/utilities": "0.1.5",
     "chalk": "3.0.0",
     "minimist": "1.2.3",
     "module-alias": "2.2.0",

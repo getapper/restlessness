@@ -3,11 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "dev:server": "npm run tsc && serverless offline --port 4123",
-    "tsc": "tsc -p tsconfig.json"
+    "tsc": "tsc -p tsconfig.json",
+    "update-deps": "npm i @restlessness/utilities@latest -S -E && npm i @restlessness/core@latest -S -E"
   },
   "dependencies": {
-    "@restlessness/core": "0.1.1",
-    "@restlessness/utilities": "0.1.3",
+    "@restlessness/core": "0.1.3",
+    "@restlessness/utilities": "0.1.5",
     "jest": "26.0.1",
     "module-alias": "2.2.2",
     "yup": "0.28.3"
