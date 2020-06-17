@@ -49,11 +49,17 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
      * We use 4 x for worst case scenario, that is "prod", since we need to check this string length
      * and to avoid it will reach 64 chars, since AWS complains about that
      */
-    const awsLambdaName: string = `${id}LambdaFunction`;
     let safeFunctionName: string = id;
+    const awsLambdaName: string = `${id}LambdaFunction`;
     if (awsLambdaName.length > 63) {
       const hash = crypto.createHash('md5').update(id).digest('hex');
       safeFunctionName = `${id.substring(0, 21)}${hash.substring(0, 3)}${id.substring(id.length - 21)}`;
+    }
+    const awsFunctionName: string = `${JsonServerless.service}-xxxx-${id}`;
+    if (awsFunctionName.length > 63) {
+      const hash = crypto.createHash('md5').update(id).digest('hex');
+      const chars = Math.floor((64 - `${JsonServerless.service}-xxxx-`.length - 10) / 2);
+      safeFunctionName = `${id.substring(0, chars)}${hash.substring(0, 3)}${id.substring(id.length - chars)}`;
     }
 
     const jsonEndpointsEntry: JsonEndpointsEntry = {
