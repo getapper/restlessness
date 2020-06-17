@@ -1,3 +1,4 @@
+import EnvironmentHandler from '../EnvironmentHandler';
 import { ValidationObjects, ValidationResult, RequestI } from './interfaces';
 import { JsonEndpoints, DaoPackage, JsonDaos, JsonDaosEntry } from '@restlessness/utilities';
 import AWSLambda from 'aws-lambda';
@@ -11,6 +12,8 @@ export const LambdaHandler = async <T, Q, P, PP>(
   event: AWSLambda.APIGatewayProxyEventBase<T>,
   context: AWSLambda.Context,
 ) => {
+  EnvironmentHandler.load();
+
   let queryStringParameters: any = event.queryStringParameters || {};
   let payload = JSON.parse(event.body || '{}');
   let pathParameters: any = event.pathParameters || {};
