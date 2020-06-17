@@ -8,13 +8,14 @@ import {
   exporterTemplate,
   validationsTemplate,
   testTemplate,
-} from './/templates';
+} from './templates';
 import Route from '../Route';
 import JsonAuthorizers from '../JsonAuthorizers';
 import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
 import JsonServerless, { FunctionEndpoint } from '../JsonServerless';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
+import JsonDaos, { JsonDaosEntry } from '../JsonDaos';
 
 export enum HttpMethod {
   GET = 'get',
@@ -28,6 +29,7 @@ export interface JsonEndpointsEntry extends JsonConfigEntry {
   route: string
   method: HttpMethod
   authorizerId?: string
+  daoIds?: string[]
 }
 
 class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
@@ -35,13 +37,14 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     return PathResolver.getEndpointsConfigPath;
   }
 
-  async create(routePath: string, method: HttpMethod, authorizerId?: string): Promise<JsonEndpointsEntry> {
+  async create(routePath: string, method: HttpMethod, authorizerId?: string, daos?: JsonDaosEntry[]): Promise<JsonEndpointsEntry> {
     const route = Route.parseFromText(routePath);
     const jsonEndpointsEntry: JsonEndpointsEntry = {
       id: method + route.functionName,
       route: routePath,
       method: method,
       authorizerId: null,
+      daoIds: null,
     };
     const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
     if (authorizerId) {
@@ -51,6 +54,16 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       jsonEndpointsEntry.authorizerId = authorizerId;
     }
     await this.addEntry(jsonEndpointsEntry);
+
+    if (daos?.length) {
+      jsonEndpointsEntry.daoIds = [];
+      for (const dao of daos) {
+        if(!await JsonDaos.getEntryById(dao.id)) {
+          throw new Error(`Dao with id ${dao.id} not found`);
+        }
+        jsonEndpointsEntry.daoIds.push(dao.id);
+      }
+    }
 
     /**
      * SIDE EFFECTS
@@ -65,7 +78,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     const folderPath = path.join(PathResolver.getEndpointsPath, method + '-' + route.folderName);
     await fs.mkdir(folderPath);
     const functionName = method + route.functionName;
-    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate());
+    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(jsonEndpointsEntry.id));
     await fs.writeFile(path.join(folderPath, 'index.test.ts'), testTemplate(functionName, jsonAuthorizersEntry));
     await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars, jsonAuthorizersEntry));
     await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars, jsonAuthorizersEntry));

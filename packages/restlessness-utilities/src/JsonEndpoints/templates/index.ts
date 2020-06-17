@@ -1,13 +1,13 @@
 import { JsonAuthorizersEntry } from '../../JsonAuthorizers';
 import Route from '../../Route';
 
-const indexTemplate = () => `import 'module-alias/register';
+const indexTemplate = (apiName: string) => `import 'module-alias/register';
 import { LambdaHandler } from '@restlessness/core';
 import handler from './handler';
 import validations from './validations';
 
-export default LambdaHandler.bind(this, handler, validations);
-`
+export default LambdaHandler.bind(this, handler, validations, '${apiName}');
+`;
 
 const testTemplate = (
   apiName: string,
