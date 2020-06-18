@@ -34,8 +34,8 @@ export default class Endpoint extends BaseModel {
     };
   }
 
-  async create(route: Route, method: HttpMethod, authorizerId?: string) {
-    const entry = await JsonEndpoints.create(route.endpointRoute, method, authorizerId);
+  async create(route: Route, method: HttpMethod, authorizerId?: string, daoIds?: string[]) {
+    const entry = await JsonEndpoints.create(route.endpointRoute, method, authorizerId, daoIds);
     await this.fromConfigEntry(entry);
   }
 }
