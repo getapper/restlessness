@@ -1,9 +1,27 @@
 import MongoBase from './base-model';
 import mongoDao from './dao';
 import { ObjectId } from 'mongodb';
+import * as yup from 'yup';
 import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/utilities';
 
 import { modelTemplate } from './templates';
+
+class ObjectIdSchema extends yup.mixed {
+  constructor() {
+    super({ type: 'objectId' });
+
+    // @ts-ignore
+    this.withMutation(schema => {
+      schema.transform(function(value) {
+        return new ObjectId(value);
+      });
+    });
+  }
+
+  _typeCheck(value) {
+    return ObjectId.isValid(value);
+  }
+}
 
 class MongoDaoPackage extends DaoPackage {
   async postInstall(): Promise<void> {
@@ -26,6 +44,9 @@ class MongoDaoPackage extends DaoPackage {
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
     await mongoDao.openConnection(context);
+    if (!yup.objectId) {
+      yup.objectId = () => new ObjectIdSchema();
+    }
   }
 
   modelTemplate(modelName: string): string {
