@@ -39,7 +39,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     return PathResolver.getEndpointsConfigPath;
   }
 
-  async create(routePath: string, method: HttpMethod, authorizerId?: string, daos?: JsonDaosEntry[]): Promise<JsonEndpointsEntry> {
+  async create(routePath: string, method: HttpMethod, authorizerId?: string, daoIds?: string[]): Promise<JsonEndpointsEntry> {
     const route = Route.parseFromText(routePath);
 
     const id = method + route.functionName;
@@ -77,17 +77,17 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       }
       jsonEndpointsEntry.authorizerId = authorizerId;
     }
-    await this.addEntry(jsonEndpointsEntry);
 
-    if (daos?.length) {
-      jsonEndpointsEntry.daoIds = [];
-      for (const dao of daos) {
-        if(!await JsonDaos.getEntryById(dao.id)) {
-          throw new Error(`Dao with id ${dao.id} not found`);
+    if (daoIds?.length) {
+      for (const id of daoIds) {
+        if (!await JsonDaos.getEntryById(id)) {
+          throw new Error(`Dao with id ${id} not found`);
         }
-        jsonEndpointsEntry.daoIds.push(dao.id);
       }
+      jsonEndpointsEntry.daoIds = [...daoIds];
     }
+
+    await this.addEntry(jsonEndpointsEntry);
 
     /**
      * SIDE EFFECTS
