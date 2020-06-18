@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/dao-mongo",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -11,7 +11,11 @@
     "eslint": "6.8.0",
     "jest": "26.0.1",
     "rimraf": "3.0.2",
-    "typescript": "3.8.3"
+    "typescript": "3.8.3",
+    "yup": "0.29.1"
+  },
+  "peerDependencies": {
+    "yup": "^0.28.3"
   },
   "dependencies": {
     "@restlessness/utilities": "0.1.5",
