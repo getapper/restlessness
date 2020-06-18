@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/cli",
-  "version": "0.1.10",
+  "version": "0.1.12",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -27,7 +27,7 @@
   "license": "ISC",
   "dependencies": {
     "@restlessness/core": "0.1.4",
-    "@restlessness/utilities": "0.1.10",
+    "@restlessness/utilities": "0.1.11",
     "chalk": "3.0.0",
     "minimist": "1.2.3",
     "module-alias": "2.2.0",
