@@ -5,24 +5,33 @@ executors:
     docker:
       - image: circleci/node:12.9.1
 
+commands:
+  install_packages:
+    description: Install npm dependencies
+    steps:
+      # @TODO add caching here
+      - run:
+          name: Install dependencies
+          command: npm i
+
+
 jobs:
   rln-utilities-deps-and-tests:
     executor: node12
     steps:
       - checkout
+      - run: cd packages/restlessness-utilities
+      - install_packages
       - run:
-          name: Install dependencies
-          command: npm i
-          working_directory: packages/restlessness-utilities
-      - run:
-          name: Run Tests
+          name: Run tests
           command: npm run test
-          working_directory: packages/restlessness-utilities
 
   rln-utilities-publish:
     executor: node12
     steps:
       - checkout
+      - run: cd packages/restlessness-utilities
+      - install_packages
       - run:
           name: Npm publish
           command: node ../scripts/npm-publish.js
