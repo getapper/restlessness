@@ -32,8 +32,8 @@ commands:
           name: Set package.json version from git tag
           command: |
             # resolve scripts folder location from working directory
-            SCRIPTS_PATH=$(node -e "require('path').relative('<< parameters.working_directory >>', '/home/circleci/project/scripts')")
-            SCRIPTS_PATH=$(node -e "require('path').resolve('$SCRIPTS_PATH')")
+            SCRIPTS_PATH=$(node -e "console.log(require('path').relative('<< parameters.working_directory >>', '/home/circleci/project/scripts'))")
+            SCRIPTS_PATH=$(node -e "console.log(require('path').resolve('$SCRIPTS_PATH'))")
             node "${SCRIPTS_PATH}/set-version-from-tag.js"
           working_directory: << parameters.working_directory >>
       - run:
