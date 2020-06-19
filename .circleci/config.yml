@@ -1,19 +1,37 @@
 version: 2.1
 
+executors:
+  node12:
+    docker:
+      - image: circleci/node:12.9.1
+
+orbs:
+  node: circleci/node@1.1.6
+
 jobs:
   rln-utilities-deps-and-tests:
-    docker:
-      - image: circleci/ruby:2.4-node
+    executor: node12
     steps:
       - checkout
+      - run: cd packages/restlessness-utilities
+      - node/npm_install
+      - node/run_tests_with_npm
+
+  rln-utilities-publish:
+    executor: node12
+    steps:
       - run:
-          command: npm i
-          working_directory: packages/restlessness-utilities
-      - run:
-          command: npm test
-          working_directory: packages/restlessness-utilities
+          name: Npm publish
+          command: node ../scripts/npm-publish.js
 
 workflows:
     rln-utilities:
       jobs:
         - rln-utilities-deps-and-tests
+        - rln-utilities-publish:
+            requires:
+              - rln-utilities-deps-and-tests
+            filters:
+              tags:
+                only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+
