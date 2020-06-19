@@ -42,7 +42,7 @@ commands:
           working_directory: << parameters.working_directory >>
       - run:
           name: Publish package
-          command: echo 'npm run publish'
+          command: echo 'npm run publish' # @TODO remove echo when workflow is done
           working_directory: << parameters.working_directory >>
 
 
@@ -66,18 +66,27 @@ jobs:
           working_directory: packages/restlessness-utilities
       - npm_publish:
           working_directory: packages/restlessness-utilities
-#      - run:
-#          name: Prepublish script
-#          command: npm run prepublishOnly
-#          working_directory: packages/restlessness-utilities
-#      - run:
-#          name: Set package.json version from git tag
-#          command: node ../../scripts/set-version-from-tag.js
-#          working_directory: packages/restlessness-utilities
-#      - run:
-#          name: Publish package
-#          command: echo 'npm run publish'
-#          working_directory: packages/restlessness-utilities
+
+  rln-core-deps-and-tests:
+    executor: node12
+    steps:
+      - checkout
+      - install_packages:
+          working_directory: packages/restlessness-core
+      - run:
+          name: Run tests
+          command: npm run test
+          working_directory: packages/restlessness-core
+
+  rln-core-publish:
+    executor: node12
+    steps:
+      - checkout
+      - install_packages:
+          working_directory: packages/restlessness-core
+      - npm_publish:
+          working_directory: packages/restlessness-core
+
 
 workflows:
     rln-utilities:
@@ -89,4 +98,14 @@ workflows:
             filters:
               tags:
                 only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+
+    rln-core:
+      jobs:
+        - rln-core-deps-and-tests
+        - rln-core-publish:
+            requires:
+              - rln-core-deps-and-tests
+            filters:
+              tags:
+                only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
 
