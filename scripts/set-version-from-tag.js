@@ -27,7 +27,7 @@ let version
 try {
   const result = /v((\d+)(\.\d+){2})$/.exec(tag)
   version = result[1]
-  console.log('Publishing with version: ', version)
+  console.log('Setting package.json version to: ', version)
 } catch {
   console.error(`Cannot parse tag: ${tag}`)
   process.exit(1)
@@ -41,7 +41,5 @@ try {
   console.error('Cannot update package.json')
   process.exit(1)
 }
-
-console.log(execSync('echo npm publish').toString()) // @TODO
 
 console.log('--- END RLN Npm publish script ---')

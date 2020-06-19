@@ -18,6 +18,30 @@ commands:
           command: npm i
           working_directory: << parameters.working_directory >>
 
+  npm_publish:
+    description: Run prepublsh script, set version and publish
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - run:
+          name: Prepublish script
+          command: npm run prepublishOnly
+          working_directory: << parameters.working_directory >>
+      - run:
+          name: Set package.json version from git tag
+          command: |
+            # resolve scripts folder location from working directory
+            SCRIPTS_PATH=$(node -e "require('path').relative('<< parameters.working_directory >>', '/home/circleci/project/scripts')")
+            SCRIPTS_PATH=$(node -e "require('path').resolve('$SCRIPTS_PATH')")
+            node "${SCRIPTS_PATH}/set-version-from-tag.js"
+          working_directory: << parameters.working_directory >>
+      - run:
+          name: Publish package
+          command: echo 'npm run publish'
+          working_directory: << parameters.working_directory >>
+
+
 jobs:
   rln-utilities-deps-and-tests:
     executor: node12
@@ -36,10 +60,20 @@ jobs:
       - checkout
       - install_packages:
           working_directory: packages/restlessness-utilities
-      - run:
-          name: Npm publish
-          command: node ../../scripts/npm-publish.js
+      - npm_publish:
           working_directory: packages/restlessness-utilities
+#      - run:
+#          name: Prepublish script
+#          command: npm run prepublishOnly
+#          working_directory: packages/restlessness-utilities
+#      - run:
+#          name: Set package.json version from git tag
+#          command: node ../../scripts/set-version-from-tag.js
+#          working_directory: packages/restlessness-utilities
+#      - run:
+#          name: Publish package
+#          command: echo 'npm run publish'
+#          working_directory: packages/restlessness-utilities
 
 workflows:
     rln-utilities:
