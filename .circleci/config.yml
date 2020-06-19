@@ -14,8 +14,10 @@ jobs:
     steps:
       - checkout
       - run: cd packages/restlessness-utilities
-      - node/npm_install
-      - node/run_tests_with_npm
+      - node/install-packages
+      - run:
+          name: Run Tests
+          command: npm run test
 
   rln-utilities-publish:
     executor: node12
