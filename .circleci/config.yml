@@ -38,7 +38,7 @@ jobs:
           working_directory: packages/restlessness-utilities
       - run:
           name: Npm publish
-          command: node ../scripts/npm-publish.js
+          command: node ../../scripts/npm-publish.js
           working_directory: packages/restlessness-utilities
 
 workflows:
