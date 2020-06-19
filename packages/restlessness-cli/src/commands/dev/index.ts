@@ -3,6 +3,7 @@ import path from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import chalk from 'chalk';
 import { which } from 'shelljs';
+import { EnvFile, ENV } from '@restlessness/utilities';
 
 const printRestlessnessData = (d, newlineAtStart = false) => {
   const data = d.toString();
@@ -99,9 +100,14 @@ function spawnFrontend(): Promise<ChildProcess> {
   });
 }
 
-function spawnProject(name): Promise<ChildProcess> {
+function spawnProject(name: string, env: ENV): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
     const proc = spawn('serverless', ['offline', '--port', '4000'], {
+      env: {
+        ...process.env,
+        ...env,
+        RLN_ENVIRONMENT_LOADED: 'true',
+      },
       shell: true,
     });
     proc.stdout.on('data', d => {
@@ -121,8 +127,16 @@ function spawnProject(name): Promise<ChildProcess> {
 }
 
 export default async (argv: minimist.ParsedArgs) => {
+  if (argv._.length > 2) {
+    throw 'Unexpected number of arguments';
+  } else if (argv._.length < 2) {
+    throw 'Expected env name';
+  }
+
   checkPeerDependencies();
   const projectName = getProjectName();
+  const envFile = new EnvFile(argv._[1]);
+  const projectEnv = await envFile.expand();
 
   let projectProc;
   let frontendProc;
@@ -154,7 +168,7 @@ export default async (argv: minimist.ParsedArgs) => {
       if (message === 'RESTART_PROJECT') {
         projectProc?.kill();
         printRestlessnessData(`Restarting project ${projectName}...`);
-        projectProc = await spawnProject(projectName);
+        projectProc = await spawnProject(projectName, projectEnv);
       }
     });
     backendProc.on('exit', terminateOnExit);
@@ -173,7 +187,7 @@ export default async (argv: minimist.ParsedArgs) => {
   }
 
   try {
-    projectProc = await spawnProject(projectName);
+    projectProc = await spawnProject(projectName, projectEnv);
     projectProc.on('exit', terminateOnExit);
   } catch (e) {
     terminateChildren();

@@ -4,6 +4,8 @@ import PathResolver from '../PathResolver';
 import { parse, config } from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 
+export type ENV = { [key: string]: string };
+
 export default class EnvFile {
   private static get envsPath(): string {
     return PathResolver.getEnvsPath;
@@ -23,12 +25,12 @@ export default class EnvFile {
     }
   }
 
-  private async readEnv(): Promise<{ [key: string]: string }> {
+  private async readEnv(): Promise<ENV> {
     const envFile = await fs.readFile(this.currentEnvPath);
     return parse(envFile.toString());
   }
 
-  private static async write(filePath: string, env: { [key: string]: string }) {
+  private static async write(filePath: string, env: ENV) {
     let output = '';
     for (let key in env) {
       output += `${key}=${env[key]}\n`;
@@ -36,7 +38,7 @@ export default class EnvFile {
     await fs.writeFile(filePath, output);
   }
 
-  private async writeCurrentEnv(env: { [key: string]: string }): Promise<void> {
+  private async writeCurrentEnv(env: ENV): Promise<void> {
     await EnvFile.write(this.currentEnvPath, env);
   }
 
@@ -71,9 +73,13 @@ export default class EnvFile {
     await this.setValue(key, `\${${key}_${this.envName.toUpperCase()}}`);
   }
 
+  async expand(): Promise<ENV> {
+    const env = await this.readEnv();
+    return dotenvExpand({ parsed: env }).parsed;
+  }
+
   async generate(): Promise<void> {
-    let env = await this.readEnv();
-    env = dotenvExpand({ parsed: env }).parsed;
+    const env = await this.expand();
     await EnvFile.write(EnvFile.generatedEnvPath, env);
   }
 }
