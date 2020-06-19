@@ -5,16 +5,15 @@ executors:
     docker:
       - image: circleci/node:12.9.1
 
-orbs:
-  node: circleci/node@1.1.6
-
 jobs:
   rln-utilities-deps-and-tests:
     executor: node12
     steps:
       - checkout
       - run: cd packages/restlessness-utilities
-      - node/install-packages
+      - run:
+          name: Install dependencies
+          command: npm i
       - run:
           name: Run Tests
           command: npm run test
