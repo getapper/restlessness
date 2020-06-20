@@ -80,6 +80,20 @@ commands:
 
 
 jobs:
+  rln-cli-tests:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_tests:
+          working_directory: packages/restlessness-cli
+
+  rln-cli-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/restlessness-cli
+
   rln-core-tests:
     executor: node12
     steps:
@@ -110,6 +124,21 @@ jobs:
 
 
 workflows:
+  rln-cli:
+    jobs:
+      - rln-cli-tests:
+          filters:
+            tags:
+              only: /^ci-test@restlessness/cli/v(\d+)\.(\d+)\.(\d+)$/
+      - rln-cli-publish:
+          requires:
+            - rln-cli-tests
+          filters:
+            tags:
+              only: /^ci-test@restlessness/cli/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
   rln-core:
     jobs:
       - rln-core-tests:
