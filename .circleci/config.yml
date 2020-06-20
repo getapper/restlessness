@@ -99,34 +99,32 @@ jobs:
 workflows:
     rln-utilities:
       jobs:
-#        - rln-utilities-tests:
-#            filters:
-#              tags:
-#                only: /.*/
-        - rln-utilities-publish:
-#            requires:
-#              - rln-utilities-tests
+        - rln-utilities-tests:
             filters:
               tags:
-                # only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
-                only: /^ci-test.*/
-#              branches:
-#                ignore: /.*/
+                only: /.*/
+        - rln-utilities-publish:
+            requires:
+              - rln-utilities-tests
+            filters:
+              tags:
+                 only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+              branches:
+                ignore: /.*/
 
 
-#    rln-core:
-#      jobs:
-#        - rln-core-tests:
-#            filters:
-#              tags:
-#                only: /.*/
-#        - rln-core-publish:
-#            requires:
-#              - rln-core-tests
-#            filters:
-#              tags:
-#                # only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
-#                only: /.*ci-test.*/
-#              branches:
-#                ignore: /.*/
+    rln-core:
+      jobs:
+        - rln-core-tests:
+            filters:
+              tags:
+                only: /.*/
+        - rln-core-publish:
+            requires:
+              - rln-core-tests
+            filters:
+              tags:
+                only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
+              branches:
+                ignore: /.*/
 
