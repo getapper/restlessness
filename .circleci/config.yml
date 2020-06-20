@@ -109,7 +109,7 @@ workflows:
             filters:
               tags:
                 # only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
-                only: /^ci-test.*/
+                only: /.*ci-test.*/
 #              branches:
 #                ignore: /.*/
 
@@ -126,7 +126,7 @@ workflows:
             filters:
               tags:
                 # only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
-                only: /^ci-test.*/
+                only: /.*ci-test.*/
               branches:
                 ignore: /.*/
 
