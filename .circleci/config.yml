@@ -25,10 +25,6 @@ commands:
         type: string
     steps:
       - run:
-          name: Prepublish script
-          command: npm run prepublishOnly
-          working_directory: << parameters.working_directory >>
-      - run:
           name: Set package.json version from git tag
           command: |
             # resolve scripts folder location from working directory
