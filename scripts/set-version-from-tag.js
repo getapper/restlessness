@@ -14,15 +14,25 @@ try {
   process.exit(1)
 }
 
-let tag
+let tags
 try {
-  tag = execSync('git tag --points-at HEAD').toString().trim()
-  console.log('Using tag: ', tag)
+  // Get all tags related to the latest commit
+  tags = execSync('git tag --points-at HEAD').toString().trim().split('\n')
 } catch (e) {
   console.error(`Error, ${e}`)
   process.exit(1)
 }
 
+// Find the tag related to the current considered package
+const tagRe = new RegExp(`^citest${packageJson.name}/v(\d+)\.(\d+)\.(\d+)`)
+const tag = tags.find(t => tagRe.test(t))
+if (!tag) {
+  console.error(`Cannot find compatible tag for package ${packageJson.name}`)
+  process.exit(1)
+}
+console.log('Using tag: ', tag)
+
+// Package.json version is fixed to 0.0.0 and only updated before publish
 let version
 try {
   const result = /v((\d+)(\.\d+){2})$/.exec(tag)
