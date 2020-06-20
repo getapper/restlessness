@@ -80,20 +80,6 @@ commands:
 
 
 jobs:
-  rln-utilities-tests:
-    executor: node12
-    steps:
-      - checkout
-      - deps_and_tests:
-          working_directory: packages/restlessness-utilities
-
-  rln-utilities-publish:
-    executor: node12
-    steps:
-      - checkout
-      - deps_and_publish:
-          working_directory: packages/restlessness-utilities
-
   rln-core-tests:
     executor: node12
     steps:
@@ -108,35 +94,48 @@ jobs:
       - deps_and_publish:
           working_directory: packages/restlessness-utilities
 
+  rln-utilities-tests:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_tests:
+          working_directory: packages/restlessness-utilities
+
+  rln-utilities-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/restlessness-utilities
+
 
 workflows:
-    rln-utilities:
-      jobs:
-        - rln-utilities-tests:
-            filters:
-              tags:
-                only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
-        - rln-utilities-publish:
-            requires:
-              - rln-utilities-tests
-            filters:
-              tags:
-                 only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
-              branches:
-                ignore: /.*/
+  rln-core:
+    jobs:
+      - rln-core-tests:
+          filters:
+            tags:
+              only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
+      - rln-core-publish:
+          requires:
+            - rln-core-tests
+          filters:
+            tags:
+              only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
 
-
-    rln-core:
-      jobs:
-        - rln-core-tests:
-            filters:
-              tags:
-                only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
-        - rln-core-publish:
-            requires:
-              - rln-core-tests
-            filters:
-              tags:
-                only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
-              branches:
-                ignore: /.*/
+  rln-utilities:
+    jobs:
+      - rln-utilities-tests:
+          filters:
+            tags:
+              only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+      - rln-utilities-publish:
+          requires:
+            - rln-utilities-tests
+          filters:
+            tags:
+              only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
