@@ -51,7 +51,7 @@ jobs:
           working_directory: packages/restlessness-utilities
       - run:
           name: Run tests
-          command: npm run test
+          command: npm test
           working_directory: packages/restlessness-utilities
 
   rln-utilities-publish:
@@ -71,7 +71,7 @@ jobs:
           working_directory: packages/restlessness-core
       - run:
           name: Run tests
-          command: npm run test
+          command: npm test
           working_directory: packages/restlessness-core
 
   rln-core-publish:
@@ -87,7 +87,8 @@ jobs:
 workflows:
     rln-utilities:
       jobs:
-        - rln-utilities-deps-and-tests
+        - rln-utilities-deps-and-tests:
+            filters.tags.only: /.*/
         - rln-utilities-publish:
             requires:
               - rln-utilities-deps-and-tests
@@ -97,7 +98,8 @@ workflows:
 
     rln-core:
       jobs:
-        - rln-core-deps-and-tests
+        - rln-core-deps-and-tests:
+            filters.tags.only: /.*/
         - rln-core-publish:
             requires:
               - rln-core-deps-and-tests
