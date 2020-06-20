@@ -18,6 +18,19 @@ commands:
           command: npm i
           working_directory: << parameters.working_directory >>
 
+  deps_and_tests:
+    description: Install dependencies and run tests
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - install_packages:
+          working_directory: << parameters.working_directory >>
+      - run:
+          name: Run tests
+          command: npm test
+          working_directory: << parameters.working_directory >>
+
   npm_publish:
     description: Run prepublsh script, set version and publish
     parameters:
@@ -47,11 +60,7 @@ jobs:
     executor: node12
     steps:
       - checkout
-      - install_packages:
-          working_directory: packages/restlessness-utilities
-      - run:
-          name: Run tests
-          command: npm test
+      - deps_and_tests:
           working_directory: packages/restlessness-utilities
 
   rln-utilities-publish:
@@ -67,12 +76,8 @@ jobs:
     executor: node12
     steps:
       - checkout
-      - install_packages:
-          working_directory: packages/restlessness-core
-      - run:
-          name: Run tests
-          command: npm test
-          working_directory: packages/restlessness-core
+      - deps_and_tests:
+          working_directory: packages/restlessness-utilities
 
   rln-core-publish:
     executor: node12
