@@ -67,7 +67,7 @@ commands:
 
 
 jobs:
-  rln-utilities-deps-and-tests:
+  rln-utilities-tests:
     executor: node12
     steps:
       - checkout
@@ -81,7 +81,7 @@ jobs:
       - deps_and_publish:
           working_directory: packages/restlessness-utilities
 
-  rln-core-deps-and-tests:
+  rln-core-tests:
     executor: node12
     steps:
       - checkout
@@ -99,31 +99,33 @@ jobs:
 workflows:
     rln-utilities:
       jobs:
-        - rln-utilities-deps-and-tests:
+        - rln-utilities-tests:
             filters:
               tags:
                 only: /.*/
         - rln-utilities-publish:
             requires:
-              - rln-utilities-deps-and-tests
+              - rln-utilities-tests
             filters:
               tags:
-                only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+                # only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+                only: /^ci-test.*/
               branches:
                 ignore: /.*/
 
     rln-core:
       jobs:
-        - rln-core-deps-and-tests:
+        - rln-core-tests:
             filters:
               tags:
                 only: /.*/
         - rln-core-publish:
             requires:
-              - rln-core-deps-and-tests
+              - rln-core-tests
             filters:
               tags:
-                only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
+                # only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
+                only: /^ci-test.*/
               branches:
                 ignore: /.*/
 
