@@ -102,8 +102,8 @@ workflows:
             filters:
               tags:
                 only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
-            branches:
-              ignore: /.*/
+              branches:
+                ignore: /.*/
 
     rln-core:
       jobs:
