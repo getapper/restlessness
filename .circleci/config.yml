@@ -18,7 +18,7 @@ commands:
           key: deps2-{{ .Branch }}-{{ checksum "<< parameters.working_directory >>/package-lock.json" }}
       - run:
           name: Install dependencies
-          command: npm ci
+          command: npm i
           working_directory: << parameters.working_directory >>
       - save_cache:
           # save dependency cache
