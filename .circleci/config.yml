@@ -15,16 +15,16 @@ commands:
       - restore_cache:
           # restores saved dependency cache if the Branch key template or
           # package-lock.json files have not changed since the previous run
-          key: deps1-{{ .Branch }}-{{ checksum "<< parameters.working_directory >>/package-lock.json" }}
+          key: deps2-{{ .Branch }}-{{ checksum "<< parameters.working_directory >>/package-lock.json" }}
       - run:
           name: Install dependencies
           command: npm ci
           working_directory: << parameters.working_directory >>
       - save_cache:
           # save dependency cache
-          key: deps1-{{ .Branch }}-{{ checksum "<< parameters.working_directory >>/package-lock.json" }}
+          key: deps2-{{ .Branch }}-{{ checksum "<< parameters.working_directory >>/package-lock.json" }}
           paths:
-            - "node_modules"
+            - "<< parameters.working_directory >>/node_modules"
 
   deps_and_tests:
     description: Install dependencies and run tests
