@@ -88,7 +88,9 @@ workflows:
     rln-utilities:
       jobs:
         - rln-utilities-deps-and-tests:
-            filters.tags.only: /.*/
+            filters:
+              tags:
+                only: /.*/
         - rln-utilities-publish:
             requires:
               - rln-utilities-deps-and-tests
@@ -99,7 +101,9 @@ workflows:
     rln-core:
       jobs:
         - rln-core-deps-and-tests:
-            filters.tags.only: /.*/
+            filters:
+              tags:
+                only: /.*/
         - rln-core-publish:
             requires:
               - rln-core-deps-and-tests
