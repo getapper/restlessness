@@ -54,6 +54,17 @@ commands:
           command: echo 'npm run publish' # @TODO remove echo when workflow is done
           working_directory: << parameters.working_directory >>
 
+  deps_and_publish:
+    description: Install dependencies and publish package
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - install_packages:
+          working_directory: << parameters.working_directory >>
+      - npm_publish:
+          working_directory: << parameters.working_directory >>
+
 
 jobs:
   rln-utilities-deps-and-tests:
@@ -67,9 +78,7 @@ jobs:
     executor: node12
     steps:
       - checkout
-      - install_packages:
-          working_directory: packages/restlessness-utilities
-      - npm_publish:
+      - deps_and_publish:
           working_directory: packages/restlessness-utilities
 
   rln-core-deps-and-tests:
@@ -83,10 +92,8 @@ jobs:
     executor: node12
     steps:
       - checkout
-      - install_packages:
-          working_directory: packages/restlessness-core
-      - npm_publish:
-          working_directory: packages/restlessness-core
+      - deps_and_publish:
+          working_directory: packages/restlessness-utilities
 
 
 workflows:
