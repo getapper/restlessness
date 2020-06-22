@@ -24,7 +24,7 @@ try {
 }
 
 // Find the tag related to the current considered package
-const tagRe = new RegExp(`^${packageJson.name}/v(\d+)\.(\d+)\.(\d+)`)
+const tagRe = new RegExp(`^${packageJson.name}/v(\\d+)\\.(\\d+)\\.(\\d+)$`)
 const tag = tags.find(t => tagRe.test(t))
 if (!tag) {
   console.error(`Cannot find compatible tag for package ${packageJson.name}`)
