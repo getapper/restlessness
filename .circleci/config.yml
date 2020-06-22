@@ -1,19 +1,199 @@
 version: 2.1
 
-jobs:
-  rln-utilities-deps-and-tests:
+executors:
+  node12:
     docker:
-      - image: circleci/ruby:2.4-node
+      - image: circleci/node:12.9.1
+
+commands:
+  install_packages:
+    description: Install npm dependencies
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - restore_cache:
+          # restores saved dependency cache if the Branch key template or
+          # package-lock.json files have not changed since the previous run
+          key: deps3-{{ .Branch }}-{{ checksum "<< parameters.working_directory >>/package-lock.json" }}
+      - run:
+          name: Install dependencies
+          command: |
+            if [ ! -d node_modules ]; then
+              npm ci
+            else
+              echo 'Cache hit - npm ci skipped'
+            fi
+          working_directory: << parameters.working_directory >>
+      - save_cache:
+          # save dependency cache
+          key: deps3-{{ .Branch }}-{{ checksum "<< parameters.working_directory >>/package-lock.json" }}
+          paths:
+            - "<< parameters.working_directory >>/node_modules"
+
+  deps_and_tests:
+    description: Install dependencies and run tests
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - install_packages:
+          working_directory: << parameters.working_directory >>
+      - run:
+          name: Run tests
+          command: npm test
+          working_directory: << parameters.working_directory >>
+
+  npm_publish:
+    description: Run prepublsh script, set version and publish
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - run:
+          name: Set package.json version from git tag
+          command: |
+            # resolve scripts folder location from working directory
+            SCRIPTS_PATH=$(node -e "
+              const path = require('path')
+              const from = '${CIRCLE_WORKING_DIRECTORY}/<< parameters.working_directory >>'
+              const to = '${CIRCLE_WORKING_DIRECTORY}/scripts'
+              console.log(path.relative(from, to))
+            ")
+            node "${SCRIPTS_PATH}/set-version-from-tag.js"
+          working_directory: << parameters.working_directory >>
+      - run:
+          name: Publish package
+          command: npm publish
+          working_directory: << parameters.working_directory >>
+
+  deps_and_publish:
+    description: Install dependencies and publish package
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - install_packages:
+          working_directory: << parameters.working_directory >>
+      - npm_publish:
+          working_directory: << parameters.working_directory >>
+
+
+jobs:
+  rln-dao-mongo-tests:
+    executor: node12
     steps:
       - checkout
-      - run:
-          command: npm i
-          working_directory: packages/restlessness-utilities
-      - run:
-          command: npm test
+      - deps_and_tests:
+          working_directory: packages/daos/mongo
+
+  rln-dao-mongo-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/daos/mongo
+
+  rln-cli-tests:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_tests:
+          working_directory: packages/restlessness-cli
+
+  rln-cli-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/restlessness-cli
+
+  rln-core-tests:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_tests:
           working_directory: packages/restlessness-utilities
 
+  rln-core-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/restlessness-utilities
+
+  rln-utilities-tests:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_tests:
+          working_directory: packages/restlessness-utilities
+
+  rln-utilities-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/restlessness-utilities
+
+
 workflows:
-    rln-utilities:
-      jobs:
-        - rln-utilities-deps-and-tests
+  rln-dao-mongo:
+    jobs:
+      - rln-dao-mongo-tests:
+          filters:
+            tags:
+              only: /^@restlessness/dao-mongo/v(\d+)\.(\d+)\.(\d+)$/
+      - rln-dao-mongo-publish:
+          requires:
+            - rln-dao-mongo-tests
+          filters:
+            tags:
+              only: /^@restlessness/dao-mongo/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-cli:
+    jobs:
+      - rln-cli-tests:
+          filters:
+            tags:
+              only: /^@restlessness/cli/v(\d+)\.(\d+)\.(\d+)$/
+      - rln-cli-publish:
+          requires:
+            - rln-cli-tests
+          filters:
+            tags:
+              only: /^@restlessness/cli/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-core:
+    jobs:
+      - rln-core-tests:
+          filters:
+            tags:
+              only: /^@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
+      - rln-core-publish:
+          requires:
+            - rln-core-tests
+          filters:
+            tags:
+              only: /^@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-utilities:
+    jobs:
+      - rln-utilities-tests:
+          filters:
+            tags:
+              only: /^@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+      - rln-utilities-publish:
+          requires:
+            - rln-utilities-tests
+          filters:
+            tags:
+              only: /^@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
