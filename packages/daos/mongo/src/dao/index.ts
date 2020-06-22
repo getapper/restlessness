@@ -66,6 +66,16 @@ class MongoDao {
     this.checkConnection();
     return this.db.collection(collectionName).deleteOne(filter);
   }
+
+  async deleteMany(collectionName: string, filter): Promise<DeleteWriteOpResultObject> {
+    this.checkConnection();
+    return this.db.collection(collectionName).deleteMany(filter);
+  }
+  
+  async createIndex(collectionName: string, keys, options): Promise<void> {
+    this.checkConnection();
+    return this.db.collection(collectionName).createIndex(keys, options);
+  }
 }
 
 const mongoDao = new MongoDao();

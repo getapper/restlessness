@@ -2,6 +2,7 @@ import path from 'path';
 import { JsonServerless, PathResolver } from '@restlessness/utilities';
 import { Response } from '../response-handler';
 import { APIGatewayEventRequestContextWithAuthorizer, ClientContext, CognitoIdentity } from 'aws-lambda';
+import EnvironmentHandler from '../EnvironmentHandler';
 
 interface Event {
   http: {
@@ -54,7 +55,9 @@ type Lambda<TAuthorizerContext> = (
 ) => Promise<Response>
 
 export class TestHandler {
-  static async beforeAll() {}
+  static async beforeAll() {
+    EnvironmentHandler.load();
+  }
 
   static async afterAll() {}
 
