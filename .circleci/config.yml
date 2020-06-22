@@ -80,6 +80,20 @@ commands:
 
 
 jobs:
+  rln-dao-mongo-tests:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_tests:
+          working_directory: packages/daos/mongo
+
+  rln-dao-mongo-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/daos/mongo
+
   rln-cli-tests:
     executor: node12
     steps:
@@ -124,6 +138,21 @@ jobs:
 
 
 workflows:
+  rln-dao-mongo:
+    jobs:
+      - rln-dao-mongo-tests:
+          filters:
+            tags:
+              only: /^ci-test@restlessness/dao-mongo/v(\d+)\.(\d+)\.(\d+)$/
+      - rln-dao-mongo-publish:
+          requires:
+            - rln-dao-mongo-tests
+          filters:
+            tags:
+              only: /^ci-test@restlessness/dao-mongo/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
   rln-cli:
     jobs:
       - rln-cli-tests:
