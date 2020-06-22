@@ -4,13 +4,13 @@ import {
   ResponseOptions,
   Response,
 } from './interfaces';
-import path from 'path';
+import { PathResolver } from '@restlessness/utilities';
 
 class ResponseHandler {
   static json (response, statusCode: StatusCodes = StatusCodes.OK, options?: ResponseOptions): Response {
     const headers: HttpHeader = {};
     try {
-      const defaultHeaders = require(path.join(process.cwd(), 'default-headers.json'));
+      const defaultHeaders = require(PathResolver.getDefaultHeadersConfigPath);
       Object.assign(headers, defaultHeaders);
     } catch (e) {}
     if (options?.headers) {

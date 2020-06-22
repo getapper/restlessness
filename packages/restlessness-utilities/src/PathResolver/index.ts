@@ -45,6 +45,10 @@ export default class PathResolver {
     return path.join(PathResolver.getConfigsPath, 'serverless.json');
   }
 
+  static get getDefaultHeadersConfigPath(): string {
+    return path.join(PathResolver.getConfigsPath, 'default-headers.json');
+  }
+
   static get getNodeModulesPath(): string {
     return path.join(PathResolver.getPrjPath, 'node_modules');
   }
