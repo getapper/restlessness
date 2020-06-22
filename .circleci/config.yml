@@ -64,7 +64,7 @@ commands:
           working_directory: << parameters.working_directory >>
       - run:
           name: Publish package
-          command: echo 'npm run publish' # @TODO remove echo when workflow is done
+          command: npm publish
           working_directory: << parameters.working_directory >>
 
   deps_and_publish:
@@ -143,13 +143,13 @@ workflows:
       - rln-dao-mongo-tests:
           filters:
             tags:
-              only: /^ci-test@restlessness/dao-mongo/v(\d+)\.(\d+)\.(\d+)$/
+              only: /^@restlessness/dao-mongo/v(\d+)\.(\d+)\.(\d+)$/
       - rln-dao-mongo-publish:
           requires:
             - rln-dao-mongo-tests
           filters:
             tags:
-              only: /^ci-test@restlessness/dao-mongo/v(\d+)\.(\d+)\.(\d+)$/
+              only: /^@restlessness/dao-mongo/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
 
@@ -158,13 +158,13 @@ workflows:
       - rln-cli-tests:
           filters:
             tags:
-              only: /^ci-test@restlessness/cli/v(\d+)\.(\d+)\.(\d+)$/
+              only: /^@restlessness/cli/v(\d+)\.(\d+)\.(\d+)$/
       - rln-cli-publish:
           requires:
             - rln-cli-tests
           filters:
             tags:
-              only: /^ci-test@restlessness/cli/v(\d+)\.(\d+)\.(\d+)$/
+              only: /^@restlessness/cli/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
 
@@ -173,13 +173,13 @@ workflows:
       - rln-core-tests:
           filters:
             tags:
-              only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
+              only: /^@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
       - rln-core-publish:
           requires:
             - rln-core-tests
           filters:
             tags:
-              only: /^ci-test@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
+              only: /^@restlessness/core/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
 
@@ -188,12 +188,12 @@ workflows:
       - rln-utilities-tests:
           filters:
             tags:
-              only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+              only: /^@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
       - rln-utilities-publish:
           requires:
             - rln-utilities-tests
           filters:
             tags:
-              only: /^ci-test@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+              only: /^@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
