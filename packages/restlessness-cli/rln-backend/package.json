@@ -7,8 +7,8 @@
     "update-deps": "npm i @restlessness/utilities@latest -S -E && npm i @restlessness/core@latest -S -E"
   },
   "dependencies": {
-    "@restlessness/core": "0.1.4",
-    "@restlessness/utilities": "0.1.11",
+    "@restlessness/core": "0.1.8",
+    "@restlessness/utilities": "0.1.17",
     "jest": "26.0.1",
     "module-alias": "2.2.2",
     "yup": "0.28.3"
