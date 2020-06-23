@@ -100,6 +100,11 @@ jobs:
     executor: node12
     steps:
       - checkout
+# @TODO uncomment when frontend and backend tests are ready
+#      - deps_and_tests:
+#          working_directory: packages/restlessness-cli/rln-backend
+#      - deps_and_tests:
+#          working_directory: packages/restlessness-cli/rln-frontend
       - deps_and_tests:
           working_directory: packages/restlessness-cli
 
@@ -107,6 +112,10 @@ jobs:
     executor: node12
     steps:
       - checkout
+      - install_packages:
+          working_directory: packages/restlessness-cli/rln-backend
+      - install_packages:
+          working_directory: packages/restlessness-cli/rln-frontend
       - deps_and_publish:
           working_directory: packages/restlessness-cli
 
