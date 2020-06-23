@@ -113,14 +113,14 @@ jobs:
     steps:
       - checkout
       - deps_and_tests:
-          working_directory: packages/restlessness-utilities
+          working_directory: packages/restlessness-core
 
   rln-core-publish:
     executor: node12
     steps:
       - checkout
       - deps_and_publish:
-          working_directory: packages/restlessness-utilities
+          working_directory: packages/restlessness-core
 
   rln-utilities-tests:
     executor: node12
