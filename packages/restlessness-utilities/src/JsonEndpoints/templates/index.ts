@@ -41,7 +41,7 @@ const handlerTemplate = (
   vars: string[],
   authorizer: JsonAuthorizersEntry,
 ): string => `import 'module-alias/register';
-import { res, StatusCodes } from '@restlessness/core';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 
 export default async (req: Request) => {
@@ -51,13 +51,13 @@ export default async (req: Request) => {
 ${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n' : ''}${authorizer ? '      session,\n' : ''}    } = req;
 
     if (!validationResult.isValid) {
-      return res({ message: validationResult.message }, StatusCodes.BadRequest);
+      return ResponseHandler.json({ message: validationResult.message }, StatusCodes.BadRequest);
     }
     
-    return res({});
+    return ResponseHandler.json({});
   } catch (e) {
     console.error(e);
-    return res({}, StatusCodes.InternalServerError);
+    return ResponseHandler.json({}, StatusCodes.InternalServerError);
   }
 };
 `;

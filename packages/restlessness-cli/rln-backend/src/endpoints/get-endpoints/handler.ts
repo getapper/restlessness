@@ -1,12 +1,11 @@
-import res from '../../services/response-handler';
-import { StatusCodes } from '@restlessness/core';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 import { Endpoint } from '../../models';
 
 export default async (req: Request) => {
   try {
     const endpoints: Endpoint[] = await Endpoint.getList();
-    return res(
+    return ResponseHandler.json(
       endpoints, StatusCodes.OK, {
         headers: {
           'Access-Control-Expose-Headers': 'content-range',
@@ -16,6 +15,6 @@ export default async (req: Request) => {
     );
   } catch (e) {
     console.error(e);
-    res({ message: e.message }, StatusCodes.InternalServerError);
+    ResponseHandler.json({ message: e.message }, StatusCodes.InternalServerError);
   }
 };

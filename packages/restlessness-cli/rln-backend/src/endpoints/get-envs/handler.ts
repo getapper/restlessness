@@ -1,5 +1,5 @@
 import { Env } from 'root/models';
-import res from '../../services/response-handler';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 
 export default async (req: Request) => {
@@ -9,7 +9,7 @@ export default async (req: Request) => {
     } = req;
 
     const envs = await Env.getList();
-    return res(envs, 200, {
+    return ResponseHandler.json(envs, StatusCodes.OK, {
       headers: {
         'Access-Control-Expose-Headers': 'content-range',
         'content-range': `${envs.length}`,
@@ -17,6 +17,6 @@ export default async (req: Request) => {
     });
   } catch (e) {
     console.error(e);
-    return res({}, 500);
+    return ResponseHandler.json({}, StatusCodes.InternalServerError);
   }
 };

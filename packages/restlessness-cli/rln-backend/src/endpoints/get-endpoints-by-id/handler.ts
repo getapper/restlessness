@@ -1,4 +1,4 @@
-import { res, StatusCodes } from '@restlessness/core';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 import { Endpoint } from '../../models';
 
@@ -14,12 +14,12 @@ export default async (req: Request) => {
     } = pathParameters;
 
     if (!validationResult.isValid) {
-      return res({ message: validationResult.message }, StatusCodes.BadRequest);
+      return ResponseHandler.json({ message: validationResult.message }, StatusCodes.BadRequest);
     }
-    
-    return res(Endpoint.getById(id));
+
+    return ResponseHandler.json(Endpoint.getById(id));
   } catch (e) {
     console.error(e);
-    return res({}, StatusCodes.InternalServerError);
+    return ResponseHandler.json({}, StatusCodes.InternalServerError);
   }
 };
