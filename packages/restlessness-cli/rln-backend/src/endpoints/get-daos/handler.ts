@@ -1,4 +1,4 @@
-import res from '../../services/response-handler';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Dao } from '../../models';
 import { Request } from './interfaces';
 
@@ -13,7 +13,7 @@ export default async (req: Request) => {
     emptyDao.id = 'null';
     emptyDao.name = 'None';
     daos.push(emptyDao);
-    return res(daos, 200, {
+    return ResponseHandler.json(daos, StatusCodes.OK, {
       headers: {
         'Access-Control-Expose-Headers': 'content-range',
         'content-range': `${daos.length}`,
@@ -21,6 +21,6 @@ export default async (req: Request) => {
     });
   } catch (e) {
     console.error(e);
-    return res({}, 500);
+    return ResponseHandler.json({}, StatusCodes.InternalServerError);
   }
 };

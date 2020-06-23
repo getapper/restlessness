@@ -1,4 +1,4 @@
-import res from '../../services/response-handler';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Dao, Model } from '../../models';
 import { Request } from './interfaces';
 
@@ -19,16 +19,16 @@ export default async (req: Request) => {
     } else {
       dao = await Dao.getById(daoId);
       if (!dao) {
-        return res({ message: 'Dao not found' }, 404);
+        return ResponseHandler.json({ message: 'Dao not found' }, StatusCodes.NotFound);
       }
     }
     const model = new Model();
     // @TODO: Check it doesn't already exist in models.json file
     await model.create(name, dao);
 
-    return res(model);
+    return ResponseHandler.json(model);
   } catch (e) {
     console.error(e);
-    return res({ message: e.message }, 500);
+    return ResponseHandler.json({ message: e.message }, StatusCodes.InternalServerError);
   }
 };

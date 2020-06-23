@@ -1,4 +1,4 @@
-import { res, StatusCodes } from '@restlessness/core';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 import { Authorizer } from '../../models';
 
@@ -13,7 +13,7 @@ export default async (req: Request) => {
     emptyAuthorizer.id = null;
     emptyAuthorizer.name = 'None';
     authorizers.push(emptyAuthorizer);
-    return res(authorizers, 200, {
+    return ResponseHandler.json(authorizers, StatusCodes.OK, {
       headers: {
         'Access-Control-Expose-Headers': 'content-range',
         'content-range': `${authorizers.length}`,
@@ -21,6 +21,6 @@ export default async (req: Request) => {
     });
   } catch (e) {
     console.error(e);
-    return res({}, StatusCodes.InternalServerError);
+    return ResponseHandler.json({}, StatusCodes.InternalServerError);
   }
 };

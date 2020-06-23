@@ -64,7 +64,9 @@ commands:
           working_directory: << parameters.working_directory >>
       - run:
           name: Publish package
-          command: npm publish
+          command: |
+            npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+            npm publish
           working_directory: << parameters.working_directory >>
 
   deps_and_publish:
@@ -98,6 +100,11 @@ jobs:
     executor: node12
     steps:
       - checkout
+# @TODO uncomment when frontend and backend tests are ready
+#      - deps_and_tests:
+#          working_directory: packages/restlessness-cli/rln-backend
+#      - deps_and_tests:
+#          working_directory: packages/restlessness-cli/rln-frontend
       - deps_and_tests:
           working_directory: packages/restlessness-cli
 
@@ -105,6 +112,10 @@ jobs:
     executor: node12
     steps:
       - checkout
+      - install_packages:
+          working_directory: packages/restlessness-cli/rln-backend
+      - install_packages:
+          working_directory: packages/restlessness-cli/rln-frontend
       - deps_and_publish:
           working_directory: packages/restlessness-cli
 
@@ -113,14 +124,14 @@ jobs:
     steps:
       - checkout
       - deps_and_tests:
-          working_directory: packages/restlessness-utilities
+          working_directory: packages/restlessness-core
 
   rln-core-publish:
     executor: node12
     steps:
       - checkout
       - deps_and_publish:
-          working_directory: packages/restlessness-utilities
+          working_directory: packages/restlessness-core
 
   rln-utilities-tests:
     executor: node12

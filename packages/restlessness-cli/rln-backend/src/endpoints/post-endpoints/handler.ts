@@ -1,4 +1,4 @@
-import res from '../../services/response-handler';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 import { Endpoint, Route } from '../../models';
 
@@ -16,13 +16,13 @@ export default async (req: Request) => {
   try {
     route = Route.parseFromText(text);
   } catch (e) {
-    return res({ message: e.message }, 400);
+    return ResponseHandler.json({ message: e.message }, StatusCodes.BadRequest);
   }
   const endpoints = await Endpoint.getList();
   if (~endpoints.findIndex(ep => ep.route.endpointRoute === route.endpointRoute && ep.method === method)) {
-    return res({ message: 'Route already exists' }, 400);
+    return ResponseHandler.json({ message: 'Route already exists' }, StatusCodes.BadRequest);
   }
   const endpoint = new Endpoint();
   await endpoint.create(route, method, authorizerId, daoIds);
-  return res(endpoint);
+  return ResponseHandler.json(endpoint);
 };
