@@ -43,7 +43,7 @@ interface TestContext {
 }
 
 interface RequestData {
-  payload?: { [name: string]: string } | null,
+  payload?: { [name: string]: any } | null,
   queryStringParameters?: { [name: string]: string } | null,
   pathParameters?: { [name: string]: string } | null,
   headers?: { [name: string]: string },
