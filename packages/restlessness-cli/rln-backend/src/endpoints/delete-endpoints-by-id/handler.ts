@@ -1,4 +1,4 @@
-import { res, StatusCodes } from '@restlessness/core';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 import { Endpoint } from '../../models';
 
@@ -13,15 +13,15 @@ export default async (req: Request) => {
       id,
     } = pathParameters;
     if (!validationResult.isValid) {
-      return res({ message: validationResult.message }, StatusCodes.BadRequest);
+      return ResponseHandler.json({ message: validationResult.message }, StatusCodes.BadRequest);
     }
 
     const endpoint: Endpoint = await Endpoint.getById(id);
     await endpoint.remove();
 
-    return res(endpoint);
+    return ResponseHandler.json(endpoint);
   } catch (e) {
     console.error(e);
-    return res({}, StatusCodes.InternalServerError);
+    return ResponseHandler.json({}, StatusCodes.InternalServerError);
   }
 };

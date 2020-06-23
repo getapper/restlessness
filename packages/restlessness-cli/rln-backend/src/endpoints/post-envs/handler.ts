@@ -1,4 +1,4 @@
-import res from '../../services/response-handler';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 import { Env } from '../../models';
 
@@ -15,13 +15,13 @@ export default async (req: Request) => {
     const parsedName = name.trim().replace(/ /g, '').toLowerCase();
     const envs = await Env.getList();
     if (~envs.findIndex(env => env.id === parsedName)) {
-      return res({ message: 'Env already exists' }, 400);
+      return ResponseHandler.json({ message: 'Env already exists' }, StatusCodes.BadRequest);
     }
     const env = new Env();
     await env.create(parsedName);
 
-    return res(env);
+    return ResponseHandler.json(env);
   } catch (e) {
-    return res({}, 500);
+    return ResponseHandler.json({}, StatusCodes.InternalServerError);
   }
 };
