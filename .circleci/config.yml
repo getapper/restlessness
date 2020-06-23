@@ -64,7 +64,9 @@ commands:
           working_directory: << parameters.working_directory >>
       - run:
           name: Publish package
-          command: npm publish
+          command: |
+            npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+            npm publish
           working_directory: << parameters.working_directory >>
 
   deps_and_publish:
