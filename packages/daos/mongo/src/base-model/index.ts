@@ -93,4 +93,9 @@ export default class MongoBase {
     }
     return false;
   }
+
+  static async createIndex(keys, options): Promise<boolean> {
+    const response: string = await MongoBase.dao.createIndex(this.collectionName, keys, options);
+    return !!response;
+  }
 }

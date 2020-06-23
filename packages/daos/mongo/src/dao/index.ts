@@ -6,6 +6,7 @@ import {
   UpdateWriteOpResult,
   FindOneOptions,
   DeleteWriteOpResultObject,
+  IndexOptions,
 } from 'mongodb';
 
 class MongoDao {
@@ -72,7 +73,7 @@ class MongoDao {
     return this.db.collection(collectionName).deleteMany(filter);
   }
   
-  async createIndex(collectionName: string, keys, options): Promise<void> {
+  async createIndex(collectionName: string, keys: string | any, options: IndexOptions): Promise<string> {
     this.checkConnection();
     return this.db.collection(collectionName).createIndex(keys, options);
   }
