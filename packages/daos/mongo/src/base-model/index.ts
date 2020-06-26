@@ -67,7 +67,7 @@ export default class MongoBase {
         _id,
         ...fields
       } = this;
-      const response: UpdateWriteOpResult = await MongoBase.dao.updateOne(this.constructor.collectionName, { _id: this._id }, fields);
+      const response: UpdateWriteOpResult = await MongoBase.dao.updateOne(this.constructor.collectionName, { _id: this._id }, { $set: fields });
       return response?.result?.ok ?? false;
     }
     return false;
