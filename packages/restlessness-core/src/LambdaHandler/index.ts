@@ -1,6 +1,6 @@
 import EnvironmentHandler from '../EnvironmentHandler';
 import { ValidationObjects, ValidationResult, RequestI } from './interfaces';
-import { JsonEndpoints, DaoPackage, JsonDaos, JsonDaosEntry } from '@restlessness/utilities';
+import { JsonEndpoints, DaoPackage, JsonDaos, JsonDaosEntry, JsonAuthorizers, AuthorizerPackage, JsonAuthorizersEntry, AuthorizerResult } from '@restlessness/utilities';
 import AWSLambda from 'aws-lambda';
 
 export * from './interfaces';
@@ -13,6 +13,7 @@ export const LambdaHandler = async <T, Q, P, PP>(
   context: AWSLambda.Context,
 ) => {
   EnvironmentHandler.load();
+  let parsedSession;
 
   // @TODO: Check Plugins beforeLambdas hooks
   const jsonEndpointsEntry = await JsonEndpoints.getEntryById(apiName);
@@ -26,6 +27,23 @@ export const LambdaHandler = async <T, Q, P, PP>(
         } catch (e) {
           console.error(`Error when calling beforeLambda hook on dao: ${jsonDaoEntry.name} (${jsonDaoEntry.id})`, e);
         }
+      }
+    }
+
+    if (jsonEndpointsEntry.authorizerId) {
+      const jsonAuthorizersEntry: JsonAuthorizersEntry = await JsonAuthorizers.getEntryById(jsonEndpointsEntry.authorizerId);
+      const authorizerPackage: AuthorizerPackage = AuthorizerPackage.load(jsonAuthorizersEntry.package);
+      try {
+        await authorizerPackage.beforeLambda(event, context);
+      } catch (e) {
+        console.error(`Error when calling beforeLambda hook on authorizer: ${jsonAuthorizersEntry.name} (${jsonAuthorizersEntry.package})`, e);
+      }
+
+      try {
+        // @ts-ignore
+        parsedSession = await authorizerPackage.parseSession(event?.requestContext?.authorizer?.serializedSession);
+      } catch {
+        console.error('Error parsing serialized session');
       }
     }
   } else {
@@ -76,5 +94,7 @@ export const LambdaHandler = async <T, Q, P, PP>(
     queryStringParameters,
     payload,
     pathParameters,
+    // @ts-ignore
+    session: parsedSession,
   });
 };
