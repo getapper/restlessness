@@ -4,7 +4,7 @@ export interface JsonConfigEntry {
   id: string
 }
 
-export default abstract class JsonConfigFile<T> {
+export default abstract class JsonConfigFile<T extends JsonConfigEntry> {
   entries: T[]
 
   abstract get jsonPath(): string;
@@ -31,6 +31,9 @@ export default abstract class JsonConfigFile<T> {
    * @param entry
    */
   async addEntry(entry: T): Promise<void> {
+    if (await this.getEntryById(entry.id)) {
+      throw new Error(`Entry with id ${entry.id} already exists`);
+    }
     await this.read();
     this.entries.push(entry);
     await this.write();
