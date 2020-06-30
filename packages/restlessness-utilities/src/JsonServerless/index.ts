@@ -1,7 +1,10 @@
 import { promises as fs } from 'fs';
 import PathResolver from '../PathResolver';
 import { HttpMethod } from '../JsonEndpoints';
+import JsonAuthorizers from '../JsonAuthorizers';
+import AuthorizerPackage from '../AuthorizerPackage';
 import _unset from 'lodash.unset';
+import path from 'path';
 
 interface Functions {
   [key: string]: FunctionEndpoint
@@ -62,8 +65,10 @@ class JsonServerless {
     if (authorizerId) {
       functionEndpoint.events[0].http.authorizer = authorizerId;
       if (!this.functions[authorizerId]) {
+        const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
+        const authorizerPackage: AuthorizerPackage = AuthorizerPackage.load(jsonAuthorizersEntry.package);
         this.functions[authorizerId] = {
-          handler: `dist/authorizers/${authorizerId}.handler`,
+          handler: path.join('node_modules', jsonAuthorizersEntry.package, authorizerPackage.authorizerPath),
         };
       }
     }
