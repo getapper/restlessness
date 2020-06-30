@@ -1,5 +1,6 @@
 export * from './config-files-handler';
 export { default as AddOnPackage } from './AddOnPackage';
+export { default as AuthorizerPackage, AuthorizerEvent, AuthorizerResult } from './AuthorizerPackage';
 export { default as DaoPackage } from './DaoPackage';
 export { default as JsonConfigFile, JsonConfigEntry } from './JsonConfigFile';
 export { default as JsonAuthorizers, JsonAuthorizersEntry } from './JsonAuthorizers';
