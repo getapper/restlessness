@@ -1,5 +1,5 @@
 import { BaseModel } from '../';
-import { JsonDaos, JsonDaosEntry } from '@restlessness/utilities';
+import { JsonDaos, JsonDaosEntry } from '@restlessness/core';
 
 export default class Dao extends BaseModel {
   id: string

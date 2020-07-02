@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { EnvFile } from '@restlessness/utilities';
+import { EnvFile } from '@restlessness/core';
 
 export default async argv => {
   if (argv._.length > 2) {

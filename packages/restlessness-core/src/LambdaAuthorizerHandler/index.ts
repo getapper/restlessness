@@ -1,5 +1,8 @@
 import { AuthPolicy, AuthPolicyResponse } from './AuthPolicy';
-import { AuthorizerResult, AuthorizerEvent } from '@restlessness/utilities';
+import {
+  AuthorizerResult,
+  AuthorizerEvent,
+} from '../';
 
 export * from './AuthPolicy';
 

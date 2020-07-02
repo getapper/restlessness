@@ -18,7 +18,7 @@
     "yup": "^0.28.3"
   },
   "dependencies": {
-    "@restlessness/utilities": "0.1.5",
+    "@restlessness/core": "0.1.0",
     "@types/aws-lambda": "8.10.50",
     "@types/mongodb": "3.5.9",
     "mongodb": "3.5.5",
@@ -33,7 +33,7 @@
     "clean": "rimraf dist",
     "tsc": "npm run clean && tsc -p tsconfig.json",
     "test": "npm run tsc && jest",
-    "update-deps": "npm i @restlessness/utilities@latest -S -E"
+    "update-deps": "npm i @restlessness/core@latest -S -E"
   },
   "jest": {
     "rootDir": "dist"

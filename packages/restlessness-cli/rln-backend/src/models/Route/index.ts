@@ -1,4 +1,4 @@
-import { Misc } from '@restlessness/utilities';
+import { Misc } from '@restlessness/core';
 
 export default class Route {
   params: string[]

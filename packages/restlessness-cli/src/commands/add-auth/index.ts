@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { AuthorizerPackage } from '@restlessness/utilities';
+import { AuthorizerPackage } from '@restlessness/core';
 
 export default async argv => {
   if (argv._.length > 2) {

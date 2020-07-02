@@ -1,8 +1,16 @@
-import EnvironmentHandler from '../EnvironmentHandler';
 import { ValidationObjects, ValidationResult, RequestI } from './interfaces';
-import { JsonEndpoints, DaoPackage, JsonDaos, JsonDaosEntry, JsonAuthorizers, AuthorizerPackage, JsonAuthorizersEntry } from '@restlessness/utilities';
+import {
+  AuthorizerContext,
+  EnvironmentHandler,
+  JsonEndpoints,
+  DaoPackage,
+  JsonDaos,
+  JsonDaosEntry,
+  JsonAuthorizers,
+  AuthorizerPackage,
+  JsonAuthorizersEntry,
+} from '../';
 import AWSLambda from 'aws-lambda';
-import { AuthorizerContext } from '../LambdaAuthorizerHandler';
 
 export * from './interfaces';
 

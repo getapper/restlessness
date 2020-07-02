@@ -1,4 +1,3 @@
-export * from './config-files-handler';
 export { default as AddOnPackage } from './AddOnPackage';
 export { default as AuthorizerPackage, AuthorizerEvent, AuthorizerResult } from './AuthorizerPackage';
 export { default as DaoPackage } from './DaoPackage';
