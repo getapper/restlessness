@@ -1,5 +1,14 @@
-import { AuthorizerPackage, AuthorizerEvent, JsonAuthorizers, AuthorizerResult, JsonAuthorizersEntry, JsonModels, EnvFile, PathResolver } from '@restlessness/utilities';
-import { LambdaAuthorizerHandler } from '@restlessness/core';
+import {
+  LambdaAuthorizerHandler,
+  AuthorizerPackage,
+  AuthorizerEvent,
+  JsonAuthorizers,
+  AuthorizerResult,
+  JsonAuthorizersEntry,
+  JsonModels,
+  EnvFile,
+  PathResolver,
+} from '@restlessness/core';
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import path from 'path';

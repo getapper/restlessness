@@ -16,6 +16,7 @@
     "typescript": "3.8.3"
   },
   "dependencies": {
+    "@restlessness/core": "file:../../restlessness-core",
     "@restlessness/utilities": "0.0.8",
     "amazon-cognito-identity-js": "4.3.2",
     "jsonwebtoken": "8.5.1",
