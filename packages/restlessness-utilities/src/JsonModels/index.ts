@@ -16,7 +16,7 @@ class JsonModel extends JsonConfigFile<JsonModelsEntry> {
     return PathResolver.getModelsConfigPath;
   }
 
-  async create(id: string, daoId?: string): Promise<JsonModelsEntry> {
+  async create(id: string, daoId?: string, template?: string): Promise<JsonModelsEntry> {
     const jsonModelsEntry = {
       id,
       daoId: null,
@@ -44,7 +44,7 @@ class JsonModel extends JsonConfigFile<JsonModelsEntry> {
 
     // Generate model file based on daoId
     if (!daoId) {
-      await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(modelName));
+      await fs.writeFile(path.join(folderPath, 'index.ts'), template || indexTemplate(modelName));
     } else {
       const jsonDaosEntry: JsonDaosEntry = await JsonDaos.getEntryById(daoId);
       const daoPackage: DaoPackage = DaoPackage.load(jsonDaosEntry.package);

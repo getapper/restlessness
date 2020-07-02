@@ -3,6 +3,7 @@ import { LambdaAuthorizerHandler } from '@restlessness/core';
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import path from 'path';
+import { jwtSessionModelTemplate } from './templates';
 
 interface JwtSessionData {
   id: string,
@@ -34,7 +35,7 @@ class JwtAuthorizer extends AuthorizerPackage {
       console.warn(`${jsonAuthorizer.id} Auth already found inside authorizers.json!`);
     }
     await JsonAuthorizers.addEntry(jsonAuthorizer);
-    await JsonModels.create('JwtSession');
+    await JsonModels.create('JwtSession', null, jwtSessionModelTemplate());
   }
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
