@@ -3,6 +3,11 @@ import { AuthorizerResult, AuthorizerEvent } from '@restlessness/utilities';
 
 export * from './AuthPolicy';
 
+export interface AuthorizerContext {
+  principalId: string,
+  serializedSession: string,
+}
+
 function generatePolicy(event: AuthorizerEvent, authResult: AuthorizerResult) {
   const UNAUTHORIZED = 'Unauthorized';
   try {
@@ -33,6 +38,7 @@ function generatePolicy(event: AuthorizerEvent, authResult: AuthorizerResult) {
       // these are made available by APIGW like so: $context.authorizer.<key>
       // additional context is cached
       authResponse.context = {
+        principalId: authResult.principalId,
         serializedSession : authResult.serializedSession,
       };
 

@@ -19,5 +19,5 @@ export interface AuthorizerResult {
 export default abstract class AuthorizerPackage extends AddOnPackage {
   abstract authorizer(event: AuthorizerEvent): any // @TODO change any to generic policy
   abstract get authorizerPath(): string // @TODO alternative: look for packageJson.main as entry point
-  abstract parseSession(session: string): Promise<any>
+  abstract parseSession<T>(session: string): Promise<T>
 }

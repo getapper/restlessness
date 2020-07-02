@@ -14,7 +14,7 @@ const testTemplate = (
   jsonEndpointsEntry: JsonEndpointsEntry,
   authorizer: JsonAuthorizersEntry,
 ): string => `import { StatusCodes, TestHandler } from '@restlessness/core';
-${authorizer ? `import { AuthorizerContext } from '${authorizer.package}';\nimport ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
+${authorizer ? `import ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
 const ${jsonEndpointsEntry.id} = '${jsonEndpointsEntry.safeFunctionName}';
 
 beforeAll(async done => {
@@ -24,7 +24,8 @@ beforeAll(async done => {
 
 describe('${jsonEndpointsEntry.id} API', () => {
   test('', async (done) => {
-    const res = await TestHandler.invokeLambda${authorizer ? '<AuthorizerContext>' : ''}(${jsonEndpointsEntry.id});
+    ${authorizer ? `const session = new ${authorizer.sessionModelName}();\nsession.id = 'test_id';\nconst serializedSession = await session.serialize();` : ''}
+    const res = await TestHandler.invokeLambda(${jsonEndpointsEntry.id}${authorizer ? ', null, {serializedSession}' : ''});
     // expect(res.statusCode).toBe(StatusCodes.OK);
     done();
   });

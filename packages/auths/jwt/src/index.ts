@@ -20,6 +20,11 @@ export interface SessionModelInstance {
 }
 
 class JwtAuthorizer extends AuthorizerPackage {
+  constructor() {
+    super();
+    this.authorizer = this.authorizer.bind(this);
+  }
+
   get authorizerPath() {
     return path.join('dist', 'index.authorizer');
   }
@@ -86,12 +91,12 @@ class JwtAuthorizer extends AuthorizerPackage {
     return LambdaAuthorizerHandler(event, this.checkSession);
   }
 
-  async parseSession(session: string): Promise<any> {
+  async parseSession<T>(session: string): Promise<T> {
     const JwtSession = require(path.join(PathResolver.getDistPath, 'models', 'JwtSession')).default;
-    return JwtSession.deserialize(session);
+    return await JwtSession.deserialize(session) as T;
   }
 }
 
 const Jwt = new JwtAuthorizer();
 export default Jwt;
-export const authorizer = e => Jwt.authorizer(e);
+export const authorizer = Jwt.authorizer;

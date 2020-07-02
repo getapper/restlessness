@@ -23,4 +23,5 @@ export interface RequestI<Q, P, PP> {
   queryStringParameters: Q,
   payload: P,
   pathParameters: PP,
+  session?: any
 }

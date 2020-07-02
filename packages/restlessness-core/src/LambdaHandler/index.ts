@@ -1,11 +1,12 @@
 import EnvironmentHandler from '../EnvironmentHandler';
 import { ValidationObjects, ValidationResult, RequestI } from './interfaces';
-import { JsonEndpoints, DaoPackage, JsonDaos, JsonDaosEntry, JsonAuthorizers, AuthorizerPackage, JsonAuthorizersEntry, AuthorizerResult } from '@restlessness/utilities';
+import { JsonEndpoints, DaoPackage, JsonDaos, JsonDaosEntry, JsonAuthorizers, AuthorizerPackage, JsonAuthorizersEntry } from '@restlessness/utilities';
 import AWSLambda from 'aws-lambda';
+import { AuthorizerContext } from '../LambdaAuthorizerHandler';
 
 export * from './interfaces';
 
-export const LambdaHandler = async <T, Q, P, PP>(
+export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
   handler: (req: RequestI<Q, P, PP>) => any,
   validationsBuilder: () => ValidationObjects,
   apiName: string,
@@ -40,7 +41,6 @@ export const LambdaHandler = async <T, Q, P, PP>(
       }
 
       try {
-        // @ts-ignore
         parsedSession = await authorizerPackage.parseSession(event?.requestContext?.authorizer?.serializedSession);
       } catch {
         console.error('Error parsing serialized session');
@@ -94,7 +94,6 @@ export const LambdaHandler = async <T, Q, P, PP>(
     queryStringParameters,
     payload,
     pathParameters,
-    // @ts-ignore
     session: parsedSession,
   });
 };
