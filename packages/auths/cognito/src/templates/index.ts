@@ -1,13 +1,4 @@
-const jwtAuthorizerTemplate = (): string => `import { authorizer } from '@restlessness/auth-jwt';
-
-const handler = authorizer;
-
-export {
-  handler,
-};
-`;
-
-const jwtSessionModelTemplate = (): string => `export default class JwtSession {
+const sessionModelTemplate = (): string => `export default class JwtSession {
   ['constructor']: typeof JwtSession
   id: string
 
@@ -23,7 +14,23 @@ const jwtSessionModelTemplate = (): string => `export default class JwtSession {
 };
 `;
 
+const appUserPoolsManagerTemplate = (): string => `import { UserPoolsManager } from '@restlessness/auth-cognito';
+
+class AppUserPoolsManager extends UserPoolsManager {
+  get poolInfos() {
+    return [
+      {
+        id: 'user',
+        attributes: [],
+      },
+    ];
+  }
+};
+
+export default new AppUserPoolsManager();
+`;
+
 export {
-  jwtAuthorizerTemplate,
-  jwtSessionModelTemplate,
+  sessionModelTemplate,
+  appUserPoolsManagerTemplate,
 };

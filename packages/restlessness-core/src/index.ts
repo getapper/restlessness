@@ -14,6 +14,6 @@ export { default as Misc } from './Misc';
 export { default as PathResolver } from './PathResolver';
 export * from './LambdaHandler';
 export * from './LambdaAuthorizerHandler';
-export * from './response-handler';
+export * from './ResponseHandler';
 export { default as EnvironmentHandler } from './EnvironmentHandler';
 export * from './TestHandler';

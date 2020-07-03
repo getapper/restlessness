@@ -2,7 +2,7 @@ import MongoBase from './base-model';
 import mongoDao from './dao';
 import { ObjectId } from 'mongodb';
 import * as yup from 'yup';
-import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/utilities';
+import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/core';
 
 import { modelTemplate } from './templates';
 

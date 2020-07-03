@@ -18,7 +18,7 @@
     "yup": "^0.28.3"
   },
   "dependencies": {
-    "@restlessness/core": "0.1.0",
+    "@restlessness/core": "file:../../restlessness-core",
     "@types/aws-lambda": "8.10.50",
     "@types/mongodb": "3.5.9",
     "mongodb": "3.5.5",

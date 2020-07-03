@@ -11,7 +11,8 @@ import request from 'request';
 import jwkToPem from 'jwk-to-pem';
 import { ConfirmationCodeType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
-export default class UserPoolManager {
+export class UserPoolManager {
+  id: string
   clientId: string
   userPool: CognitoUserPool
   attributesList: string[]
@@ -21,11 +22,13 @@ export default class UserPoolManager {
   cognitoIdentityServiceProvider: CognitoIdentityServiceProvider
 
   constructor (
+    id: string,
     userPoolId: string,
     clientId: string,
     region: string,
     attributesList: string[],
   ) {
+    this.id = id;
     this.userPool = new CognitoUserPool({
       UserPoolId: userPoolId,
       ClientId: clientId,
@@ -152,5 +155,31 @@ export default class UserPoolManager {
 
     const confirmSignUp = this.cognitoIdentityServiceProvider.confirmSignUp(params);
     const result = await confirmSignUp.promise();
+  }
+}
+
+export interface PoolInfo {
+  id: string
+  attributes: string[]
+}
+
+export abstract class UserPoolsManager {
+  pools: UserPoolManager[]
+
+  abstract get poolInfos(): PoolInfo[];
+
+  async init() {
+    this.pools = this.poolInfos.map(poolInfo => new UserPoolManager(
+      poolInfo.id,
+      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_POOL_ID`],
+      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_CLIENT_ID`],
+      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REGION`],
+      poolInfo.attributes,
+    ));
+    return Promise.all(this.pools.map(async pool => await pool.init()));
+  }
+
+  getUserPoolById(id: string) {
+    return this.pools.find(pool => pool.id === id);
   }
 }

@@ -8,12 +8,13 @@ import {
   JsonModels,
   EnvFile,
   PathResolver,
+  JsonEnvs,
 } from '@restlessness/core';
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import path from 'path';
-import UserPoolManager from './auth';
-import { jwtSessionModelTemplate } from './templates';
+import { UserPoolsManager } from './auth';
+import { sessionModelTemplate, appUserPoolsManagerTemplate } from './templates';
 
 interface JwtSessionData {
   id: string,
@@ -51,10 +52,20 @@ class CognitoAuthorizer extends AuthorizerPackage {
       console.warn(`${jsonAuthorizer.id} Auth already found inside authorizers.json!`);
     }
     await JsonAuthorizers.addEntry(jsonAuthorizer);
-    await JsonModels.create('JwtSession', null, jwtSessionModelTemplate());
+    await JsonModels.create('CognitoSession', null, sessionModelTemplate());
+    await JsonModels.create('AppUserPoolsManager', null, appUserPoolsManagerTemplate());
+    await JsonEnvs.read();
+    await Promise.all(JsonEnvs.entries.map(async jsonEnvsEntry => {
+      const envFile = new EnvFile(jsonEnvsEntry.id);
+      await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_POOL_ID');
+      await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_CLIENT_ID');
+      await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_REGION');
+    }));
   }
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
+    const appUserPoolsManager: UserPoolsManager = require(path.join(PathResolver.getDistPath, 'models', 'AppUserPoolsManager')).default;
+    await appUserPoolsManager.init();
   }
 
   async postEnvCreated(envName: string): Promise<void> {
@@ -112,4 +123,4 @@ class CognitoAuthorizer extends AuthorizerPackage {
 const Cognito = new CognitoAuthorizer();
 export default Cognito;
 export const authorizer = Cognito.authorizer;
-export { UserPoolManager };
+export * from './auth';
