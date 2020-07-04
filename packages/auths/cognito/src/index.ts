@@ -1,5 +1,4 @@
 import {
-  LambdaAuthorizerHandler,
   AuthorizerPackage,
   AuthorizerEvent,
   JsonAuthorizers,
@@ -9,6 +8,8 @@ import {
   EnvFile,
   PathResolver,
   JsonEnvs,
+  SessionModelInstance,
+  SessionModelInterface,
 } from '@restlessness/core';
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
@@ -21,24 +22,11 @@ interface JwtSessionData {
   serializedSession: string,
 }
 
-export interface SessionModelInterface<T> {
-  deserialize: (string) => Promise<T>
-}
-
-export interface SessionModelInstance {
-  id: string,
-  serialize: () => Promise<string>,
-}
-
 class CognitoAuthorizer extends AuthorizerPackage {
   constructor() {
     super();
     this.authorizer = this.authorizer.bind(this);
-    this.checkSession = this.checkSession.bind(this);
-  }
-
-  get authorizerPath() {
-    return path.join('dist', 'index.authorizer');
+    this.verifyToken = this.verifyToken.bind(this);
   }
 
   async postInstall(): Promise<void> {
@@ -74,7 +62,7 @@ class CognitoAuthorizer extends AuthorizerPackage {
     await envFile.setParametricValue('RLN_AUTH_JWT_SECRET');
   }
 
-  async checkSession(event: AuthorizerEvent): Promise<AuthorizerResult> {
+  async verifyToken(event: AuthorizerEvent): Promise<AuthorizerResult> {
     const authResult: AuthorizerResult = {
       granted: false,
     };
@@ -110,11 +98,7 @@ class CognitoAuthorizer extends AuthorizerPackage {
     }, jwtSecret);
   }
 
-  async authorizer(event: AuthorizerEvent) {
-    return LambdaAuthorizerHandler(event, this.checkSession);
-  }
-
-  async parseSession<T>(session: string): Promise<T> {
+  async parseSession<T extends SessionModelInterface<SessionModelInstance>>(session: string): Promise<T> {
     const JwtSession = require(path.join(PathResolver.getDistPath, 'models', 'JwtSession')).default;
     return await JwtSession.deserialize(session) as T;
   }
