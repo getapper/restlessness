@@ -1,5 +1,5 @@
 export { default as AddOnPackage } from './AddOnPackage';
-export { default as AuthorizerPackage, AuthorizerEvent, AuthorizerResult } from './AuthorizerPackage';
+export * from './AuthorizerPackage';
 export { default as DaoPackage } from './DaoPackage';
 export { default as JsonConfigFile, JsonConfigEntry } from './JsonConfigFile';
 export { default as JsonAuthorizers, JsonAuthorizersEntry } from './JsonAuthorizers';
@@ -13,7 +13,6 @@ export { default as Project } from './Project';
 export { default as Misc } from './Misc';
 export { default as PathResolver } from './PathResolver';
 export * from './LambdaHandler';
-export * from './LambdaAuthorizerHandler';
 export * from './ResponseHandler';
 export { default as EnvironmentHandler } from './EnvironmentHandler';
 export * from './TestHandler';
