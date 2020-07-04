@@ -23,8 +23,6 @@
   },
   "scripts": {
     "prepublishOnly": "rimraf ./dist && tsc",
-    "npm:tag": "node ../../../scripts/git-packages-tagger.js",
-    "preinstall": "cross-env-shell node ./dist/hooks/pre-install/index.js $INIT_CWD",
-    "postinstall": "cross-env-shell node ./dist/hooks/post-install/index.js $INIT_CWD"
+    "npm:tag": "node ../../../scripts/git-packages-tagger.js"
   }
 }

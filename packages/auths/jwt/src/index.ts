@@ -1,5 +1,15 @@
-import { AuthorizerPackage, AuthorizerEvent, JsonAuthorizers, AuthorizerResult, JsonAuthorizersEntry, JsonModels, EnvFile, PathResolver } from '@restlessness/utilities';
-import { LambdaAuthorizerHandler } from '@restlessness/core';
+import {
+  AuthorizerEvent,
+  AuthorizerPackage,
+  AuthorizerResult,
+  EnvFile,
+  JsonAuthorizers,
+  JsonAuthorizersEntry,
+  JsonModels,
+  PathResolver,
+  SessionModelInstance,
+  SessionModelInterface,
+} from '@restlessness/core';
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import path from 'path';
@@ -10,23 +20,10 @@ interface JwtSessionData {
   serializedSession: string,
 }
 
-export interface SessionModelInterface<T> {
-  deserialize: (string) => Promise<T>
-}
-
-export interface SessionModelInstance {
-  id: string,
-  serialize: () => Promise<string>,
-}
-
 class JwtAuthorizer extends AuthorizerPackage {
   constructor() {
     super();
     this.authorizer = this.authorizer.bind(this);
-  }
-
-  get authorizerPath() {
-    return path.join('dist', 'index.authorizer');
   }
 
   async postInstall(): Promise<void> {
@@ -51,7 +48,16 @@ class JwtAuthorizer extends AuthorizerPackage {
     await envFile.setParametricValue('RLN_AUTH_JWT_SECRET');
   }
 
-  async checkSession(event: AuthorizerEvent): Promise<AuthorizerResult> {
+  async createToken(session: SessionModelInstance): Promise<string> {
+    const jwtSecret = process.env['RLN_AUTH_JWT_SECRET'];
+    const sessionString = await session.serialize();
+    return jwt.sign({
+      id: session.id,
+      serializedSession: sessionString,
+    }, jwtSecret);
+  }
+
+  async verifyToken(event: AuthorizerEvent): Promise<AuthorizerResult> {
     const authResult: AuthorizerResult = {
       granted: false,
     };
@@ -78,20 +84,7 @@ class JwtAuthorizer extends AuthorizerPackage {
     return authResult;
   }
 
-  async createToken(session: SessionModelInstance): Promise<string> {
-    const jwtSecret = process.env['RLN_AUTH_JWT_SECRET'];
-    const sessionString = await session.serialize();
-    return jwt.sign({
-      id: session.id,
-      serializedSession: sessionString,
-    }, jwtSecret);
-  }
-
-  async authorizer(event: AuthorizerEvent) {
-    return LambdaAuthorizerHandler(event, this.checkSession);
-  }
-
-  async parseSession<T>(session: string): Promise<T> {
+  async parseSession<T extends SessionModelInterface<SessionModelInstance>>(session: string): Promise<T> {
     const JwtSession = require(path.join(PathResolver.getDistPath, 'models', 'JwtSession')).default;
     return await JwtSession.deserialize(session) as T;
   }
