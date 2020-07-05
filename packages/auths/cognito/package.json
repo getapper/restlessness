@@ -13,10 +13,11 @@
     "aws-sdk": "2.709.0",
     "eslint": "6.8.0",
     "rimraf": "3.0.2",
-    "typescript": "3.8.3"
+    "typescript": "3.8.3",
+    "yup": "0.29.1"
   },
   "dependencies": {
-    "@restlessness/core": "0.2.0",
+    "@restlessness/core": "0.2.1",
     "@types/jwk-to-pem": "2.0.0",
     "amazon-cognito-identity-js": "4.3.2",
     "jsonwebtoken": "8.5.1",
@@ -28,6 +29,7 @@
   },
   "scripts": {
     "prepublishOnly": "rimraf ./dist && tsc",
-    "npm:tag": "node ../../../scripts/git-packages-tagger.js"
+    "npm:tag": "node ../../../scripts/git-packages-tagger.js",
+    "update-deps": "npm i @restlessness/core@latest -S -E"
   }
 }

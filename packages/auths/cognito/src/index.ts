@@ -22,15 +22,6 @@ interface JwtSessionData {
   serializedSession: string,
 }
 
-export interface SessionModelInterface<T> {
-  deserialize: (string) => Promise<T>
-}
-
-export interface SessionModelInstance {
-  id: string,
-  serialize: () => Promise<string>,
-}
-
 export interface AwsJwt {
   header: {
     kid: string
