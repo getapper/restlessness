@@ -2,7 +2,6 @@ import { promises as fs } from 'fs';
 import PathResolver from '../PathResolver';
 import { HttpMethod } from '../JsonEndpoints';
 import JsonAuthorizers from '../JsonAuthorizers';
-import AuthorizerPackage from '../AuthorizerPackage';
 import _unset from 'lodash.unset';
 import path from 'path';
 
@@ -66,10 +65,16 @@ class JsonServerless {
       functionEndpoint.events[0].http.authorizer = authorizerId;
       if (!this.functions[authorizerId]) {
         const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
-        const authorizerPackage: AuthorizerPackage = AuthorizerPackage.load(jsonAuthorizersEntry.package);
-        this.functions[authorizerId] = {
-          handler: path.join('node_modules', jsonAuthorizersEntry.package, authorizerPackage.authorizerPath),
-        };
+        try {
+          const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main;
+          const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`)
+          const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
+          this.functions[authorizerId] = {
+            handler: handlerRelativePath,
+          };
+        } catch {
+          throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry.package}!`);
+        }
       }
     }
     this.functions[safeFunctionName] = functionEndpoint;
