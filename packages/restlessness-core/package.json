@@ -35,7 +35,6 @@
     "rootDir": "dist"
   },
   "dependencies": {
-    "@restlessness/utilities": "0.1.16",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "lodash.merge": "4.6.2",

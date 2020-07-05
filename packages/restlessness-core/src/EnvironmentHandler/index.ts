@@ -1,5 +1,5 @@
 import path from 'path';
-import { PathResolver } from '@restlessness/utilities';
+import { PathResolver } from '../';
 import { config } from 'dotenv';
 
 class EnvironmentHandler {

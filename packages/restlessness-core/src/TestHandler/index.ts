@@ -1,6 +1,5 @@
 import path from 'path';
-import { JsonServerless, PathResolver } from '@restlessness/utilities';
-import { Response } from '../response-handler';
+import { JsonServerless, PathResolver, Response } from '../';
 import { APIGatewayEventRequestContextWithAuthorizer, ClientContext, CognitoIdentity } from 'aws-lambda';
 import EnvironmentHandler from '../EnvironmentHandler';
 

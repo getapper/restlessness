@@ -4,12 +4,16 @@ import {
   AuthenticationDetails,
   CognitoUser,
   CognitoUserSession,
+  ISignUpResult,
 } from 'amazon-cognito-identity-js';
 import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { promisify } from 'util';
 import request from 'request';
 import jwkToPem from 'jwk-to-pem';
 import { ConfirmationCodeType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+
+export interface CognitoSignUpResult extends ISignUpResult {};
+export { CognitoUserSession };
 
 export class UserPoolManager {
   id: string
@@ -71,15 +75,14 @@ export class UserPoolManager {
     email: string,
     password: string,
     values: any,
-  ) {
+  ): Promise<CognitoSignUpResult> {
     const attributes: CognitoUserAttribute[] = this.attributesList.map(a => new CognitoUserAttribute(({
       Name: a,
       Value: values[a],
     })));
 
     const signupPromise = promisify(this.userPool.signUp.bind(this.userPool));
-    const result = await signupPromise(email, password, attributes, null);
-    return result.user;
+    return signupPromise(email, password, attributes, null);;
   }
 
   async login (
@@ -162,6 +165,21 @@ export interface PoolInfo {
   id: string
   attributes: string[]
 }
+
+export class CognitoSession {
+  ['constructor']: typeof CognitoSession
+  email: string
+
+  async serialize(): Promise<string> {
+    return JSON.stringify(this);
+  }
+
+  static async deserialize(session: string): Promise<CognitoSession> {
+    const jwtSession = new CognitoSession();
+    Object.assign(jwtSession, JSON.parse(session));
+    return jwtSession;
+  }
+};
 
 export abstract class UserPoolsManager {
   pools: UserPoolManager[]

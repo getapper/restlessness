@@ -13,7 +13,7 @@ import {
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import path from 'path';
-import { UserPoolsManager } from './auth';
+import { UserPoolsManager, CognitoSession } from './auth';
 import { sessionModelTemplate, appUserPoolsManagerTemplate } from './templates';
 
 interface JwtSessionData {
@@ -28,6 +28,18 @@ export interface SessionModelInterface<T> {
 export interface SessionModelInstance {
   id: string,
   serialize: () => Promise<string>,
+}
+
+export interface AwsJwt {
+  header: {
+    kid: string
+    alg: string
+  },
+  payload: {
+    iss: string
+    email: string
+    event_id: string
+  }
 }
 
 class CognitoAuthorizer extends AuthorizerPackage {
@@ -82,21 +94,35 @@ class CognitoAuthorizer extends AuthorizerPackage {
     try {
       const token = event?.authorizationToken?.split(' ')?.[1] ?? null;
       if (token !== null) {
-        const jwtSecret = process.env['RLN_AUTH_JWT_SECRET'];
-        const jwtUnsigned: any = jwt.verify(token, jwtSecret);
-        if (jwtUnsigned.serializedSession && jwtUnsigned.id) {
-          const jwtSessionData: JwtSessionData = {
-            id: jwtUnsigned.id,
-            serializedSession: jwtUnsigned.serializedSession,
-          };
-          authResult.granted = true;
-          authResult.principalId = jwtSessionData.id;
-          authResult.serializedSession = jwtSessionData.serializedSession;
+        const decodedJwt = jwt.decode(token, { complete: true }) as AwsJwt;
+        if (decodedJwt) {
+          const kid = decodedJwt?.header?.kid;
+          const appUserPoolsManager: UserPoolsManager = require(path.join(PathResolver.getDistPath, 'models', 'AppUserPoolsManager')).default;
+          await appUserPoolsManager.init();
+          const userPool = appUserPoolsManager.pools.find(pool => pool.iss === decodedJwt?.payload?.iss);
+          if (userPool) {
+            try {
+              await new Promise((resolve, reject) => {
+                jwt.verify(token, userPool.pems[kid], err => {
+                  if (err) {
+                    return reject(err);
+                  } else {
+                    return resolve();
+                  }
+                });
+              });
+              authResult.granted = true;
+              authResult.principalId = decodedJwt.payload.event_id;
+              const CognitoSession = require(path.join(PathResolver.getDistPath, 'models', 'CognitoSession')).default;
+              const cognito = new CognitoSession();
+              authResult.serializedSession = JSON.stringify({
+                email: decodedJwt.payload.email,
+              });
+            } catch (e) {}
+          }
         }
       }
-    } catch {
-      authResult.granted = false;
-    }
+    } catch {}
 
     return authResult;
   }
@@ -115,8 +141,8 @@ class CognitoAuthorizer extends AuthorizerPackage {
   }
 
   async parseSession<T>(session: string): Promise<T> {
-    const JwtSession = require(path.join(PathResolver.getDistPath, 'models', 'JwtSession')).default;
-    return await JwtSession.deserialize(session) as T;
+    const CognitoSession = require(path.join(PathResolver.getDistPath, 'models', 'CognitoSession')).default;
+    return await CognitoSession.deserialize(session) as T;
   }
 }
 

@@ -4,7 +4,7 @@ import {
   ResponseOptions,
   Response,
 } from './interfaces';
-import { PathResolver } from '@restlessness/utilities';
+import { PathResolver } from '../';
 
 class ResponseHandler {
   static json (response, statusCode: StatusCodes = StatusCodes.OK, options?: ResponseOptions): Response {

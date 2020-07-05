@@ -18,6 +18,7 @@
   "dependencies": {
     "@restlessness/core": "file:../../restlessness-core",
     "@restlessness/utilities": "0.0.8",
+    "@types/jwk-to-pem": "2.0.0",
     "amazon-cognito-identity-js": "4.3.2",
     "jsonwebtoken": "8.5.1",
     "jwk-to-pem": "2.0.4",
