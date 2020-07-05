@@ -5,9 +5,6 @@
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
-    "@types/aws-lambda": "8.10.51",
-    "@types/aws-sdk": "2.7.0",
-    "@types/jsonwebtoken": "8.3.9",
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "^2.1.0",
     "aws-sdk": "2.709.0",
@@ -17,7 +14,10 @@
     "yup": "0.29.1"
   },
   "dependencies": {
-    "@restlessness/core": "0.2.1",
+    "@types/aws-lambda": "8.10.51",
+    "@types/aws-sdk": "2.7.0",
+    "@types/jsonwebtoken": "8.3.9",
+    "@restlessness/core": "0.2.2",
     "@types/jwk-to-pem": "2.0.0",
     "amazon-cognito-identity-js": "4.3.2",
     "jsonwebtoken": "8.5.1",
