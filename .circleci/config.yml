@@ -133,6 +133,13 @@ jobs:
       - deps_and_publish:
           working_directory: packages/restlessness-core
 
+  rln-auth-cognito-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/auths/cognito
+
 workflows:
   rln-dao-mongo:
     jobs:
@@ -181,7 +188,7 @@ workflows:
 
   rln-auth-cognito:
     jobs:
-      - rln-core-publish:
+      - rln-auth-cognito-publish:
           filters:
             tags:
               only: /^@restlessness/auth-cognito/v(\d+)\.(\d+)\.(\d+)$/
