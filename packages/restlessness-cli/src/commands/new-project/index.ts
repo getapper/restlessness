@@ -1,4 +1,4 @@
-import { Project } from '@restlessness/utilities';
+import { Project } from '@restlessness/core';
 import minimist from 'minimist';
 import chalk from 'chalk';
 import path from 'path';

@@ -1,11 +1,20 @@
-import EnvironmentHandler from '../EnvironmentHandler';
 import { ValidationObjects, ValidationResult, RequestI } from './interfaces';
-import { JsonEndpoints, DaoPackage, JsonDaos, JsonDaosEntry } from '@restlessness/utilities';
+import {
+  AuthorizerContext,
+  EnvironmentHandler,
+  JsonEndpoints,
+  DaoPackage,
+  JsonDaos,
+  JsonDaosEntry,
+  JsonAuthorizers,
+  AuthorizerPackage,
+  JsonAuthorizersEntry,
+} from '../';
 import AWSLambda from 'aws-lambda';
 
 export * from './interfaces';
 
-export const LambdaHandler = async <T, Q, P, PP>(
+export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
   handler: (req: RequestI<Q, P, PP>) => any,
   validationsBuilder: () => ValidationObjects,
   apiName: string,
@@ -13,6 +22,7 @@ export const LambdaHandler = async <T, Q, P, PP>(
   context: AWSLambda.Context,
 ) => {
   EnvironmentHandler.load();
+  let parsedSession;
 
   // @TODO: Check Plugins beforeLambdas hooks
   const jsonEndpointsEntry = await JsonEndpoints.getEntryById(apiName);
@@ -26,6 +36,22 @@ export const LambdaHandler = async <T, Q, P, PP>(
         } catch (e) {
           console.error(`Error when calling beforeLambda hook on dao: ${jsonDaoEntry.name} (${jsonDaoEntry.id})`, e);
         }
+      }
+    }
+
+    if (jsonEndpointsEntry.authorizerId) {
+      const jsonAuthorizersEntry: JsonAuthorizersEntry = await JsonAuthorizers.getEntryById(jsonEndpointsEntry.authorizerId);
+      const authorizerPackage: AuthorizerPackage = AuthorizerPackage.load(jsonAuthorizersEntry.package);
+      try {
+        await authorizerPackage.beforeLambda(event, context);
+      } catch (e) {
+        console.error(`Error when calling beforeLambda hook on authorizer: ${jsonAuthorizersEntry.name} (${jsonAuthorizersEntry.package})`, e);
+      }
+
+      try {
+        parsedSession = await authorizerPackage.parseSession(event?.requestContext?.authorizer?.serializedSession);
+      } catch {
+        console.error('Error parsing serialized session');
       }
     }
   } else {
@@ -76,5 +102,6 @@ export const LambdaHandler = async <T, Q, P, PP>(
     queryStringParameters,
     payload,
     pathParameters,
+    session: parsedSession,
   });
 };

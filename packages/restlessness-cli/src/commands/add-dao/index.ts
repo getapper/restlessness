@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { DaoPackage } from '@restlessness/utilities';
+import { DaoPackage } from '@restlessness/core';
 
 export default async argv => {
   if (argv._.length > 2) {

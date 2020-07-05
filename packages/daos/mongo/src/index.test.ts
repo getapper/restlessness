@@ -2,7 +2,7 @@ import path from 'path';
 import rimraf from 'rimraf';
 import { promisify } from 'util';
 import { promises as fs } from 'fs';
-import { Project, JsonDaos } from '@restlessness/utilities';
+import { Project, JsonDaos } from '@restlessness/core';
 import MongoDaoPackage from '.';
 
 const PROJECT_NAME = 'tmp-mongo-dao';
@@ -25,7 +25,7 @@ describe('Mongo Dao Package hooks', () => {
     await JsonDaos.read();
     const jsonDaosEntry = await JsonDaos.getEntryById('dao-mongo');
     expect(jsonDaosEntry.package).toBe('@restlessness/dao-mongo');
-    await expect(MongoDaoPackage.postInstall()).rejects.toEqual(new Error('Key already exists'));
+    await expect(MongoDaoPackage.postInstall()).rejects.toEqual(new Error('Entry with id dao-mongo already exists'));
     done();
   });
 });

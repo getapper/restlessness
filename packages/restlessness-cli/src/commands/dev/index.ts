@@ -3,7 +3,7 @@ import path from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import chalk from 'chalk';
 import { which } from 'shelljs';
-import { EnvFile, ENV } from '@restlessness/utilities';
+import { EnvFile, ENV } from '@restlessness/core';
 
 const printRestlessnessData = (d, newlineAtStart = false) => {
   const data = d.toString();

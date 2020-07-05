@@ -1,4 +1,4 @@
-import { HttpMethod } from '@restlessness/utilities';
+import { HttpMethod } from '@restlessness/core';
 
 export interface Payload {
   route: string,

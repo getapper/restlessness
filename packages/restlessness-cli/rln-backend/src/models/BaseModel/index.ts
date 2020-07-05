@@ -1,4 +1,4 @@
-import { JsonConfigFile, JsonConfigEntry } from '@restlessness/utilities';
+import { JsonConfigFile, JsonConfigEntry } from '@restlessness/core';
 
 export default class BaseModel implements JsonConfigEntry {
   id: string;

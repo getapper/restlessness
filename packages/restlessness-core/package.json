@@ -2,28 +2,43 @@
   "name": "@restlessness/core",
   "version": "0.0.0",
   "main": "dist/index.js",
+  "types": "dist/index.d.js",
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
     "@types/aws-lambda": "8.10.50",
+    "@types/jest": "25.2.3",
+    "@types/lodash.merge": "4.6.6",
+    "@types/lodash.unset": "4.5.6",
     "@types/node": "13.7.1",
     "@types/yup": "^0.26.33",
+    "@types/rimraf": "3.0.0",
     "@typescript-eslint/parser": "2.25.0",
     "eslint": "6.8.0",
+    "jest": "26.0.1",
     "rimraf": "3.0.2",
     "typescript": "3.8.3"
   },
   "peerDependencies": {
     "yup": "^0.28.3"
   },
+  "repository": {
+    "url": "https://github.com/getapper/restlessness/tree/master/packages/restlessness-core"
+  },
   "scripts": {
     "prepublishOnly": "npm run tsc",
     "npm:tag": "node ../../scripts/git-packages-tagger.js",
     "tsc": "rimraf dist && tsc -p tsconfig.json",
-    "update-deps": "npm i @restlessness/utilities@latest -S -E"
+    "test": "npm run tsc && jest"
+  },
+  "jest": {
+    "rootDir": "dist"
   },
   "dependencies": {
-    "@restlessness/utilities": "0.1.16",
-    "dotenv": "8.2.0"
+    "dotenv": "8.2.0",
+    "dotenv-expand": "5.1.0",
+    "lodash.merge": "4.6.2",
+    "lodash.unset": "4.5.2",
+    "rimraf": "3.0.2"
   }
 }

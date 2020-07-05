@@ -1,4 +1,4 @@
-import { JsonAuthorizers, JsonAuthorizersEntry } from '@restlessness/utilities';
+import { JsonAuthorizers, JsonAuthorizersEntry } from '@restlessness/core';
 import { BaseModel } from '../';
 
 export default class Authorizer extends BaseModel {

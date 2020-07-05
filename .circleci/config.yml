@@ -133,21 +133,6 @@ jobs:
       - deps_and_publish:
           working_directory: packages/restlessness-core
 
-  rln-utilities-tests:
-    executor: node12
-    steps:
-      - checkout
-      - deps_and_tests:
-          working_directory: packages/restlessness-utilities
-
-  rln-utilities-publish:
-    executor: node12
-    steps:
-      - checkout
-      - deps_and_publish:
-          working_directory: packages/restlessness-utilities
-
-
 workflows:
   rln-dao-mongo:
     jobs:
@@ -194,17 +179,11 @@ workflows:
             branches:
               ignore: /.*/
 
-  rln-utilities:
+  rln-auth-cognito:
     jobs:
-      - rln-utilities-tests:
+      - rln-core-publish:
           filters:
             tags:
-              only: /^@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
-      - rln-utilities-publish:
-          requires:
-            - rln-utilities-tests
-          filters:
-            tags:
-              only: /^@restlessness/utilities/v(\d+)\.(\d+)\.(\d+)$/
+              only: /^@restlessness/auth-cognito/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/

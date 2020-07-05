@@ -2,8 +2,9 @@ import MongoBase from './base-model';
 import mongoDao from './dao';
 import { ObjectId } from 'mongodb';
 import * as yup from 'yup';
-import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/utilities';
-
+import path from 'path';
+import { PathResolver } from '@restlessness/core';
+import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/core';
 import { modelTemplate } from './templates';
 
 class ObjectIdSchema extends yup.mixed {
@@ -42,10 +43,11 @@ class MongoDaoPackage extends DaoPackage {
     await envFile.setParametricValue('RLN_MONGO_DAO_URI');
   }
 
-  async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
+  async beforeLambda<T>(event?: AWSLambda.APIGatewayProxyEventBase<T>, context?: AWSLambda.Context): Promise<void> {
     await mongoDao.openConnection(context);
-    if (!yup.objectId) {
-      yup.objectId = () => new ObjectIdSchema();
+    const projectYup = require(path.join(PathResolver.getNodeModulesPath, 'yup'));
+    if (!projectYup.objectId) {
+      projectYup.objectId = () => new ObjectIdSchema();
     }
   }
 

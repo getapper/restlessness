@@ -1,5 +1,5 @@
 import { BaseModel } from '../';
-import { JsonEnvs, JsonEnvsEntry, EnvStage, EnvType } from '@restlessness/utilities';
+import { JsonEnvs, JsonEnvsEntry, EnvStage, EnvType } from '@restlessness/core';
 
 export default class Env extends BaseModel {
   id: string
