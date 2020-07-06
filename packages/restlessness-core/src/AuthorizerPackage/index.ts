@@ -1,5 +1,5 @@
 import AddOnPackage from '../AddOnPackage';
-import { AuthPolicy, AuthPolicyResponse } from '../LambdaAuthorizerHandler/AuthPolicy';
+import { AuthPolicy, AuthPolicyResponse } from './AuthPolicy';
 import { AuthorizerEvent, AuthorizerResult, SessionModelInstance, SessionModelInterface } from './interfaces';
 
 export * from './interfaces';
