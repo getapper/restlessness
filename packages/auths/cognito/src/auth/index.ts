@@ -11,6 +11,7 @@ import { promisify } from 'util';
 import request from 'request';
 import jwkToPem from 'jwk-to-pem';
 import { ConfirmationCodeType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import fetch from 'cross-fetch';
 
 export interface CognitoSignUpResult extends ISignUpResult {};
 export { CognitoUserSession };
@@ -45,6 +46,7 @@ export class UserPoolManager {
   }
 
   async init () {
+    global['fetch'] = fetch;
     return new Promise((resolve, reject) => {
       request({
         url : `${this.iss}/.well-known/jwks.json`,
