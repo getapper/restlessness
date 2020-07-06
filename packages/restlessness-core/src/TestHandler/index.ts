@@ -1,7 +1,16 @@
 import path from 'path';
-import { JsonServerless, PathResolver, Response } from '../';
+import {
+  JsonServerless,
+  PathResolver,
+  JsonEndpoints,
+  AuthorizerPackage,
+  JsonAuthorizers,
+  SessionModelInstance,
+  Response,
+} from '../';
 import { APIGatewayEventRequestContextWithAuthorizer, ClientContext, CognitoIdentity } from 'aws-lambda';
 import EnvironmentHandler from '../EnvironmentHandler';
+import AWSLambda from 'aws-lambda';
 
 interface Event {
   http: {
@@ -64,6 +73,7 @@ export class TestHandler {
     apiName: string,
     data?: RequestData,
     authorizer?: TAuthorizerContext,
+    session?: SessionModelInstance,
     event?: TestAPIGatewayProxyEventBase<TAuthorizerContext>,
     context?: TestContext,
   ): Promise<Response> {
@@ -74,9 +84,10 @@ export class TestHandler {
     }
 
     const endpoint = await JsonServerless.getEndpoint(apiName);
+    const jsonEndpoint = await JsonEndpoints.getEntryById(apiName);
 
     let requestContext: APIGatewayEventRequestContextWithAuthorizer<TAuthorizerContext> = null;
-    if (authorizer) {
+    if (authorizer || jsonEndpoint.authorizerId) {
       requestContext = {
         accountId: null,
         apiId: null,
@@ -92,6 +103,30 @@ export class TestHandler {
         resourceId: null,
         resourcePath: null,
       };
+
+      if (jsonEndpoint.authorizerId) {
+        const jsonAuthorizer = await JsonAuthorizers.getEntryById(jsonEndpoint.authorizerId);
+        const authPackage: AuthorizerPackage = AuthorizerPackage.load(jsonAuthorizer.package);
+        let authResult;
+        try {
+          const authToken = await authPackage.createToken(session);
+          authResult = await authPackage.authorizer({
+            type: 'TOKEN',
+            authorizationToken: `Bearer ${authToken}`,
+            methodArn: `arn:aws:execute-api:us-east-1:random-account-id:random-api-id/dev/${jsonEndpoint.method.toUpperCase()}/${jsonEndpoint.route}`,
+          });
+        } catch(e) {
+          throw new Error(`Authorizer ${jsonEndpoint.authorizerId}\n${e}`);
+        }
+        if (authResult === 'Unauthorized') {
+          throw new Error('Unauthorized');
+        }
+
+        requestContext.authorizer = {
+          ...(requestContext.authorizer || {}),
+          ...authResult.context,
+        };
+      }
     };
     const eventOptions: AWSLambda.APIGatewayProxyEventBase<TAuthorizerContext> = Object.assign({
       body: null,

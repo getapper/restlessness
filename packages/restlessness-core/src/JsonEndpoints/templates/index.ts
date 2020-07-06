@@ -24,8 +24,8 @@ beforeAll(async done => {
 
 describe('${jsonEndpointsEntry.id} API', () => {
   test('', async (done) => {
-    ${authorizer ? `const session = new ${authorizer.sessionModelName}();\nsession.id = 'test_id';\nconst serializedSession = await session.serialize();` : ''}
-    const res = await TestHandler.invokeLambda(${jsonEndpointsEntry.id}${authorizer ? ', null, {serializedSession}' : ''});
+    ${authorizer ? `const session = new ${authorizer.sessionModelName}();\nsession.id = 'test_id';` : ''}
+    const res = await TestHandler.invokeLambda(${jsonEndpointsEntry.id}${authorizer ? ', null, null, session' : ''});
     // expect(res.statusCode).toBe(StatusCodes.OK);
     done();
   });
