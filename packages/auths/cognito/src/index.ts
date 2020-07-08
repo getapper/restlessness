@@ -4,6 +4,7 @@ import {
   JsonAuthorizers,
   AuthorizerResult,
   JsonAuthorizersEntry,
+  JsonServerless,
   JsonModels,
   EnvFile,
   PathResolver,
@@ -60,7 +61,10 @@ class CognitoAuthorizer extends AuthorizerPackage {
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_CLIENT_ID');
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_REGION');
     }));
-    // @TODO: Add auth function to serverless.json
+
+    const handlerPathAbs = path.join(PathResolver.getNodeModulesPath, jsonAuthorizer.package, 'dist/index.authorizer');
+    const handler = path.relative(PathResolver.getPrjPath, handlerPathAbs);
+    await JsonServerless.addFunction(jsonAuthorizer.id, { handler });
   }
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {

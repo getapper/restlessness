@@ -46,8 +46,6 @@ class JsonServerless {
     method: HttpMethod,
     authorizerId?: string,
   ) {
-    await this.read();
-
     const functionEndpoint: FunctionEndpoint = {
       handler: `dist/exporter.${safeFunctionName}`,
       events: [
@@ -56,28 +54,17 @@ class JsonServerless {
             path: functionPath,
             method: method,
             cors: true,
-            authorizer: null,
+            authorizer: authorizerId || null,
           },
         },
       ],
     };
-    if (authorizerId) {
-      functionEndpoint.events[0].http.authorizer = authorizerId;
-      if (!this.functions[authorizerId]) {
-        const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
-        try {
-          const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main;
-          const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`)
-          const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
-          this.functions[authorizerId] = {
-            handler: handlerRelativePath,
-          };
-        } catch {
-          throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry.package}!`);
-        }
-      }
-    }
-    this.functions[safeFunctionName] = functionEndpoint;
+    await this.addFunction(safeFunctionName, functionEndpoint);
+  }
+
+  async addFunction(functionId: string, content: FunctionEndpoint) {
+    await this.read();
+    this.functions[functionId] = content;
     await this.save();
   }
 

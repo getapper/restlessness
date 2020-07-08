@@ -5,6 +5,7 @@ import {
   EnvFile,
   JsonAuthorizers,
   JsonAuthorizersEntry,
+  JsonServerless,
   JsonModels,
   PathResolver,
   SessionModelInstance,
@@ -38,6 +39,10 @@ class JwtAuthorizer extends AuthorizerPackage {
     }
     await JsonAuthorizers.addEntry(jsonAuthorizer);
     await JsonModels.create('JwtSession', null, jwtSessionModelTemplate());
+
+    const handlerPathAbs = path.join(PathResolver.getNodeModulesPath, jsonAuthorizer.package, 'dist/index.authorizer');
+    const handler = path.relative(PathResolver.getPrjPath, handlerPathAbs);
+    await JsonServerless.addFunction(jsonAuthorizer.id, { handler });
   }
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
