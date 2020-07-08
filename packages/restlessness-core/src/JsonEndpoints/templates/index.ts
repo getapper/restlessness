@@ -10,6 +10,7 @@ import validations from './validations';
 export default LambdaHandler.bind(this, handler, validations, '${jsonEndpointsEntry.safeFunctionName}');
 `;
 
+// @TODO: Change import based on SessionModelName with a generic testTemplate() function from the package
 const testTemplate = (
   jsonEndpointsEntry: JsonEndpointsEntry,
   authorizer: JsonAuthorizersEntry,
@@ -63,6 +64,7 @@ ${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n'
 };
 `;
 
+// @TODO: Change import based on SessionModelName with a generic interfaceTemplate() function from the package
 const interfacesTemplate = (
   hasPayload: boolean,
   vars: string[],

@@ -52,7 +52,6 @@ class CognitoAuthorizer extends AuthorizerPackage {
       console.warn(`${jsonAuthorizer.id} Auth already found inside authorizers.json!`);
     }
     await JsonAuthorizers.addEntry(jsonAuthorizer);
-    await JsonModels.create('CognitoSession', null, sessionModelTemplate());
     await JsonModels.create('AppUserPoolsManager', null, appUserPoolsManagerTemplate());
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(async jsonEnvsEntry => {
@@ -61,6 +60,7 @@ class CognitoAuthorizer extends AuthorizerPackage {
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_CLIENT_ID');
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_REGION');
     }));
+    // @TODO: Add auth function to serverless.json
   }
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
