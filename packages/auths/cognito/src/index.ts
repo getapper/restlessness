@@ -14,24 +14,12 @@ import {
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import path from 'path';
-import { UserPoolsManager, CognitoSession } from './auth';
+import { UserPoolsManager, CognitoSession, AwsJwt } from './auth';
 import { sessionModelTemplate, appUserPoolsManagerTemplate } from './templates';
 
 interface JwtSessionData {
   id: string,
   serializedSession: string,
-}
-
-export interface AwsJwt {
-  header: {
-    kid: string
-    alg: string
-  },
-  payload: {
-    iss: string
-    email: string
-    event_id: string
-  }
 }
 
 class CognitoAuthorizer extends AuthorizerPackage {
@@ -101,11 +89,10 @@ class CognitoAuthorizer extends AuthorizerPackage {
               });
               authResult.granted = true;
               authResult.principalId = decodedJwt.payload.event_id;
-              const CognitoSession = require(path.join(PathResolver.getDistPath, 'models', 'CognitoSession')).default;
               const cognito = new CognitoSession();
-              authResult.serializedSession = JSON.stringify({
-                email: decodedJwt.payload.email,
-              });
+              cognito.email = decodedJwt.payload.email;
+              cognito.id = authResult.principalId;
+              authResult.serializedSession = await cognito.serialize();
             } catch (e) {}
           }
         }
@@ -124,9 +111,8 @@ class CognitoAuthorizer extends AuthorizerPackage {
     }, jwtSecret);
   }
 
-  async parseSession<T extends SessionModelInterface<SessionModelInstance>>(session: string): Promise<T> {
-    const CognitoSession = require(path.join(PathResolver.getDistPath, 'models', 'CognitoSession')).default;
-    return await CognitoSession.deserialize(session) as T;
+  async parseSession(session: string) {
+    return CognitoSession.deserialize(session);
   }
 }
 

@@ -13,7 +13,7 @@ export interface SessionModelInterface<T> {
 }
 
 export interface SessionModelInstance {
-  id: string,
+  id: string
   serialize: () => Promise<string>,
 }
 

@@ -1,10 +1,14 @@
 import {
+  SessionModelInterface,
+} from '@restlessness/core';
+import {
   CognitoUserPool,
   CognitoUserAttribute,
   AuthenticationDetails,
   CognitoUser,
   CognitoUserSession,
   ISignUpResult,
+  CognitoRefreshToken,
 } from 'amazon-cognito-identity-js';
 import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { promisify } from 'util';
@@ -12,9 +16,22 @@ import request from 'request';
 import jwkToPem from 'jwk-to-pem';
 import { ConfirmationCodeType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import fetch from 'cross-fetch';
+import jwt from 'jsonwebtoken';
 
 export interface CognitoSignUpResult extends ISignUpResult {};
 export { CognitoUserSession };
+
+export interface AwsJwt {
+  header: {
+    kid: string
+    alg: string
+  },
+  payload: {
+    iss: string
+    email: string
+    event_id: string
+  }
+}
 
 export class UserPoolManager {
   id: string
@@ -161,6 +178,33 @@ export class UserPoolManager {
     const confirmSignUp = this.cognitoIdentityServiceProvider.confirmSignUp(params);
     const result = await confirmSignUp.promise();
   }
+
+  async refreshTokens (idToken: string, refreshToken: string): Promise<CognitoUserSession> {
+    const decodedJwt = jwt.decode(idToken, { complete: true }) as AwsJwt;
+    if (decodedJwt) {
+      const { email } = decodedJwt.payload;
+
+      const cognitoUser: CognitoUser = new CognitoUser({
+        Username: email,
+        Pool: this.userPool,
+      });
+
+      const cognitoRefreshToken = new CognitoRefreshToken({
+        RefreshToken: refreshToken,
+      });
+
+      return new Promise((resolve, reject) => {
+        cognitoUser.refreshSession(cognitoRefreshToken, (err, session: CognitoUserSession) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(session);
+        });
+      });
+    } else {
+      throw new Error('Invalid session token');
+    }
+  }
 }
 
 export interface PoolInfo {
@@ -170,6 +214,7 @@ export interface PoolInfo {
 
 export class CognitoSession {
   ['constructor']: typeof CognitoSession
+  id: string
   email: string
 
   async serialize(): Promise<string> {

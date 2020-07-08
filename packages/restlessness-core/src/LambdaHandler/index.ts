@@ -50,8 +50,8 @@ export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
 
       try {
         parsedSession = await authorizerPackage.parseSession(event?.requestContext?.authorizer?.serializedSession);
-      } catch {
-        console.error('Error parsing serialized session');
+      } catch(e) {
+        console.error('Error parsing serialized session', e);
       }
     }
   } else {
