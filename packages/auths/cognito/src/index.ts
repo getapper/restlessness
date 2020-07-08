@@ -9,7 +9,6 @@ import {
   PathResolver,
   JsonEnvs,
   SessionModelInstance,
-  SessionModelInterface,
 } from '@restlessness/core';
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
@@ -93,11 +92,15 @@ class CognitoAuthorizer extends AuthorizerPackage {
               cognito.email = decodedJwt.payload.email;
               cognito.id = authResult.principalId;
               authResult.serializedSession = await cognito.serialize();
-            } catch (e) {}
+            } catch (e) {
+              console.log(e);
+            }
           }
         }
       }
-    } catch {}
+    } catch(e) {
+      console.log(e);
+    }
 
     return authResult;
   }

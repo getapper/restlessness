@@ -1,5 +1,5 @@
-import AddOnPackage from '../AddOnPackage';
-import { AuthPolicy, AuthPolicyResponse } from '../LambdaAuthorizerHandler/AuthPolicy';
+import { EnvironmentHandler, AddOnPackage } from '../';
+import { AuthPolicy, AuthPolicyResponse } from '../AuthPolicy';
 import { AuthorizerEvent, AuthorizerResult, SessionModelInstance, SessionModelInterface } from './interfaces';
 
 export * from './interfaces';
@@ -10,19 +10,30 @@ export abstract class AuthorizerPackage extends AddOnPackage {
   abstract parseSession(session: string): Promise<unknown>
 
   async authorizer(event: AuthorizerEvent) {
+    EnvironmentHandler.load();
     // extract data from event
-    const authResult = await this.verifyToken(event);
-    return this.generatePolicy(event, authResult);
+    let authorizeResult: AuthorizerResult = {
+      granted: false,
+    };
+    try {
+      authorizeResult = await this.verifyToken(event);
+    } catch (e) {
+      console.error(e);
+    }
+    return this.generatePolicy(event, authorizeResult);
   }
 
-  generatePolicy(event: AuthorizerEvent, authResult: AuthorizerResult): AuthPolicyResponse | 'Unauthorized' {
-    const UNAUTHORIZED = 'Unauthorized';
+  static get Unauthorized() {
+    return 'Unauthorized';
+  };
+
+  generatePolicy(event: AuthorizerEvent, authResult: AuthorizerResult): AuthPolicyResponse {
     try {
       if (authResult.granted) {
         const principalId: string = authResult.principalId;
 
         // you can send a 401 Unauthorized response to the client by failing like so:
-        // callback("Unauthorized", null);
+        // throw new Error(AuthorizerPackage.Unauthorized);
         // if the token is valid, a policy must be generated which will allow or deny access to the client
         // if access is denied, the client will receive a 403 Access Denied response
         // if access is allowed, API Gateway will proceed with the backend integration configured on the method that was called
@@ -46,10 +57,10 @@ export abstract class AuthorizerPackage extends AddOnPackage {
 
         return authResponse;
       } else {
-        return UNAUTHORIZED;
+        throw new Error(AuthorizerPackage.Unauthorized);
       }
     } catch {
-      return UNAUTHORIZED;
+      throw new Error(AuthorizerPackage.Unauthorized);
     }
   }
 }
