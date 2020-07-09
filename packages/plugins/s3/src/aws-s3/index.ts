@@ -3,19 +3,13 @@ import { PromiseResult } from 'aws-sdk/lib/request';
 import { AWSError } from 'aws-sdk/lib/error';
 import path from 'path';
 
-class RLNS3 {
+class AwsS3 {
   awsS3: S3
 
-  constructor() {
-    const config = require(path.join(process.cwd(), 'env.json'));
-    const credentials = config?.s3?.credentials ?? null;
-    const region = config?.s3?.region ?? null;
-    if (credentials === null || region === null) {
-      throw new Error('No s3 configuration found in env.json');
-    }
+  init() {
     const s3ConfigOptions:S3.ClientConfiguration = {
-      credentials: new Credentials(credentials.accessKeyId, credentials.secretAccessKey),
-      region,
+      credentials: new Credentials(process.env['RLN_S3_AWS_ACCESS_KEY_ID'], process.env['RLN_S3_AWS_SECRET_ACCESS_KEY']),
+      region: process.env['RLN_S3_AWS_REGION'],
     };
     this.awsS3 = new S3(s3ConfigOptions);
   }
@@ -58,6 +52,9 @@ class RLNS3 {
   }
 }
 
-const s3 = new RLNS3();
+const s3 = new AwsS3();
 
-export default () => s3;
+export default () => {
+  s3.init();
+  return s3;
+};

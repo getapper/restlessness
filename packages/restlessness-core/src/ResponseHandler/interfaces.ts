@@ -76,6 +76,7 @@ interface Response {
   statusCode: number,
   body: string,
   headers?: HttpHeader
+  isBase64Encoded?: boolean
 }
 
 export {
