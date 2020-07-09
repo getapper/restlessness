@@ -27,6 +27,10 @@ class JwtAuthorizer extends AuthorizerPackage {
     this.authorizer = this.authorizer.bind(this);
   }
 
+  get importSessionTemplate(): string {
+    return 'import JwtSession from \'root/models/JwtSession\'';
+  }
+
   async postInstall(): Promise<void> {
     const jsonAuthorizer: JsonAuthorizersEntry = {
       id: 'jwt',

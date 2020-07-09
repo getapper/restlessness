@@ -42,6 +42,10 @@ class CognitoAuthorizer extends AuthorizerPackage {
     this.verifyToken = this.verifyToken.bind(this);
   }
 
+  get importSessionTemplate(): string {
+    return 'import CognitoSession from \'root/models/CognitoSession\'';
+  }
+
   async postInstall(): Promise<void> {
     const jsonAuthorizer: JsonAuthorizersEntry = {
       id: 'cognito',
