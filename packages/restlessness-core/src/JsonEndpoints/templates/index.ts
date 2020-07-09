@@ -1,6 +1,5 @@
-import { JsonAuthorizersEntry } from '../../JsonAuthorizers';
+import { JsonAuthorizersEntry, AuthorizerPackage, JsonEndpointsEntry } from '../../';
 import Route from '../../Route';
-import { JsonEndpointsEntry } from '../';
 
 const indexTemplate = (jsonEndpointsEntry: JsonEndpointsEntry) => `import 'module-alias/register';
 import { LambdaHandler } from '@restlessness/core';
@@ -10,12 +9,13 @@ import validations from './validations';
 export default LambdaHandler.bind(this, handler, validations, '${jsonEndpointsEntry.safeFunctionName}');
 `;
 
-// @TODO: Change import based on SessionModelName with a generic testTemplate() function from the package
 const testTemplate = (
   jsonEndpointsEntry: JsonEndpointsEntry,
   authorizer: JsonAuthorizersEntry,
-): string => `import { StatusCodes, TestHandler } from '@restlessness/core';
-${authorizer ? `import ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
+): string => {
+  const authPackage = authorizer ? AuthorizerPackage.load<AuthorizerPackage>(authorizer.package) : null;
+  return `import { StatusCodes, TestHandler } from '@restlessness/core';
+${authorizer ? authPackage.importSessionTemplate : ''}
 const ${jsonEndpointsEntry.id} = '${jsonEndpointsEntry.safeFunctionName}';
 
 beforeAll(async done => {
@@ -41,6 +41,7 @@ afterAll(async done => {
   done();
 });
 `;
+};
 
 const handlerTemplate = (
   hasPayload: boolean,
@@ -68,13 +69,14 @@ ${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n'
 };
 `;
 
-// @TODO: Change import based on SessionModelName with a generic interfaceTemplate() function from the package
 const interfacesTemplate = (
   hasPayload: boolean,
   vars: string[],
   authorizer: JsonAuthorizersEntry,
-): string => `import { RequestI } from '@restlessness/core';
-${authorizer ? `import ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
+): string => {
+  const authPackage = authorizer ? AuthorizerPackage.load<AuthorizerPackage>(authorizer.package) : null;
+  return `import { RequestI } from '@restlessness/core';
+${authorizer ? authPackage.importSessionTemplate : ''}
 export interface QueryStringParameters {}${hasPayload
   ? '\n\nexport interface Payload {}' : ''}${vars.length ? `\n\nexport interface PathParameters {
 ${vars.map(v => `  ${v}: string,`).join('\n')}
@@ -83,6 +85,7 @@ ${vars.map(v => `  ${v}: string,`).join('\n')}
 
 export interface Request extends RequestI<QueryStringParameters, ${hasPayload ? 'Payload' : 'null'}, ${vars.length ? 'PathParameters' : 'null'}> {${authorizer ? `\n  session: ${authorizer.sessionModelName},\n` : ''}};
 `;
+};
 
 const validationsTemplate = (hasPayload: boolean, vars: string[]): string => `import * as yup from 'yup';
 import { QueryStringParameters${hasPayload ? ', Payload' : ''}${vars.length ? ', PathParameters' : ''} } from './interfaces';

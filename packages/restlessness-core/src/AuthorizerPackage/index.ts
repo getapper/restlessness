@@ -8,6 +8,7 @@ export abstract class AuthorizerPackage extends AddOnPackage {
   abstract createToken(session: SessionModelInstance): Promise<string>
   abstract verifyToken(event: AuthorizerEvent): Promise<AuthorizerResult>
   abstract parseSession<T extends SessionModelInterface<SessionModelInstance>>(session: string): Promise<T>
+  abstract get importSessionTemplate(): string
 
   async authorizer(event: AuthorizerEvent) {
     // extract data from event
