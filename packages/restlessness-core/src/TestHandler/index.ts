@@ -1,6 +1,6 @@
 import path from 'path';
-import { JsonServerless, PathResolver, Response } from '../';
-import { APIGatewayEventRequestContextWithAuthorizer, ClientContext, CognitoIdentity } from 'aws-lambda';
+import { JsonServerless, PathResolver, Response, SessionModelInstance, AuthorizerContext } from '../';
+import AWSLambda, { APIGatewayEventRequestContextWithAuthorizer, ClientContext, CognitoIdentity } from 'aws-lambda';
 import EnvironmentHandler from '../EnvironmentHandler';
 
 interface Event {
@@ -60,10 +60,11 @@ export class TestHandler {
 
   static async afterAll() {}
 
-  static async invokeLambda<TAuthorizerContext>(
+  static async invokeLambda<TAuthorizerContext extends AuthorizerContext>(
     apiName: string,
     data?: RequestData,
     authorizer?: TAuthorizerContext,
+    session?: SessionModelInstance,
     event?: TestAPIGatewayProxyEventBase<TAuthorizerContext>,
     context?: TestContext,
   ): Promise<Response> {
@@ -76,11 +77,14 @@ export class TestHandler {
     const endpoint = await JsonServerless.getEndpoint(apiName);
 
     let requestContext: APIGatewayEventRequestContextWithAuthorizer<TAuthorizerContext> = null;
-    if (authorizer) {
+    if (authorizer || session) {
       requestContext = {
         accountId: null,
         apiId: null,
-        authorizer,
+        authorizer: {
+          ...authorizer,
+          serializedSession: session ? await session.serialize() : null,
+        },
         protocol: null,
         httpMethod: null,
         identity: null,
@@ -92,7 +96,8 @@ export class TestHandler {
         resourceId: null,
         resourcePath: null,
       };
-    };
+    }
+
     const eventOptions: AWSLambda.APIGatewayProxyEventBase<TAuthorizerContext> = Object.assign({
       body: null,
       headers: null,
