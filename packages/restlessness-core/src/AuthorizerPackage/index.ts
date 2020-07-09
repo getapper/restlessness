@@ -3,6 +3,7 @@ import { AuthPolicy, AuthPolicyResponse } from './AuthPolicy';
 import { AuthorizerEvent, AuthorizerResult, SessionModelInstance, SessionModelInterface } from './interfaces';
 
 export * from './interfaces';
+export * from './AuthPolicy';
 
 export abstract class AuthorizerPackage extends AddOnPackage {
   abstract createToken(session: SessionModelInstance): Promise<string>
