@@ -6,6 +6,7 @@ import path from 'path';
 import { PathResolver } from '@restlessness/core';
 import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/core';
 import { modelTemplate } from './templates';
+import AWSLambda from 'aws-lambda';
 
 class ObjectIdSchema extends yup.mixed {
   constructor() {
@@ -44,7 +45,6 @@ class MongoDaoPackage extends DaoPackage {
   }
 
   async beforeLambda<T>(event?: AWSLambda.APIGatewayProxyEventBase<T>, context?: AWSLambda.Context): Promise<void> {
-    await mongoDao.openConnection(context);
     const projectYup = require(path.join(PathResolver.getNodeModulesPath, 'yup'));
     if (!projectYup.objectId) {
       projectYup.objectId = () => new ObjectIdSchema();

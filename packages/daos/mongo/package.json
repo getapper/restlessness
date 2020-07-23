@@ -5,7 +5,9 @@
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
+    "@types/aws-lambda": "8.10.50",
     "@types/jest": "25.2.3",
+    "@types/mongodb": "3.5.9",
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "^2.1.0",
     "eslint": "6.8.0",
@@ -19,8 +21,8 @@
   },
   "dependencies": {
     "@restlessness/core": "0.2.1",
-    "@types/aws-lambda": "8.10.50",
-    "@types/mongodb": "3.5.9",
+    "aws-sdk": "2.718.0",
+    "js-yaml": "3.14.0",
     "mongodb": "3.5.5",
     "pluralize": "8.0.0"
   },
