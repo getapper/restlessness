@@ -39,6 +39,12 @@ export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
       }
     }
 
+    // @ts-ignore
+    if (event.source === 'serverless-plugin-warmup') {
+      console.log('WarmUP - Lambda is warm!')
+      return 'Lambda is warm!';
+    }
+
     if (jsonEndpointsEntry.authorizerId) {
       const jsonAuthorizersEntry: JsonAuthorizersEntry = await JsonAuthorizers.getEntryById(jsonEndpointsEntry.authorizerId);
       const authorizerPackage: AuthorizerPackage = AuthorizerPackage.load(jsonAuthorizersEntry.package);

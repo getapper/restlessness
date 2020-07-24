@@ -3,7 +3,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import rimraf from 'rimraf';
 import Misc from '../Misc';
-import { generateServerlessYaml, generatePackageJson, generateGitIgnore } from './templates';
+import { generateServerlessYaml, generatePackageJson, generateGitIgnore, generateServerlessJson } from './templates';
 import { promisify } from 'util';
 import PathResolver from '../PathResolver';
 
@@ -28,8 +28,9 @@ export default class Project {
       } catch(e) {}
       const name = path.normalize(projectPath).split(path.sep).pop();
       await Misc.copyFolderRecursive(path.join(__dirname, '..', '..', 'assets', 'boilerplate'), projectPath, true);
-      await fs.writeFile(path.join(projectPath, 'serverless.yml'), generateServerlessYaml(name));
+      await fs.writeFile(path.join(projectPath, 'serverless.yml'), generateServerlessYaml());
       await fs.writeFile(path.join(projectPath, 'package.json'), generatePackageJson(name));
+      await fs.writeFile(path.join(projectPath, 'configs', 'serverless.json'), generateServerlessJson(name));
       await fs.writeFile(path.join(projectPath, '.gitignore'), generateGitIgnore());
       if (mergedOptions.installNodemodules) {
         execSync('npm i', {
