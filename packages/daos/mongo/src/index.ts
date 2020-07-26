@@ -35,13 +35,13 @@ class MongoDaoPackage extends DaoPackage {
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(async jsonEnvsEntry => {
       const envFile = new EnvFile(jsonEnvsEntry.id);
-      await envFile.setParametricValue('RLN_MONGO_DAO_URI');
+      await envFile.setParametricValue('MONGO_URI');
     }));
   }
 
   async postEnvCreated(envName: string): Promise<void> {
     const envFile = new EnvFile(envName);
-    await envFile.setParametricValue('RLN_MONGO_DAO_URI');
+    await envFile.setParametricValue('MONGO_URI');
   }
 
   async beforeLambda<T>(event?: AWSLambda.APIGatewayProxyEventBase<T>, context?: AWSLambda.Context): Promise<void> {
