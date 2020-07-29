@@ -28,7 +28,11 @@ class MongoDao {
     try {
       await JsonServerless.read();
       const serviceName = JsonServerless.service;
-      const stage = 'dev'; // @TODO env var?
+      let stage = process.env['ENV_NAME'];
+      if (!stage) {
+        console.warn('dao-mongo stage name not set! defaulting to dev');
+        stage = 'dev';
+      }
       invocationResult = await this.mongoProxy.invoke({
         FunctionName: `${serviceName}-${stage}-${this.proxyFunctionName}`,
         InvocationType: 'RequestResponse',
