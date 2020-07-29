@@ -6,6 +6,7 @@ import path from 'path';
 import { PathResolver } from '@restlessness/core';
 import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/core';
 import { modelTemplate } from './templates';
+import AWSLambda from 'aws-lambda';
 
 class ObjectIdSchema extends yup.mixed {
   constructor() {
@@ -34,17 +35,22 @@ class MongoDaoPackage extends DaoPackage {
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(async jsonEnvsEntry => {
       const envFile = new EnvFile(jsonEnvsEntry.id);
-      await envFile.setParametricValue('RLN_MONGO_DAO_URI');
+      await envFile.setParametricValue('MONGO_URI');
+      const stageName = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
+      await envFile.setValue('STAGE_NAME', stageName);
     }));
   }
 
   async postEnvCreated(envName: string): Promise<void> {
     const envFile = new EnvFile(envName);
-    await envFile.setParametricValue('RLN_MONGO_DAO_URI');
+    await envFile.setParametricValue('MONGO_URI');
+    await JsonEnvs.read();
+    const jsonEnvsEntry = await JsonEnvs.getEntryById(envName);
+    const stageName = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
+    await envFile.setValue('STAGE_NAME', stageName);
   }
 
   async beforeLambda<T>(event?: AWSLambda.APIGatewayProxyEventBase<T>, context?: AWSLambda.Context): Promise<void> {
-    await mongoDao.openConnection(context);
     const projectYup = require(path.join(PathResolver.getNodeModulesPath, 'yup'));
     if (!projectYup.objectId) {
       projectYup.objectId = () => new ObjectIdSchema();

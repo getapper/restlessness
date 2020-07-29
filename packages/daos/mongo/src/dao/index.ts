@@ -1,81 +1,85 @@
-import path from 'path';
 import {
-  Db,
   InsertOneWriteOpResult,
-  MongoClient,
   UpdateWriteOpResult,
   FindOneOptions,
   DeleteWriteOpResultObject,
   IndexOptions,
 } from 'mongodb';
+import { Lambda } from 'aws-sdk';
+import { JsonServerless, JsonEnvs } from '@restlessness/core';
+
+interface ProxyRequest {
+  collectionName: string
+  operation: string
+  args: any[]
+}
 
 class MongoDao {
-  mongoClient: MongoClient
-  db: Db
+  mongoProxy: Lambda
+  proxyFunctionName = '_serverless-mongo-proxy'
 
   constructor() {
-    this.mongoClient = null;
-    this.db = null;
+    this.mongoProxy = new Lambda(
+      process.env['IS_OFFLINE'] ? { endpoint: 'http://localhost:4000' } : {});
   }
 
-  checkConnection() {
-    if (this.mongoClient === null) {
-      throw new Error('Mongo connection not initialized');
-    }
-  }
-
-  async closeConnection() {
-    if (this.mongoClient !== null) {
-      await this.mongoClient.close();
-    }
-  }
-
-  async openConnection(context?: AWSLambda.Context) {
-    if (context) {
-      context.callbackWaitsForEmptyEventLoop = false;
-    }
+  async invokeProxy(request: ProxyRequest) {
+    let invocationResult;
     try {
-      this.checkConnection();
-      return this.mongoClient;
+      await JsonServerless.read();
+      const serviceName = JsonServerless.service;
+      await JsonEnvs.read();
+      const jsonEnvsEntry = await JsonEnvs.getEntryById(process.env['ENV_NAME']);
+      const stage = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
+      invocationResult = await this.mongoProxy.invoke({
+        FunctionName: `${serviceName}-${stage}-${this.proxyFunctionName}`,
+        InvocationType: 'RequestResponse',
+        Payload: JSON.stringify(request),
+      }).promise();
     } catch (e) {
-      this.mongoClient = await MongoClient.connect(process.env['RLN_MONGO_DAO_URI']);
-      this.db = this.mongoClient.db();
+      throw new Error(`Error invoking mongodb proxy function, ${e}`);
     }
+
+    const { StatusCode, Payload } = invocationResult;
+    const error = (Payload as any)?.error;
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (StatusCode !== 200) {
+      throw new Error(`Error invoking mongodb proxy function, status code ${StatusCode}`);
+    }
+
+    return Payload;
   }
 
   async findOne(collectionName: string, filters, options?): Promise<any> {
-    this.checkConnection();
-    return this.db.collection(collectionName).findOne(filters, options);
+    return this.invokeProxy({ collectionName, operation: 'findOne', args: [filters, options] });
   }
 
   async find(collectionName: string, query, options?: FindOneOptions): Promise<any> {
-    this.checkConnection();
-    return this.db.collection(collectionName).find(query, options).toArray();
+    return this.invokeProxy({ collectionName, operation: 'find', args: [query, options] });
   }
 
   async insertOne(collectionName: string, object): Promise<InsertOneWriteOpResult<null>> {
-    this.checkConnection();
-    return this.db.collection(collectionName).insertOne(object);
+    return this.invokeProxy({ collectionName, operation: 'insertOne', args: [object] });
   }
 
   async updateOne(collectionName: string, filter, object): Promise<UpdateWriteOpResult> {
-    this.checkConnection();
-    return this.db.collection(collectionName).updateOne(filter, object);
+    return this.invokeProxy({ collectionName, operation: 'updateOne', args: [filter, object] });
   }
 
   async deleteOne(collectionName: string, filter): Promise<DeleteWriteOpResultObject> {
-    this.checkConnection();
-    return this.db.collection(collectionName).deleteOne(filter);
+    return this.invokeProxy({ collectionName, operation: 'deleteOne', args: [filter] });
   }
 
   async deleteMany(collectionName: string, filter): Promise<DeleteWriteOpResultObject> {
-    this.checkConnection();
-    return this.db.collection(collectionName).deleteMany(filter);
+    return this.invokeProxy({ collectionName, operation: 'deleteMany', args: [filter] });
   }
-  
+
   async createIndex(collectionName: string, keys: string | any, options: IndexOptions): Promise<string> {
-    this.checkConnection();
-    return this.db.collection(collectionName).createIndex(keys, options);
+    return this.invokeProxy({ collectionName, operation: 'createIndex', args: [keys, options] });
   }
 }
 

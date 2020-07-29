@@ -9,13 +9,14 @@ export default async argv => {
     console.log(chalk.red('Expected dao package name'));
     process.exit(1);
   } else {
+      let daoPackage: DaoPackage;
     try {
-      const daoPackage: DaoPackage = DaoPackage.load(argv._[1]);
-      await daoPackage.postInstall();
+      daoPackage = DaoPackage.load(argv._[1]);
     } catch {
-      console.log(chalk.red('The specified Environment does not exist'));
+      console.log(chalk.red('The specified Dao package does not exist'));
       process.exit(1);
     }
+    await daoPackage.postInstall();
   }
   process.exit(0);
 };
