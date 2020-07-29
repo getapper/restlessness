@@ -6,7 +6,7 @@ import {
   IndexOptions,
 } from 'mongodb';
 import { Lambda } from 'aws-sdk';
-import { JsonServerless } from '@restlessness/core';
+import { JsonServerless, JsonEnvs } from '@restlessness/core';
 
 interface ProxyRequest {
   collectionName: string
@@ -28,11 +28,9 @@ class MongoDao {
     try {
       await JsonServerless.read();
       const serviceName = JsonServerless.service;
-      let stage = process.env['ENV_NAME'];
-      if (!stage) {
-        console.warn('dao-mongo stage name not set! defaulting to dev');
-        stage = 'dev';
-      }
+      await JsonEnvs.read();
+      const jsonEnvsEntry = await JsonEnvs.getEntryById(process.env['ENV_NAME']);
+      const stage = jsonEnvsEntry.stage;
       invocationResult = await this.mongoProxy.invoke({
         FunctionName: `${serviceName}-${stage}-${this.proxyFunctionName}`,
         InvocationType: 'RequestResponse',
