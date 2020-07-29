@@ -30,7 +30,7 @@ class MongoDao {
       const serviceName = JsonServerless.service;
       await JsonEnvs.read();
       const jsonEnvsEntry = await JsonEnvs.getEntryById(process.env['ENV_NAME']);
-      const stage = jsonEnvsEntry.stage;
+      const stage = jsonEnvsEntry.stage || jsonEnvsEntry.type;
       invocationResult = await this.mongoProxy.invoke({
         FunctionName: `${serviceName}-${stage}-${this.proxyFunctionName}`,
         InvocationType: 'RequestResponse',

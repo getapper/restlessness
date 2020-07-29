@@ -36,12 +36,16 @@ class MongoDaoPackage extends DaoPackage {
     await Promise.all(JsonEnvs.entries.map(async jsonEnvsEntry => {
       const envFile = new EnvFile(jsonEnvsEntry.id);
       await envFile.setParametricValue('MONGO_URI');
+      await envFile.setValue('STAGE_NAME', jsonEnvsEntry.stage || jsonEnvsEntry.type);
     }));
   }
 
   async postEnvCreated(envName: string): Promise<void> {
     const envFile = new EnvFile(envName);
     await envFile.setParametricValue('MONGO_URI');
+    await JsonEnvs.read();
+    const jsonEnvsEntry = await JsonEnvs.getEntryById(envName);
+    await envFile.setValue('STAGE_NAME', jsonEnvsEntry.stage || jsonEnvsEntry.type);
   }
 
   async beforeLambda<T>(event?: AWSLambda.APIGatewayProxyEventBase<T>, context?: AWSLambda.Context): Promise<void> {
