@@ -6,7 +6,8 @@ import {
   IndexOptions,
 } from 'mongodb';
 import { Lambda } from 'aws-sdk';
-import { JsonServerless, JsonEnvs } from '@restlessness/core';
+import { JsonServerless, JsonEnvs, PathResolver } from '@restlessness/core';
+import path from 'path';
 
 interface ProxyRequest {
   collectionName: string
@@ -19,23 +20,40 @@ class MongoDao {
   proxyFunctionName = '_serverless-mongo-proxy'
 
   constructor() {
-    this.mongoProxy = new Lambda(
-      process.env['IS_OFFLINE'] ? { endpoint: 'http://localhost:4000' } : {});
+    this.mongoProxy = new Lambda({});
+  }
+
+  private async invokeLocal(request: ProxyRequest): Promise<Lambda.InvocationResponse> {
+    const proxyPath = path.join(PathResolver.getNodeModulesPath, 'serverless-mongo-proxy', 'dist', 'proxy');
+    const proxy = require(proxyPath).default;
+    const payload = await proxy(request, {});
+    return {
+      StatusCode: payload?.error ? 500 : 200,
+      Payload: payload,
+    };
+  }
+
+  private async invokeLambda(request: ProxyRequest) {
+    await JsonServerless.read();
+    const serviceName = JsonServerless.service;
+    await JsonEnvs.read();
+    const jsonEnvsEntry = await JsonEnvs.getEntryById(process.env['ENV_NAME']);
+    const stage = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
+    return await this.mongoProxy.invoke({
+      FunctionName: `${serviceName}-${stage}-${this.proxyFunctionName}`,
+      InvocationType: 'RequestResponse',
+      Payload: JSON.stringify(request),
+    }).promise();
   }
 
   async invokeProxy(request: ProxyRequest) {
-    let invocationResult;
+    let invocationResult: Lambda.InvocationResponse;
     try {
-      await JsonServerless.read();
-      const serviceName = JsonServerless.service;
-      await JsonEnvs.read();
-      const jsonEnvsEntry = await JsonEnvs.getEntryById(process.env['ENV_NAME']);
-      const stage = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
-      invocationResult = await this.mongoProxy.invoke({
-        FunctionName: `${serviceName}-${stage}-${this.proxyFunctionName}`,
-        InvocationType: 'RequestResponse',
-        Payload: JSON.stringify(request),
-      }).promise();
+      if (process.env['IS_OFFLINE']) {
+        invocationResult = await this.invokeLocal(request);
+      } else {
+        invocationResult = await this.invokeLambda(request);
+      }
     } catch (e) {
       throw new Error(`Error invoking mongodb proxy function, ${e}`);
     }
@@ -51,7 +69,7 @@ class MongoDao {
       throw new Error(`Error invoking mongodb proxy function, status code ${StatusCode}`);
     }
 
-    return Payload;
+    return Payload as any;
   }
 
   async findOne(collectionName: string, filters, options?): Promise<any> {
