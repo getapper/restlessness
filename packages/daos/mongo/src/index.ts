@@ -38,6 +38,9 @@ class MongoDaoPackage extends DaoPackage {
       await envFile.setParametricValue('MONGO_URI');
       const stageName = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
       await envFile.setValue('STAGE_NAME', stageName);
+      if (jsonEnvsEntry.type === 'test') {
+        await envFile.setValue('IS_OFFLINE', 'true');
+      }
     }));
   }
 
@@ -48,6 +51,9 @@ class MongoDaoPackage extends DaoPackage {
     const jsonEnvsEntry = await JsonEnvs.getEntryById(envName);
     const stageName = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
     await envFile.setValue('STAGE_NAME', stageName);
+    if (jsonEnvsEntry.type === 'test') {
+      await envFile.setValue('IS_OFFLINE', 'true');
+    }
   }
 
   async beforeLambda<T>(event?: AWSLambda.APIGatewayProxyEventBase<T>, context?: AWSLambda.Context): Promise<void> {
