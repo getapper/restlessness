@@ -8,15 +8,17 @@ provider:
   name: aws
   runtime: nodejs12.x
 
-plugins:
-  - serverless-offline
+plugins: \${file(./configs/serverless.json):plugins}
 
 functions: \${file(./configs/serverless.json):functions}
 `;
 
 const generateServerlessJson = (name: string) => `{
-  "functions": {},
-  "service": "${name}"
+  "service": "${name}",
+  "plugins": [
+    "serverless-offline"
+  ],
+  "functions": {}
 }
 `;
 

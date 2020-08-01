@@ -25,6 +25,7 @@ export interface FunctionEndpoint {
 
 class JsonServerless {
   service: string
+  plugins: string[]
   functions: Functions
 
   get jsonPath(): string {
@@ -67,7 +68,7 @@ class JsonServerless {
         const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
         try {
           const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main;
-          const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`)
+          const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`);
           const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
           this.functions[authorizerId] = {
             handler: handlerRelativePath,
