@@ -29,7 +29,7 @@ class MongoDao {
     const payload = await proxy(request, {});
     return {
       StatusCode: payload?.error ? 500 : 200,
-      Payload: payload,
+      Payload: JSON.stringify(payload),
     };
   }
 
@@ -59,7 +59,8 @@ class MongoDao {
     }
 
     const { StatusCode, Payload } = invocationResult;
-    const error = (Payload as any)?.error;
+    const response = JSON.parse(typeof Payload === 'string' ? Payload : Payload.toString());
+    const error = response?.error;
 
     if (error) {
       throw new Error(error.message);
@@ -69,7 +70,7 @@ class MongoDao {
       throw new Error(`Error invoking mongodb proxy function, status code ${StatusCode}`);
     }
 
-    return Payload as any;
+    return response;
   }
 
   async findOne(collectionName: string, filters, options?): Promise<any> {
