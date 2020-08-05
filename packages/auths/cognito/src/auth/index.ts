@@ -109,7 +109,7 @@ export class UserPoolManager {
   async login (
     email: string,
     password: string,
-  ): Promise<CognitoUserSession> {
+  ): Promise<CognitoUserSession |  CognitoUser> {
     const authenticationDetails: AuthenticationDetails = new AuthenticationDetails({
       Username: email,
       Password: password,
@@ -129,6 +129,10 @@ export class UserPoolManager {
             onSuccess: resolve,
             onFailure: reject,
           });
+        },
+        mfaRequired () {
+          // console.log('cognitoUser', cognitoUser);
+          resolve(cognitoUser);
         },
       });
     });
@@ -221,6 +225,15 @@ export class UserPoolManager {
     };
     const adminUpdateUserAttributes = this.cognitoIdentityServiceProvider.adminUpdateUserAttributes(params);
     const result = await adminUpdateUserAttributes.promise();
+  }
+
+  async verifyMFA (cognitoUser: CognitoUser, verificationCode: string): Promise<any> {
+    return await new Promise((resolve, reject) => {
+      cognitoUser.sendMFACode(verificationCode, {
+        onSuccess: resolve,
+        onFailure: reject,
+      });
+    });
   }
 }
 
