@@ -49,6 +49,8 @@ export class UserPoolManager {
     clientId: string,
     region: string,
     attributesList: string[],
+    accessKeyId?,
+    secretAccessKey?,
   ) {
     this.id = id;
     this.userPool = new CognitoUserPool({
@@ -59,7 +61,7 @@ export class UserPoolManager {
     this.attributesList = attributesList;
     this.region = region;
     this.iss = `https://cognito-idp.${this.region}.amazonaws.com/${this.userPool.getUserPoolId()}`;
-    this.cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region });
+    this.cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region, accessKeyId, secretAccessKey });
   }
 
   async init () {
@@ -205,6 +207,21 @@ export class UserPoolManager {
       throw new Error('Invalid session token');
     }
   }
+
+  async adminUpdateAttributes (email: string, attributes: object): Promise<any> {
+    const attributesList = Object.keys(attributes).map((key) => ({
+      Name: key,
+      Value: attributes[key],
+    }));
+
+    const params = {
+      Username: email,
+      UserPoolId: this.userPool.getUserPoolId(),
+      UserAttributes: attributesList,
+    };
+    const adminUpdateUserAttributes = this.cognitoIdentityServiceProvider.adminUpdateUserAttributes(params);
+    const result = await adminUpdateUserAttributes.promise();
+  }
 }
 
 export interface PoolInfo {
@@ -240,6 +257,9 @@ export abstract class UserPoolsManager {
       process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_CLIENT_ID`],
       process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REGION`],
       poolInfo.attributes,
+      process.env['RLN_COGNITO_AUTH_ACCESS_KEY_ID'],
+      process.env['RLN_COGNITO_AUTH_SECRET_ACCESS_KEY'],
+
     ));
     return Promise.all(this.pools.map(async pool => await pool.init()));
   }
