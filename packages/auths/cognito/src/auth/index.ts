@@ -19,7 +19,7 @@ import fetch from 'cross-fetch';
 import jwt from 'jsonwebtoken';
 
 export interface CognitoSignUpResult extends ISignUpResult {};
-export { CognitoUserSession };
+export { CognitoUserSession, CognitoUser };
 
 export interface AwsJwt {
   header: {
@@ -31,6 +31,10 @@ export interface AwsJwt {
     email: string
     event_id: string
   }
+}
+
+export interface CognitoUserCustom extends CognitoUser {
+  Session?: CognitoUserSession
 }
 
 export class UserPoolManager {
@@ -227,8 +231,13 @@ export class UserPoolManager {
     const result = await adminUpdateUserAttributes.promise();
   }
 
-  async verifyMFA (cognitoUser: CognitoUser, verificationCode: string): Promise<any> {
+  async verifyMFA (cognitoUserSession: CognitoUserSession, email: string, verificationCode: string): Promise<any> {
     return await new Promise((resolve, reject) => {
+      const cognitoUser: CognitoUserCustom = new CognitoUser({
+        Username: email,
+        Pool: this.userPool,
+      });
+      cognitoUser.Session = cognitoUserSession
       cognitoUser.sendMFACode(verificationCode, {
         onSuccess: resolve,
         onFailure: reject,
