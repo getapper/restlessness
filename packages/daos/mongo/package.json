@@ -6,6 +6,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/aws-lambda": "8.10.50",
+    "@types/bson": "4.0.2",
     "@types/jest": "25.2.3",
     "@types/mongodb": "3.5.9",
     "@types/node": "13.7.1",
@@ -17,12 +18,14 @@
     "yup": "0.29.1"
   },
   "peerDependencies": {
+    "serverless-mongo-proxy": "^0.1.0",
     "yup": "^0.28.3"
   },
   "dependencies": {
     "@restlessness/core": "0.2.1",
     "aws-sdk": "2.718.0",
-    "mongodb": "3.5.5",
+    "bson": "4.0.4",
+    "mongodb": "3.4.1",
     "pluralize": "8.0.0"
   },
   "repository": {
