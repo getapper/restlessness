@@ -135,8 +135,11 @@ export class UserPoolManager {
           });
         },
         mfaRequired () {
-          // console.log('cognitoUser', cognitoUser);
-          resolve(cognitoUser);
+          const e = new Error('MFA required to authenticate');
+          e['code'] = 'MFARequired';
+          e['session'] = cognitoUser['Session'];
+          reject(e);
+          // resolve(cognitoUser);
         },
       });
     });
@@ -237,7 +240,7 @@ export class UserPoolManager {
         Username: email,
         Pool: this.userPool,
       });
-      cognitoUser.Session = cognitoUserSession
+      cognitoUser.Session = cognitoUserSession;
       cognitoUser.sendMFACode(verificationCode, {
         onSuccess: resolve,
         onFailure: reject,
