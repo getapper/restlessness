@@ -1,7 +1,4 @@
 import {
-  SessionModelInterface,
-} from '@restlessness/core';
-import {
   CognitoUserPool,
   CognitoUserAttribute,
   AuthenticationDetails,
@@ -113,7 +110,7 @@ export class UserPoolManager {
   async login (
     email: string,
     password: string,
-  ): Promise<CognitoUserSession |  CognitoUser> {
+  ): Promise<CognitoUserSession> {
     const authenticationDetails: AuthenticationDetails = new AuthenticationDetails({
       Username: email,
       Password: password,
@@ -234,10 +231,10 @@ export class UserPoolManager {
     const result = await adminUpdateUserAttributes.promise();
   }
 
-  async verifyMFA (cognitoUserSession: CognitoUserSession, email: string, verificationCode: string): Promise<any> {
+  async verifyMFA (cognitoUserSession: CognitoUserSession, username: string, verificationCode: string): Promise<any> {
     return await new Promise((resolve, reject) => {
       const cognitoUser: CognitoUserCustom = new CognitoUser({
-        Username: email,
+        Username: username,
         Pool: this.userPool,
       });
       cognitoUser.Session = cognitoUserSession;
