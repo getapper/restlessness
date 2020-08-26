@@ -5,6 +5,7 @@ import {
   DeleteWriteOpResultObject,
   IndexOptions,
 } from 'mongodb';
+import Bson from 'bson';
 import { Lambda } from 'aws-sdk';
 import { JsonServerless, JsonEnvs, PathResolver } from '@restlessness/core';
 import path from 'path';
@@ -23,17 +24,17 @@ class MongoDao {
     this.mongoProxy = new Lambda({});
   }
 
-  private async invokeLocal(request: ProxyRequest): Promise<Lambda.InvocationResponse> {
+  private async invokeLocal(bufferValues: number[]): Promise<Lambda.InvocationResponse> {
     const proxyPath = path.join(PathResolver.getNodeModulesPath, 'serverless-mongo-proxy', 'dist', 'proxy');
     const proxy = require(proxyPath).default;
-    const payload = await proxy(request, {});
+    const payload = await proxy({ bufferValues }, {});
     return {
       StatusCode: payload?.error ? 500 : 200,
       Payload: JSON.stringify(payload),
     };
   }
 
-  private async invokeLambda(request: ProxyRequest) {
+  private async invokeLambda(bufferValues: number[]) {
     await JsonServerless.read();
     const serviceName = JsonServerless.service;
     await JsonEnvs.read();
@@ -42,32 +43,45 @@ class MongoDao {
     return await this.mongoProxy.invoke({
       FunctionName: `${serviceName}-${stage}-${this.proxyFunctionName}`,
       InvocationType: 'RequestResponse',
-      Payload: JSON.stringify(request),
+      Payload: JSON.stringify({ bufferValues }),
     }).promise();
   }
 
   async invokeProxy(request: ProxyRequest) {
+    let bufferValues: number[];
+    try {
+      bufferValues = Array.from(Bson.serialize(request).values());
+    } catch (e) {
+      throw new Error(`Error on bson serialize, ${e}`);
+    }
+
     let invocationResult: Lambda.InvocationResponse;
     try {
       if (process.env['IS_OFFLINE']) {
-        invocationResult = await this.invokeLocal(request);
+        invocationResult = await this.invokeLocal(bufferValues);
       } else {
-        invocationResult = await this.invokeLambda(request);
+        invocationResult = await this.invokeLambda(bufferValues);
       }
     } catch (e) {
       throw new Error(`Error invoking mongodb proxy function, ${e}`);
     }
 
     const { StatusCode, Payload } = invocationResult;
-    const response = JSON.parse(typeof Payload === 'string' ? Payload : Payload.toString());
-    const error = response?.error;
-
-    if (error) {
-      throw new Error(error.message);
-    }
 
     if (StatusCode !== 200) {
       throw new Error(`Error invoking mongodb proxy function, status code ${StatusCode}`);
+    }
+
+    let response: any;
+    try {
+      const payload: number[] = JSON.parse(typeof Payload === 'string' ? Payload : Payload.toString());
+      response = Bson.deserialize(Buffer.from(payload));
+    } catch (e) {
+      throw new Error(`Error on bson deserialize, ${e}`);
+    }
+
+    if (response?.error) {
+      throw new Error(response.error.message);
     }
 
     return response;
