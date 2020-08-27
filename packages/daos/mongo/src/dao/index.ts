@@ -75,7 +75,7 @@ class MongoDao {
     let response: any;
     try {
       const payload: number[] = JSON.parse(typeof Payload === 'string' ? Payload : Payload.toString());
-      response = Bson.deserialize(Buffer.from(payload));
+      response = Bson.deserialize(Buffer.from(payload)).result;
     } catch (e) {
       throw new Error(`Error on bson deserialize, ${e}`);
     }
