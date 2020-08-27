@@ -72,10 +72,10 @@ class MongoDao {
       throw new Error(`Error invoking mongodb proxy function, status code ${StatusCode}`);
     }
 
-    let response: any;
+    let response: { result: any, error?: any };
     try {
       const payload: number[] = JSON.parse(typeof Payload === 'string' ? Payload : Payload.toString());
-      response = Bson.deserialize(Buffer.from(payload)).result;
+      response = Bson.deserialize(Buffer.from(payload));
     } catch (e) {
       throw new Error(`Error on bson deserialize, ${e}`);
     }
@@ -84,7 +84,7 @@ class MongoDao {
       throw new Error(response.error.message);
     }
 
-    return response;
+    return response.result;
   }
 
   async findOne(collectionName: string, filters, options?): Promise<any> {
