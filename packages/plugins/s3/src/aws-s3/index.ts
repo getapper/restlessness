@@ -1,7 +1,6 @@
 import { S3, Credentials } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { AWSError } from 'aws-sdk/lib/error';
-import path from 'path';
 
 class AwsS3 {
   awsS3: S3
