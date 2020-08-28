@@ -3,13 +3,6 @@ import useS3 from './aws-s3';
 
 class S3Package extends PluginPackage {
   async postInstall(): Promise<void> {
-    /*
-    await addPlugin(PROJECT_PATH, 's3', {
-      id: 's3',
-      name: 'AWS S3',
-      package: '@restlessness/s3',
-    });
-     */
   }
 
   async postEnvCreated(envName: string): Promise<void> {
