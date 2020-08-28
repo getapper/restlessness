@@ -96,6 +96,20 @@ jobs:
       - deps_and_publish:
           working_directory: packages/daos/mongo
 
+  rln-plugin-s3-tests:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_tests:
+          working_directory: packages/plugins/s3
+
+  rln-plugin-s3-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/plugins/s3
+
   rln-cli-tests:
     executor: node12
     steps:
@@ -153,6 +167,15 @@ workflows:
           filters:
             tags:
               only: /^@restlessness/dao-mongo/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-plugin-s3:
+    jobs:
+      - rln-plugin-s3-publish:
+          filters:
+            tags:
+              only: /^@restlessness/plugin-s3/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
 
