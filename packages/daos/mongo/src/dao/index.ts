@@ -16,6 +16,11 @@ interface ProxyRequest {
   args: any[]
 }
 
+interface ProxyResponse {
+  responseBufferValues?: number[]
+  error?: string
+}
+
 class MongoDao {
   mongoProxy: Lambda
   proxyFunctionName = '_serverless-mongo-proxy'
@@ -24,17 +29,18 @@ class MongoDao {
     this.mongoProxy = new Lambda({});
   }
 
-  private async invokeLocal(bufferValues: number[]): Promise<Lambda.InvocationResponse> {
+  private async invokeLocal(serializedRequest: string): Promise<Lambda.InvocationResponse> {
     const proxyPath = path.join(PathResolver.getNodeModulesPath, 'serverless-mongo-proxy', 'dist', 'proxy');
     const proxy = require(proxyPath).default;
-    const payload = await proxy({ bufferValues }, {});
+    const request = JSON.parse(serializedRequest);
+    const payload = await proxy(request, {});
     return {
       StatusCode: payload?.error ? 500 : 200,
       Payload: JSON.stringify(payload),
     };
   }
 
-  private async invokeLambda(bufferValues: number[]) {
+  private async invokeLambda(serializedRequest: string) {
     await JsonServerless.read();
     const serviceName = JsonServerless.service;
     await JsonEnvs.read();
@@ -43,14 +49,16 @@ class MongoDao {
     return await this.mongoProxy.invoke({
       FunctionName: `${serviceName}-${stage}-${this.proxyFunctionName}`,
       InvocationType: 'RequestResponse',
-      Payload: JSON.stringify({ bufferValues }),
+      Payload: serializedRequest,
     }).promise();
   }
 
   async invokeProxy(request: ProxyRequest) {
-    let bufferValues: number[];
+    let serializedRequest: string;
     try {
-      bufferValues = Array.from(Bson.serialize(request).values());
+      serializedRequest = JSON.stringify({
+        requestBufferValues: Array.from(Bson.serialize(request).values()),
+      });
     } catch (e) {
       throw new Error(`Error on bson serialize, ${e}`);
     }
@@ -58,9 +66,9 @@ class MongoDao {
     let invocationResult: Lambda.InvocationResponse;
     try {
       if (process.env['IS_OFFLINE']) {
-        invocationResult = await this.invokeLocal(bufferValues);
+        invocationResult = await this.invokeLocal(serializedRequest);
       } else {
-        invocationResult = await this.invokeLambda(bufferValues);
+        invocationResult = await this.invokeLambda(serializedRequest);
       }
     } catch (e) {
       throw new Error(`Error invoking mongodb proxy function, ${e}`);
@@ -72,19 +80,22 @@ class MongoDao {
       throw new Error(`Error invoking mongodb proxy function, status code ${StatusCode}`);
     }
 
-    let response: { result: any, error?: any };
+    let response: ProxyResponse;
     try {
-      const payload: number[] = JSON.parse(typeof Payload === 'string' ? Payload : Payload.toString());
-      response = Bson.deserialize(Buffer.from(payload));
+      response = JSON.parse(typeof Payload === 'string' ? Payload : Payload.toString());
+    } catch (e) {
+      throw new Error(`Error parsing json payload, ${e}`);
+    }
+
+    if (response.error) {
+      throw new Error(response.error);
+    }
+
+    try {
+      return Bson.deserialize(Buffer.from(response.responseBufferValues)).result;
     } catch (e) {
       throw new Error(`Error on bson deserialize, ${e}`);
     }
-
-    if (response?.error) {
-      throw new Error(response.error.message);
-    }
-
-    return response.result;
   }
 
   async findOne(collectionName: string, filters, options?): Promise<any> {

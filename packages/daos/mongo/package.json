@@ -18,7 +18,7 @@
     "yup": "0.29.1"
   },
   "peerDependencies": {
-    "serverless-mongo-proxy": "^0.1.0",
+    "serverless-mongo-proxy": "^0.1.3",
     "yup": "^0.28.3"
   },
   "dependencies": {
