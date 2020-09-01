@@ -44,6 +44,8 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
 
     const id = method + route.functionName;
 
+    await JsonServerless.read();
+
     /**
      * The 4 xxxx stand for "dev" or "prod", based on which stage deployment will be selected
      * We use 4 x for worst case scenario, that is "prod", since we need to check this string length
