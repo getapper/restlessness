@@ -25,11 +25,12 @@ export interface FunctionEndpoint {
 
 class JsonServerless {
   service: string
+  provider: {[key: string]: any}
   plugins: string[]
   functions: Functions
 
   get jsonPath(): string {
-    return PathResolver.getFunctionsConfigPath;
+    return PathResolver.getServerlessJsonPath;
   }
 
   async read(): Promise<void> {
