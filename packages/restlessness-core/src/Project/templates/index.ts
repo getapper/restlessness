@@ -1,7 +1,3 @@
-/*
- * @TODO: provider data should be written and imported from a json file,
- * so it will possible to manage other providers as gcp as well
- */
 const generateServerlessJson = (serviceName: string): string => `{
   "service": "${serviceName}",
 

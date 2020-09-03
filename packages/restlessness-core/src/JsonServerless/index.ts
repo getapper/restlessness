@@ -94,6 +94,13 @@ class JsonServerless {
     _unset(this, `functions.${safeFunctionName}`);
     await this.save();
   }
+
+  async addPlugin(pluginName: string): Promise<void> {
+    if (!this.plugins.includes(pluginName)) {
+      this.plugins.push(pluginName);
+      await this.save();
+    }
+  }
 }
 
 export default new JsonServerless();
