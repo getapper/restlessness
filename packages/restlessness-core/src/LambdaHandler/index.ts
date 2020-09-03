@@ -41,7 +41,7 @@ export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
 
     // @ts-ignore
     if (event.source === 'serverless-plugin-warmup') {
-      console.log('WarmUP - Lambda is warm!')
+      console.log('WarmUP - Lambda is warm!');
       return 'Lambda is warm!';
     }
 
@@ -65,6 +65,17 @@ export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
   }
 
   let queryStringParameters: any = event.queryStringParameters || {};
+  let multiValueQueryStringParameters: any = event.multiValueQueryStringParameters || {};
+  Object.keys(multiValueQueryStringParameters).forEach(key => {
+    if (queryStringParameters[key]) {
+      delete queryStringParameters[key];
+      const value = multiValueQueryStringParameters[key];
+      if (key.match(/.*\[\]$/m)) {
+        key = key.slice(0, -2);
+      }
+      queryStringParameters[key] = value;
+    }
+  })
   let payload = JSON.parse(event.body || '{}');
   let pathParameters: any = event.pathParameters || {};
   const validations = validationsBuilder();
