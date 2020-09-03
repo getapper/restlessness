@@ -1,4 +1,4 @@
-import { ValidationObjects, ValidationResult, RequestI } from './interfaces';
+import {  } from './interfaces';
 import {
   AuthorizerContext,
   EnvironmentHandler,
@@ -9,61 +9,19 @@ import {
   JsonAuthorizers,
   AuthorizerPackage,
   JsonAuthorizersEntry,
-} from '../';
+  ValidationObjects,
+  ValidationResult,
+  RequestI,
+} from '@restlessness/core';
 import AWSLambda from 'aws-lambda';
 
-export * from './interfaces';
-
-export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
+export default async <T  extends AuthorizerContext, Q, P, PP>(
   handler: (req: RequestI<Q, P, PP>) => any,
   validationsBuilder: () => ValidationObjects,
   apiName: string,
   event: AWSLambda.APIGatewayProxyEventBase<T>,
   context: AWSLambda.Context,
 ) => {
-  EnvironmentHandler.load();
-  let parsedSession;
-
-  // @TODO: Check Plugins beforeLambdas hooks
-  const jsonEndpointsEntry = await JsonEndpoints.getEntryById(apiName);
-  if (jsonEndpointsEntry) {
-    if (jsonEndpointsEntry.daoIds?.length) {
-      for (const daoId of jsonEndpointsEntry.daoIds)  {
-        const jsonDaoEntry: JsonDaosEntry = await JsonDaos.getEntryById(daoId);
-        try {
-          const daoPackage: DaoPackage = DaoPackage.load(jsonDaoEntry.package);
-          await daoPackage.beforeLambda(event, context);
-        } catch (e) {
-          console.error(`Error when calling beforeLambda hook on dao: ${jsonDaoEntry.name} (${jsonDaoEntry.id})`, e);
-        }
-      }
-    }
-
-    // @ts-ignore
-    if (event.source === 'serverless-plugin-warmup') {
-      console.log('WarmUP - Lambda is warm!');
-      return 'Lambda is warm!';
-    }
-
-    if (jsonEndpointsEntry.authorizerId) {
-      const jsonAuthorizersEntry: JsonAuthorizersEntry = await JsonAuthorizers.getEntryById(jsonEndpointsEntry.authorizerId);
-      const authorizerPackage: AuthorizerPackage = AuthorizerPackage.load(jsonAuthorizersEntry.package);
-      try {
-        await authorizerPackage.beforeLambda(event, context);
-      } catch (e) {
-        console.error(`Error when calling beforeLambda hook on authorizer: ${jsonAuthorizersEntry.name} (${jsonAuthorizersEntry.package})`, e);
-      }
-
-      try {
-        parsedSession = await authorizerPackage.parseSession(event?.requestContext?.authorizer?.serializedSession);
-      } catch(e) {
-        console.error('Error parsing serialized session', e);
-      }
-    }
-  } else {
-    console.error(`Cannot find Endpoint identified by ${apiName}`);
-  }
-
   let queryStringParameters: any = event.queryStringParameters || {};
   let multiValueQueryStringParameters: any = event.multiValueQueryStringParameters || {};
   Object.keys(multiValueQueryStringParameters).forEach(key => {
@@ -119,6 +77,5 @@ export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
     queryStringParameters,
     payload,
     pathParameters,
-    session: parsedSession,
   });
 };

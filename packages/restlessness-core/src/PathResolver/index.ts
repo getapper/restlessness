@@ -9,8 +9,8 @@ export default class PathResolver {
     return path.join(PathResolver.getPrjPath, 'package.json');
   }
 
-  static get getServerlessYmlPath(): string {
-    return path.join(PathResolver.getPrjPath, 'serverless.yml');
+  static get getServerlessJsonPath(): string {
+    return path.join(PathResolver.getPrjPath, 'serverless.json');
   }
 
   static get getEnvsPath(): string {
@@ -39,10 +39,6 @@ export default class PathResolver {
 
   static get getDaosConfigPath(): string {
     return path.join(PathResolver.getConfigsPath, 'daos.json');
-  }
-
-  static get getFunctionsConfigPath(): string {
-    return path.join(PathResolver.getConfigsPath, 'serverless.json');
   }
 
   static get getDefaultHeadersConfigPath(): string {

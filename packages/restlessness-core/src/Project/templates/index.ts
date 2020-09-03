@@ -1,23 +1,15 @@
-/*
- * @TODO: provider data should be written and imported from a json file,
- * so it will possible to manage other providers as gcp as well
- */
-const generateServerlessYaml = (): string => `service: \${file(./configs/serverless.json):service}
+const generateServerlessJson = (serviceName: string): string => `{
+  "service": "${serviceName}",
 
-provider:
-  name: aws
-  runtime: nodejs12.x
-
-plugins: \${file(./configs/serverless.json):plugins}
-
-functions: \${file(./configs/serverless.json):functions}
-`;
-
-const generateServerlessJson = (name: string) => `{
-  "service": "${name}",
+  "provider": {
+    "name": "aws",
+    "runtime": "nodejs12.x"
+  },
+  
   "plugins": [
     "serverless-offline"
   ],
+  
   "functions": {}
 }
 `;
@@ -79,6 +71,5 @@ const generateGitIgnore = (): string => `node_modules
 export {
   generateGitIgnore,
   generatePackageJson,
-  generateServerlessYaml,
   generateServerlessJson,
 };

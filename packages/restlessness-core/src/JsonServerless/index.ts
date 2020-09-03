@@ -25,11 +25,12 @@ export interface FunctionEndpoint {
 
 class JsonServerless {
   service: string
+  provider: {[key: string]: any}
   plugins: string[]
   functions: Functions
 
   get jsonPath(): string {
-    return PathResolver.getFunctionsConfigPath;
+    return PathResolver.getServerlessJsonPath;
   }
 
   async read(): Promise<void> {
@@ -92,6 +93,13 @@ class JsonServerless {
     await this.read();
     _unset(this, `functions.${safeFunctionName}`);
     await this.save();
+  }
+
+  async addPlugin(pluginName: string): Promise<void> {
+    if (!this.plugins.includes(pluginName)) {
+      this.plugins.push(pluginName);
+      await this.save();
+    }
   }
 }
 
