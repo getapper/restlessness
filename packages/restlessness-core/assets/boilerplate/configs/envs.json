@@ -15,6 +15,6 @@
   {
     "id": "production",
     "type": "deploy",
-    "stage": "deploy"
+    "stage": "prod"
   }
 ]
