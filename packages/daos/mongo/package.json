@@ -22,7 +22,7 @@
     "yup": "^0.28.3"
   },
   "dependencies": {
-    "@restlessness/core": "0.2.1",
+    "@restlessness/core": "0.3.0",
     "aws-sdk": "2.718.0",
     "bson": "4.0.4",
     "mongodb": "3.4.1",
