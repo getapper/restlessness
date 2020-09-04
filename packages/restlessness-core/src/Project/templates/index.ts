@@ -1,15 +1,17 @@
 const generateServerlessJson = (serviceName: string): string => `{
   "service": "${serviceName}",
-
   "provider": {
     "name": "aws",
     "runtime": "nodejs12.x"
   },
-  
+  "package": {
+    "include": [
+      "serverless.json"
+    ]
+  },
   "plugins": [
     "serverless-offline"
   ],
-  
   "functions": {}
 }
 `;
