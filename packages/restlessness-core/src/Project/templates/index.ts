@@ -10,9 +10,16 @@ const generateServerlessJson = (serviceName: string): string => `{
     ]
   },
   "plugins": [
-    "serverless-offline"
+    "serverless-offline",
+    "serverless-plugin-warmup"
   ],
-  "functions": {}
+  "functions": {},
+  "custom": {
+    "warmup": {
+      "prewarm": true,
+      "enabled": true
+    }
+  }
 }
 `;
 
@@ -39,6 +46,7 @@ const generatePackageJson = (name: string) => `{
     "eslint": "6.8.0",
     "jest": "26.0.1",
     "serverless-offline": "5.12.1",
+    "serverless-plugin-warmup": "4.9.0",
     "typescript": "3.8.3"
   },
   "peerDependencies": {
