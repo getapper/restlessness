@@ -68,12 +68,12 @@ export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
   let multiValueQueryStringParameters: any = event.multiValueQueryStringParameters || {};
   Object.keys(multiValueQueryStringParameters).forEach(key => {
     if (queryStringParameters[key]) {
-      delete queryStringParameters[key];
-      const value = multiValueQueryStringParameters[key];
       if (key.match(/.*\[\]$/m)) {
+        delete queryStringParameters[key];
+        const value = multiValueQueryStringParameters[key];
         key = key.slice(0, -2);
+        queryStringParameters[key] = value;
       }
-      queryStringParameters[key] = value;
     }
   });
   let payload = JSON.parse(event.body || '{}');
