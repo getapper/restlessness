@@ -14,12 +14,7 @@ import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import { UserPoolsManager, CognitoSession, AwsJwt } from './auth';
-import { sessionModelTemplate, appUserPoolsManagerTemplate } from './templates';
-
-interface JwtSessionData {
-  id: string,
-  serializedSession: string,
-}
+import { appUserPoolsManagerTemplate } from './templates';
 
 class CognitoAuthorizer extends AuthorizerPackage {
   constructor() {
@@ -39,7 +34,6 @@ class CognitoAuthorizer extends AuthorizerPackage {
       console.warn(`${jsonAuthorizer.id} Auth already found inside authorizers.json!`);
     }
     await JsonAuthorizers.addEntry(jsonAuthorizer);
-    await JsonModels.create('CognitoSession', null, sessionModelTemplate());
     await JsonModels.create('AppUserPoolsManager', null, appUserPoolsManagerTemplate());
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(async jsonEnvsEntry => {
@@ -47,6 +41,8 @@ class CognitoAuthorizer extends AuthorizerPackage {
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_POOL_ID');
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_CLIENT_ID');
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_REGION');
+      await envFile.setParametricValue('RLN_COGNITO_AUTH_ACCESS_KEY_ID');
+      await envFile.setParametricValue('RLN_COGNITO_AUTH_SECRET_ACCESS_KEY');
     }));
   }
 
@@ -57,8 +53,9 @@ class CognitoAuthorizer extends AuthorizerPackage {
 
   async postEnvCreated(envName: string): Promise<void> {
     const envFile = new EnvFile(envName);
-    // @TODO: Put AWS secrets
-    await envFile.setParametricValue('RLN_AUTH_JWT_SECRET');
+    await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_POOL_ID');
+    await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_CLIENT_ID');
+    await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_REGION');
   }
 
   async verifyToken(event: AuthorizerEvent): Promise<AuthorizerResult> {
@@ -106,12 +103,7 @@ class CognitoAuthorizer extends AuthorizerPackage {
   }
 
   async createToken(session: SessionModelInstance): Promise<string> {
-    const jwtSecret = process.env['RLN_AUTH_JWT_SECRET'];
-    const sessionString = await session.serialize();
-    return jwt.sign({
-      id: session.id,
-      serializedSession: sessionString,
-    }, jwtSecret);
+    return '';
   }
 
   async parseSession(session: string) {
