@@ -5,6 +5,7 @@ import {
   DeleteWriteOpResultObject,
   IndexOptions,
   UpdateOneOptions,
+  MongoCountPreferences,
 } from 'mongodb';
 import Bson from 'bson';
 import { Lambda } from 'aws-sdk';
@@ -121,6 +122,10 @@ class MongoDao {
 
   async deleteMany(collectionName: string, filter): Promise<DeleteWriteOpResultObject> {
     return this.invokeProxy({ collectionName, operation: 'deleteMany', args: [filter] });
+  }
+
+  async count(collectionName: string, filter, options?: MongoCountPreferences): Promise<number> {
+    return this.invokeProxy({ collectionName, operation: 'count', args: [filter, options] });
   }
 
   async createIndex(collectionName: string, keys: string | any, options: IndexOptions): Promise<string> {
