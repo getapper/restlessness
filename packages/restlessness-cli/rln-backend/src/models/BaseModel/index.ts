@@ -2,6 +2,7 @@ import { JsonConfigFile, JsonConfigEntry } from '@restlessness/core';
 
 export default class BaseModel implements JsonConfigEntry {
   id: string;
+  cls = <typeof BaseModel>this.constructor;
 
   protected static get model(): JsonConfigFile<JsonConfigEntry> {
     throw new Error('BaseModel "static get model()" not implemented!');
@@ -36,12 +37,14 @@ export default class BaseModel implements JsonConfigEntry {
   }
 
   public async add(): Promise<void> {
-    const cls = <typeof BaseModel>this.constructor;
-    await cls.model.addEntry(await this.toConfigEntry());
+    await this.cls.model.addEntry(await this.toConfigEntry());
   }
 
   public async remove(): Promise<void> {
-    const cls = <typeof BaseModel>this.constructor;
-    await cls.model.removeEntryById(this.id);
+    await this.cls.model.removeEntryById(this.id);
+  }
+
+  public async update() {
+    await this.cls.model.updateEntry(await this.toConfigEntry());
   }
 }
