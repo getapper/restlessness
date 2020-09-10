@@ -51,6 +51,10 @@ export default class MongoBase {
     });
   }
 
+  static async getCounter<T>(query: QuerySelector<T> = {}): Promise<number> {
+    return MongoBase.dao.count(this.collectionName, query, {});
+  }
+
   async save() {
     this.created = new Date();
     const response: InsertOneWriteOpResult<MongoBase> = await MongoBase.dao.insertOne(this.constructor.collectionName, this);
