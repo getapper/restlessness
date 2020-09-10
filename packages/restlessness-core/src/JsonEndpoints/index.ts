@@ -16,7 +16,8 @@ import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
 import JsonServerless, { FunctionEndpoint } from '../JsonServerless';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
-import JsonDaos, { JsonDaosEntry } from '../JsonDaos';
+import JsonDaos from '../JsonDaos';
+import { AuthorizerPackage } from '../AuthorizerPackage';
 
 export enum HttpMethod {
   GET = 'get',
@@ -73,11 +74,13 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       daoIds: null,
     };
     const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
+    let authorizerPackage: AuthorizerPackage = null;
     if (authorizerId) {
       if (!jsonAuthorizersEntry) {
         throw new Error('Authorizer not found');
       }
       jsonEndpointsEntry.authorizerId = authorizerId;
+      authorizerPackage = AuthorizerPackage.load(jsonAuthorizersEntry.package);
     }
 
     if (daoIds?.length) {
@@ -104,9 +107,9 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     const folderPath = path.join(PathResolver.getEndpointsPath, method + '-' + route.folderName);
     await fs.mkdir(folderPath);
     await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(jsonEndpointsEntry));
-    await fs.writeFile(path.join(folderPath, 'index.test.ts'), testTemplate(jsonEndpointsEntry, jsonAuthorizersEntry));
-    await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars, jsonAuthorizersEntry));
-    await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars, jsonAuthorizersEntry));
+    await fs.writeFile(path.join(folderPath, 'index.test.ts'), testTemplate(jsonEndpointsEntry, authorizerPackage));
+    await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate(hasPayload, routeVars, authorizerPackage));
+    await fs.writeFile(path.join(folderPath, 'interfaces.ts'), interfacesTemplate(hasPayload, routeVars, authorizerPackage));
     await fs.writeFile(path.join(folderPath, 'validations.ts'), validationsTemplate(hasPayload, routeVars));
 
     // Re-generate exporter file with considering the new endpoint

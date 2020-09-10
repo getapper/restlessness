@@ -5,7 +5,7 @@
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
-    "@restlessness/core": "0.3.3",
+    "@restlessness/core": "0.3.6",
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "^2.1.0",
     "aws-sdk": "2.709.0",
@@ -26,7 +26,7 @@
     "request": "2.88.2"
   },
   "peerDependencies": {
-    "@restlessness/core": "^0.2.9"
+    "@restlessness/core": "^0.3.6"
   },
   "repository": {
     "url": "https://github.com/getapper/restlessness/tree/master/packages/auths/cognito"

@@ -1,6 +1,7 @@
 import { JsonAuthorizersEntry } from '../../JsonAuthorizers';
 import Route from '../../Route';
 import { JsonEndpointsEntry } from '../';
+import { AuthorizerPackage } from '../../AuthorizerPackage';
 
 const indexTemplate = (jsonEndpointsEntry: JsonEndpointsEntry) => `import 'module-alias/register';
 import { LambdaHandler } from '@restlessness/core';
@@ -12,9 +13,9 @@ export default LambdaHandler.bind(this, handler, validations, '${jsonEndpointsEn
 
 const testTemplate = (
   jsonEndpointsEntry: JsonEndpointsEntry,
-  authorizer: JsonAuthorizersEntry,
+  authorizerPackage: AuthorizerPackage,
 ): string => `import { StatusCodes, TestHandler } from '@restlessness/core';
-${authorizer ? `import ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
+${authorizerPackage ? `${authorizerPackage.getSessionModelImport()}\n` : ''}
 const ${jsonEndpointsEntry.id} = '${jsonEndpointsEntry.safeFunctionName}';
 
 beforeAll(async done => {
@@ -24,8 +25,8 @@ beforeAll(async done => {
 
 describe('${jsonEndpointsEntry.id} API', () => {
   test('', async (done) => {
-    ${authorizer ? `const session = new ${authorizer.sessionModelName}();\nsession.id = 'test_id';\nconst serializedSession = await session.serialize();` : ''}
-    const res = await TestHandler.invokeLambda(${jsonEndpointsEntry.id}${authorizer ? ', null, {serializedSession}' : ''});
+    ${authorizerPackage ? `const session = new ${authorizerPackage.getSessionModelName()}();\n    session.id = 'test_id';\n    const serializedSession = await session.serialize();` : ''}
+    const res = await TestHandler.invokeLambda(${jsonEndpointsEntry.id}${authorizerPackage ? ', null, {serializedSession}' : ''});
     // expect(res.statusCode).toBe(StatusCodes.OK);
     done();
   });
@@ -40,7 +41,7 @@ afterAll(async done => {
 const handlerTemplate = (
   hasPayload: boolean,
   vars: string[],
-  authorizer: JsonAuthorizersEntry,
+  authorizerPackage: AuthorizerPackage,
 ): string => `import 'module-alias/register';
 import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
@@ -49,7 +50,7 @@ export default async (req: Request) => {
   try {
     const {
       validationResult,
-${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n' : ''}${authorizer ? '      session,\n' : ''}    } = req;
+${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n' : ''}${authorizerPackage ? '      session,\n' : ''}    } = req;
 
     if (!validationResult.isValid) {
       return ResponseHandler.json({ message: validationResult.message }, StatusCodes.BadRequest);
@@ -66,16 +67,16 @@ ${hasPayload ? '      payload,\n' : ''}${vars.length ? '      pathParameters,\n'
 const interfacesTemplate = (
   hasPayload: boolean,
   vars: string[],
-  authorizer: JsonAuthorizersEntry,
+  authorizerPackage: AuthorizerPackage,
 ): string => `import { RequestI } from '@restlessness/core';
-${authorizer ? `import ${authorizer.sessionModelName} from 'root/models/${authorizer.sessionModelName}';\n` : ''}
+${authorizerPackage ? `${authorizerPackage.getSessionModelImport()}\n` : ''}
 export interface QueryStringParameters {}${hasPayload
   ? '\n\nexport interface Payload {}' : ''}${vars.length ? `\n\nexport interface PathParameters {
 ${vars.map(v => `  ${v}: string,`).join('\n')}
 }`
   : ''}
 
-export interface Request extends RequestI<QueryStringParameters, ${hasPayload ? 'Payload' : 'null'}, ${vars.length ? 'PathParameters' : 'null'}> {${authorizer ? `\n  session: ${authorizer.sessionModelName},\n` : ''}};
+export interface Request extends RequestI<QueryStringParameters, ${hasPayload ? 'Payload' : 'null'}, ${vars.length ? 'PathParameters' : 'null'}> {${authorizerPackage ? `\n  session: ${authorizerPackage.getSessionModelName()},\n` : ''}};
 `;
 
 const validationsTemplate = (hasPayload: boolean, vars: string[]): string => `import * as yup from 'yup';

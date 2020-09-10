@@ -28,7 +28,6 @@ class CognitoAuthorizer extends AuthorizerPackage {
       id: 'cognito',
       name: 'AWS Cognito',
       package: '@restlessness/auth-cognito',
-      sessionModelName: 'CognitoSession',
     };
     if (await JsonAuthorizers.getEntryById(jsonAuthorizer.id)) {
       console.warn(`${jsonAuthorizer.id} Auth already found inside authorizers.json!`);
@@ -108,6 +107,14 @@ class CognitoAuthorizer extends AuthorizerPackage {
 
   async parseSession(session: string) {
     return CognitoSession.deserialize(session);
+  }
+
+  getSessionModelName(): string {
+    return 'CognitoSession';
+  }
+
+  getSessionModelImport(): string {
+    return 'import { CognitoSession } from \'@restlessness/auth-cognito\';';
   }
 }
 

@@ -8,11 +8,13 @@ export abstract class AuthorizerPackage extends AddOnPackage {
   abstract createToken(session: SessionModelInstance): Promise<string>
   abstract verifyToken(event: AuthorizerEvent): Promise<AuthorizerResult>
   abstract parseSession(session: string): Promise<unknown>
+  abstract getSessionModelName(): string
+  abstract getSessionModelImport(): string
 
   async authorizer(event: AuthorizerEvent) {
     // @ts-ignore
     if (event.source === 'serverless-plugin-warmup') {
-      console.log('WarmUP - Lambda is warm!')
+      console.log('WarmUP - Lambda is warm!');
       return 'Lambda is warm!';
     }
     EnvironmentHandler.load();
