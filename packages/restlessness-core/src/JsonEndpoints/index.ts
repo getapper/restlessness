@@ -32,6 +32,7 @@ export interface JsonEndpointsEntry extends JsonConfigEntry {
   method: HttpMethod
   authorizerId?: string
   daoIds?: string[]
+  warmupEnabled: boolean
 }
 
 class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
@@ -39,7 +40,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     return PathResolver.getEndpointsConfigPath;
   }
 
-  async create(routePath: string, method: HttpMethod, authorizerId?: string, daoIds?: string[]): Promise<JsonEndpointsEntry> {
+  async create(routePath: string, method: HttpMethod, authorizerId?: string, daoIds?: string[], warmupEnabled?: boolean): Promise<JsonEndpointsEntry> {
     const route = Route.parseFromText(routePath);
 
     const id = method + route.functionName;
@@ -71,6 +72,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       method: method,
       authorizerId: null,
       daoIds: null,
+      warmupEnabled,
     };
     const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
     if (authorizerId) {
@@ -119,6 +121,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       route.functionPath,
       method,
       authorizerId,
+      warmupEnabled,
     );
     return jsonEndpointsEntry;
   }

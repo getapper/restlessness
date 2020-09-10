@@ -21,6 +21,7 @@ interface Event {
 export interface FunctionEndpoint {
   handler: string,
   events?: Event[],
+  warmup?: {[key: string]: any, enabled: boolean}
 }
 
 class JsonServerless {
@@ -47,6 +48,7 @@ class JsonServerless {
     functionPath: string,
     method: HttpMethod,
     authorizerId?: string,
+    warmupEnabled = true,
   ) {
     await this.read();
 
@@ -62,6 +64,9 @@ class JsonServerless {
           },
         },
       ],
+      warmup: {
+        enabled: warmupEnabled,
+      },
     };
     if (authorizerId) {
       functionEndpoint.events[0].http.authorizer = authorizerId;
