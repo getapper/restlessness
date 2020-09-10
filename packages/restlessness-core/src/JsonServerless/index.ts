@@ -71,21 +71,35 @@ class JsonServerless {
     if (authorizerId) {
       functionEndpoint.events[0].http.authorizer = authorizerId;
       if (!this.functions[authorizerId]) {
-        const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
-        try {
-          const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main;
-          const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`);
-          const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
-          this.functions[authorizerId] = {
-            handler: handlerRelativePath,
-          };
-        } catch {
-          throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry.package}!`);
-        }
+        await this.createAuthorizerFunction(authorizerId);
       }
     }
     this.functions[safeFunctionName] = functionEndpoint;
     await this.save();
+  }
+
+  async createAuthorizerFunction(authorizerId: string) {
+    const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
+    try {
+      const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main;
+      const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`);
+      const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
+      this.functions[authorizerId] = {
+        handler: handlerRelativePath,
+      };
+    } catch {
+      throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry?.package}!`);
+    }
+  }
+
+  async setAuthorizer(functionName: string, authorizerId: string) {
+    if (!authorizerId) {
+      return;
+    }
+    if (!this.functions[authorizerId]) {
+      await this.createAuthorizerFunction(authorizerId);
+    }
+    this.functions[functionName].events[0].http.authorizer = authorizerId;
   }
 
   async getEndpoint(safeFunctionName: string): Promise<FunctionEndpoint> {
@@ -105,6 +119,14 @@ class JsonServerless {
       this.plugins.push(pluginName);
       await this.save();
     }
+  }
+
+  async updateEndpoint(functionName: string, authorizerId: string, warmupEnabled: boolean) {
+    await this.setAuthorizer(functionName, authorizerId);
+    this.functions[functionName].warmup = {
+      enabled: warmupEnabled,
+    };
+    await this.save();
   }
 }
 

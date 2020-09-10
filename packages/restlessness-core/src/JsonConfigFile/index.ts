@@ -44,4 +44,14 @@ export default abstract class JsonConfigFile<T extends JsonConfigEntry> {
     this.entries = this.entries.filter(entry => entry['id'] !== id);
     await this.write();
   }
+
+  async updateEntry(entry: T) {
+    await this.read();
+    const idx = this.entries.findIndex(e => e.id === entry.id);
+    if (idx === -1) {
+      throw Error(`Entry with id ${entry.id} does not exist`);
+    }
+    this.entries[idx] = entry;
+    await this.write();
+  }
 }
