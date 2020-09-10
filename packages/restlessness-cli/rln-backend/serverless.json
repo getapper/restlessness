@@ -1,4 +1,12 @@
 {
+  "service": "restlessness-rest-api",
+  "provider": {
+    "name": "aws",
+    "runtime": "nodejs12.x"
+  },
+  "plugins": [
+    "serverless-offline"
+  ],
   "functions": {
     "postEndpoints": {
       "handler": "dist/exporter.postEndpoints",
@@ -145,6 +153,22 @@
           }
         }
       ]
+    },
+    "putEndpointsById": {
+      "handler": "dist/exporter.putEndpointsById",
+      "events": [
+        {
+          "http": {
+            "path": "endpoints/{id}",
+            "method": "put",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": true
+      }
     }
   }
 }
