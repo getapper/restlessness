@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, SimpleForm, TextInput, SelectInput, ReferenceInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput, SelectInput, ReferenceInput, BooleanInput } from 'react-admin';
 
 const EndpointsUpdate = (props) => (
   <Edit {...props}>
@@ -15,6 +15,7 @@ const EndpointsUpdate = (props) => (
       <ReferenceInput label="Authorizer" source="authorizerId" reference="authorizers">
         <SelectInput />
       </ReferenceInput>
+      <BooleanInput source="warmupEnabled" />
     </SimpleForm>
   </Edit>
 );
