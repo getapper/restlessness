@@ -8,6 +8,7 @@ export default class Endpoint extends BaseModel {
   method: HttpMethod
   authorizer: Authorizer
   daos: Dao[]
+  warmupEnabled: boolean
 
   static get model() {
     return JsonEndpoints;
@@ -21,6 +22,7 @@ export default class Endpoint extends BaseModel {
       this.authorizer = await Authorizer.getById(entry.authorizerId);
       const daos = entry.daoIds?.map(id => Dao.getById(id));
       this.daos = daos ? await Promise.all(daos) : [];
+      this.warmupEnabled = entry.warmupEnabled;
   }
 
   protected async toConfigEntry(): Promise<JsonEndpointsEntry> {
@@ -31,11 +33,12 @@ export default class Endpoint extends BaseModel {
       method: this.method,
       authorizerId: this.authorizer?.id,
       daoIds: this.daos.map(dao => dao.id),
+      warmupEnabled: this.warmupEnabled,
     };
   }
 
-  async create(route: Route, method: HttpMethod, authorizerId?: string, daoIds?: string[]) {
-    const entry = await JsonEndpoints.create(route.endpointRoute, method, authorizerId, daoIds);
+  async create(route: Route, method: HttpMethod, authorizerId?: string, daoIds?: string[], warmupEnabled?: boolean) {
+    const entry = await JsonEndpoints.create(route.endpointRoute, method, authorizerId, daoIds, warmupEnabled);
     await this.fromConfigEntry(entry);
   }
 }

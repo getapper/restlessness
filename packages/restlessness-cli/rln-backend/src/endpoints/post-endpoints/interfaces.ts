@@ -5,6 +5,7 @@ export interface Payload {
   method: HttpMethod,
   authorizerId: string
   daoIds: string[]
+  warmupEnabled: boolean
 }
 
 export interface Request {
