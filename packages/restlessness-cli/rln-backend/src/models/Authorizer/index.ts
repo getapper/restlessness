@@ -12,11 +12,10 @@ export default class Authorizer extends BaseModel {
   }
 
   protected async fromConfigEntry(entry: JsonAuthorizersEntry): Promise<void> {
-    const { id, name, package: pkg, sessionModelName } = entry;
+    const { id, name, package: pkg } = entry;
     this.id = id;
     this.name = name;
     this.package = pkg;
-    this.sessionModelName = sessionModelName;
   }
 
   protected async toConfigEntry(): Promise<JsonAuthorizersEntry> {
