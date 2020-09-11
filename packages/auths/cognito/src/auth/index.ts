@@ -255,6 +255,27 @@ export class UserPoolManager {
       });
     });
   }
+
+  async changePassword (
+    email: string,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+
+    const cognitoUser: CognitoUser = new CognitoUser({
+      Username: email,
+      Pool: this.userPool,
+    });
+
+    return await new Promise((resolve, reject) => {
+      cognitoUser.changePassword(oldPassword, newPassword, (err) => {
+        if (err) {
+          reject(err);
+        }
+        resolve();
+      });
+    });
+  }
 }
 
 export interface PoolInfo {
