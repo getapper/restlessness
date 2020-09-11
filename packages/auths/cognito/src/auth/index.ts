@@ -11,7 +11,7 @@ import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { promisify } from 'util';
 import request from 'request';
 import jwkToPem from 'jwk-to-pem';
-import { ConfirmationCodeType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import {AttributeListType, ConfirmationCodeType} from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import fetch from 'cross-fetch';
 import jwt from 'jsonwebtoken';
 
@@ -229,6 +229,17 @@ export class UserPoolManager {
     };
     const adminUpdateUserAttributes = this.cognitoIdentityServiceProvider.adminUpdateUserAttributes(params);
     const result = await adminUpdateUserAttributes.promise();
+  }
+
+  async adminCreateUser (email: string, password: string, attributes?: AttributeListType): Promise<any> {
+    const result = await (this.cognitoIdentityServiceProvider.adminCreateUser({
+      UserPoolId: this.userPool.getUserPoolId(),
+      Username: email,
+      TemporaryPassword: password,
+      UserAttributes: attributes,
+    }).promise());
+
+    return result;
   }
 
   async verifyMFA (cognitoUserSession: CognitoUserSession, username: string, verificationCode: string): Promise<any> {

@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/auth-cognito",
-  "version": "0.0.0",
+  "version": "0.3.2",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
