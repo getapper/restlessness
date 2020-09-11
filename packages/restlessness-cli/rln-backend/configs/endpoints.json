@@ -60,5 +60,13 @@
     "route": "/endpoints/{id}",
     "method": "delete",
     "authorizerId": null
+  },
+  {
+    "id": "putEndpointsById",
+    "safeFunctionName": "putEndpointsById",
+    "route": "/endpoints/{id}",
+    "method": "put",
+    "authorizerId": null,
+    "daoIds": null
   }
 ]

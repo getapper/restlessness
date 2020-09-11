@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  CheckboxGroupInput, Create, ReferenceArrayInput, ReferenceInput, SelectInput, SimpleForm, TextInput
+  CheckboxGroupInput, Create, ReferenceArrayInput, ReferenceInput, SelectInput, SimpleForm, TextInput, BooleanInput
 } from 'react-admin'
 
 const EndpointsCreate = (props) => (
@@ -20,6 +20,7 @@ const EndpointsCreate = (props) => (
       <ReferenceArrayInput label="Daos" source="daoIds" reference="daos">
         <CheckboxGroupInput />
       </ReferenceArrayInput>
+      <BooleanInput source="warmupEnabled" defaultValue={true} />
     </SimpleForm>
   </Create>
 );

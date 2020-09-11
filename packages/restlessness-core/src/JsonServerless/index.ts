@@ -4,6 +4,8 @@ import { HttpMethod } from '../JsonEndpoints';
 import JsonAuthorizers from '../JsonAuthorizers';
 import _unset from 'lodash.unset';
 import path from 'path';
+import { promisify } from 'util';
+import lockfile from 'lockfile';
 
 interface Functions {
   [key: string]: FunctionEndpoint
@@ -21,6 +23,7 @@ interface Event {
 export interface FunctionEndpoint {
   handler: string,
   events?: Event[],
+  warmup?: {[key: string]: any, enabled: boolean}
 }
 
 class JsonServerless {
@@ -34,12 +37,16 @@ class JsonServerless {
   }
 
   async read(): Promise<void> {
+    await promisify<string, any>(lockfile.lock)(this.jsonPath + '.lock', { wait: 10 * 1000 });
     const file = await fs.readFile(this.jsonPath);
     Object.assign(this, JSON.parse(file.toString()));
+    await promisify(lockfile.unlock)(this.jsonPath + '.lock');
   }
 
   async save(): Promise<void> {
+    await promisify<string, any>(lockfile.lock)(this.jsonPath + '.lock', { wait: 10 * 1000 });
     await fs.writeFile(this.jsonPath, JSON.stringify(this, null, 2));
+    await promisify(lockfile.unlock)(this.jsonPath + '.lock');
   }
 
   async addEndpoint(
@@ -47,6 +54,7 @@ class JsonServerless {
     functionPath: string,
     method: HttpMethod,
     authorizerId?: string,
+    warmupEnabled = true,
   ) {
     await this.read();
 
@@ -62,25 +70,42 @@ class JsonServerless {
           },
         },
       ],
+      warmup: {
+        enabled: warmupEnabled,
+      },
     };
     if (authorizerId) {
       functionEndpoint.events[0].http.authorizer = authorizerId;
       if (!this.functions[authorizerId]) {
-        const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
-        try {
-          const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main;
-          const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`);
-          const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
-          this.functions[authorizerId] = {
-            handler: handlerRelativePath,
-          };
-        } catch {
-          throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry.package}!`);
-        }
+        await this.createAuthorizerFunction(authorizerId);
       }
     }
     this.functions[safeFunctionName] = functionEndpoint;
     await this.save();
+  }
+
+  async createAuthorizerFunction(authorizerId: string) {
+    const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
+    try {
+      const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main;
+      const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`);
+      const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
+      this.functions[authorizerId] = {
+        handler: handlerRelativePath,
+      };
+    } catch {
+      throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry?.package}!`);
+    }
+  }
+
+  async setAuthorizer(functionName: string, authorizerId: string) {
+    if (!authorizerId) {
+      return;
+    }
+    if (!this.functions[authorizerId]) {
+      await this.createAuthorizerFunction(authorizerId);
+    }
+    this.functions[functionName].events[0].http.authorizer = authorizerId;
   }
 
   async getEndpoint(safeFunctionName: string): Promise<FunctionEndpoint> {
@@ -100,6 +125,14 @@ class JsonServerless {
       this.plugins.push(pluginName);
       await this.save();
     }
+  }
+
+  async updateEndpoint(functionName: string, authorizerId: string, warmupEnabled: boolean) {
+    await this.setAuthorizer(functionName, authorizerId);
+    this.functions[functionName].warmup = {
+      enabled: warmupEnabled,
+    };
+    await this.save();
   }
 }
 

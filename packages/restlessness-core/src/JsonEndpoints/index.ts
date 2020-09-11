@@ -33,6 +33,7 @@ export interface JsonEndpointsEntry extends JsonConfigEntry {
   method: HttpMethod
   authorizerId?: string
   daoIds?: string[]
+  warmupEnabled: boolean
 }
 
 class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
@@ -40,7 +41,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     return PathResolver.getEndpointsConfigPath;
   }
 
-  async create(routePath: string, method: HttpMethod, authorizerId?: string, daoIds?: string[]): Promise<JsonEndpointsEntry> {
+  async create(routePath: string, method: HttpMethod, authorizerId?: string, daoIds?: string[], warmupEnabled?: boolean): Promise<JsonEndpointsEntry> {
     const route = Route.parseFromText(routePath);
 
     const id = method + route.functionName;
@@ -72,6 +73,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       method: method,
       authorizerId: null,
       daoIds: null,
+      warmupEnabled,
     };
     const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
     let authorizerPackage: AuthorizerPackage = null;
@@ -122,6 +124,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       route.functionPath,
       method,
       authorizerId,
+      warmupEnabled,
     );
     return jsonEndpointsEntry;
   }
@@ -151,6 +154,36 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     const routes: Route[] = this.entries.sort().map(je => Route.parseFromText(je.route));
     const methods: string[] = this.entries.map(je => je.method);
     await fs.writeFile(path.join(PathResolver.getSrcPath, 'exporter.ts'), exporterTemplate(this.entries, methods, routes));
+  }
+
+  async updateEntry(entry: JsonEndpointsEntry) {
+    const jsonEndpointsEntry = await this.getEntryById(entry.id);
+    if (entry.daoIds?.length) {
+      for (const id of entry.daoIds) {
+        if (!await JsonDaos.getEntryById(id)) {
+          throw new Error(`Dao with id ${id} not found`);
+        }
+      }
+      jsonEndpointsEntry.daoIds = [...entry.daoIds];
+    } else {
+      jsonEndpointsEntry.daoIds = [];
+    }
+    if (entry.authorizerId && !(await JsonAuthorizers.getEntryById(entry.authorizerId))) {
+      throw new Error('Authorizer not found');
+    }
+    jsonEndpointsEntry.authorizerId = entry.authorizerId;
+    jsonEndpointsEntry.warmupEnabled = entry.warmupEnabled;
+
+    await super.updateEntry(jsonEndpointsEntry);
+
+    // side effects
+
+    await JsonServerless.read();
+    await JsonServerless.updateEndpoint(
+      jsonEndpointsEntry.safeFunctionName,
+      jsonEndpointsEntry.authorizerId,
+      jsonEndpointsEntry.warmupEnabled,
+    );
   }
 }
 
