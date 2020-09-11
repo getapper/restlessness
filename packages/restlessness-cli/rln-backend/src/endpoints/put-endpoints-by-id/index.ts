@@ -1,5 +1,5 @@
 import 'module-alias/register';
-import { LambdaHandler } from '@restlessness/core';
+import LambdaHandler from '../../services/LambdaHandler';
 import handler from './handler';
 import validations from './validations';
 
