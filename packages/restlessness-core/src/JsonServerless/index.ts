@@ -87,7 +87,7 @@ class JsonServerless {
   async createAuthorizerFunction(authorizerId: string) {
     const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
     try {
-      const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main;
+      const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main.replace('.js', '');
       const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`);
       const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
       this.functions[authorizerId] = {
