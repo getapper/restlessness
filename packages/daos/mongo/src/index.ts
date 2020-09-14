@@ -8,6 +8,8 @@ import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/core';
 import { modelTemplate } from './templates';
 import AWSLambda from 'aws-lambda';
 import { JsonServerless } from '@restlessness/core/dist';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 class ObjectIdSchema extends yup.mixed {
   constructor() {
@@ -35,8 +37,37 @@ class MongoDaoPackage extends DaoPackage {
     });
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(this.addEnv));
+    await this.installProxy();
+  }
+
+  async installProxy() {
+    await promisify(exec)('npm i -E serverless-mongo-proxy');
     await JsonServerless.read();
     await JsonServerless.addPlugin('serverless-mongo-proxy');
+    this.addProxyPermissions();
+    await JsonServerless.save();
+  }
+
+  addProxyPermissions() {
+    const { provider } = JsonServerless;
+    if (provider.name === 'aws') {
+      const statement = provider.iamRoleStatements?.find(
+        s => s['Effect'] === 'Allow' &&
+          s['Resource'] === '*' &&
+          s['Action'].includes('lambda:InvokeFunction')
+      );
+      if (!statement) {
+        const invokeStatement = {
+          'Effect': 'Allow',
+          'Resource': '*',
+          'Action': ['lambda:InvokeFunction'],
+        };
+        if (!provider.iamRoleStatements) {
+          provider.iamRoleStatements = [];
+        }
+        provider.iamRoleStatements.push(invokeStatement);
+      }
+    }
   }
 
   async postEnvCreated(envName: string): Promise<void> {
