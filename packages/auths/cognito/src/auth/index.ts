@@ -287,6 +287,8 @@ export class CognitoSession {
   ['constructor']: typeof CognitoSession
   id: string
   email: string
+  sub: string
+  username: string
 
   async serialize(): Promise<string> {
     return JSON.stringify(this);

@@ -85,7 +85,7 @@ class CognitoAuthorizer extends AuthorizerPackage {
               authResult.granted = true;
               authResult.principalId = decodedJwt.payload.event_id;
               const cognito = new CognitoSession();
-              cognito.email = decodedJwt.payload.email;
+              Object.assign(cognito, decodedJwt.payload);
               cognito.id = authResult.principalId;
               authResult.serializedSession = await cognito.serialize();
             } catch (e) {
