@@ -261,20 +261,42 @@ export class UserPoolManager {
     oldPassword: string,
     newPassword: string,
   ): Promise<void> {
-
+    //@TODO: not working, user unauthorized, to be fixed
     const cognitoUser: CognitoUser = new CognitoUser({
       Username: email,
       Pool: this.userPool,
     });
-
-    return await new Promise((resolve, reject) => {
-      cognitoUser.changePassword(oldPassword, newPassword, (err) => {
+    await new Promise((resolve, reject) => {
+      this.userPool.getCurrentUser().getSession((err) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         resolve();
       });
     });
+    return await new Promise((resolve, reject) => {
+      this.userPool.getCurrentUser().changePassword(oldPassword, newPassword, (err) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  }
+
+  async adminChangeUserPassword (
+    email: string,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const params = {
+      Username: email,
+      UserPoolId: this.userPool.getUserPoolId(),
+      Password: newPassword,
+      Permanent: true,
+    };
+    const adminUpdateUserAttributes = this.cognitoIdentityServiceProvider.adminSetUserPassword(params);
+    const result = await adminUpdateUserAttributes.promise();
   }
 }
 
