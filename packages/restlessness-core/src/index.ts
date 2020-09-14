@@ -16,4 +16,5 @@ export { default as PathResolver } from './PathResolver';
 export * from './LambdaHandler';
 export * from './ResponseHandler';
 export { default as EnvironmentHandler } from './EnvironmentHandler';
+export { default as Openapi } from './Openapi';
 export * from './TestHandler';

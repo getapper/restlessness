@@ -92,7 +92,7 @@ export default class Openapi {
     };
 
     for (let ep of endpoints){
-      const route: Route = Route.parseFromText(ep.route)
+      const route: Route = Route.parseFromText(ep.route);
       const routeName = route.endpointRoute;
       const routeMethod = ep.method;
       if (!openapi.paths[routeName]) {
@@ -150,7 +150,10 @@ export default class Openapi {
         console.warn(e.message);
       }
     }
-    await Openapi.saveOpenapi(openapi);
+    Object.assign(this, openapi);
+    try {
+      await Openapi.saveOpenapi(openapi);
+    } catch (e) {}
   }
 
   static async saveOpenapi(openapi) {
