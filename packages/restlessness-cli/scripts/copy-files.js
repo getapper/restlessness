@@ -54,7 +54,7 @@ const exec = async () => {
   }
   copyFolderRecursiveSync(path.join(sourceBackendRoot, 'dist'), backendRoot);
   copyFolderRecursiveSync(path.join(sourceBackendRoot, 'configs'), backendRoot);
-  copyFileSync(path.join(sourceBackendRoot, 'serverless.yml'), backendRoot);
+  copyFileSync(path.join(sourceBackendRoot, 'serverless.json'), backendRoot);
   copyFolderRecursiveSync(path.join(sourceFrontendRoot, 'build'), frontendRoot);
 };
 
