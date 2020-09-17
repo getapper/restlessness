@@ -11,7 +11,7 @@ import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { promisify } from 'util';
 import request from 'request';
 import jwkToPem from 'jwk-to-pem';
-import {AttributeListType, ConfirmationCodeType} from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { AttributeListType, ConfirmationCodeType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import fetch from 'cross-fetch';
 import jwt from 'jsonwebtoken';
 
@@ -72,23 +72,24 @@ export class UserPoolManager {
         url : `${this.iss}/.well-known/jwks.json`,
         json : true,
       }, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
-          // console.log(body);
-          this.pems = {};
-          const keys = body['keys'];
-          for (let i = 0; i < keys.length; i++) {
-            const key_id = keys[i].kid;
-            const modulus = keys[i].n;
-            const exponent = keys[i].e;
-            const key_type = keys[i].kty;
-            const jwk = { kty: key_type, n: modulus, e: exponent };
-            const pem = jwkToPem(jwk);
-            this.pems[key_id] = pem;
-          }
-          resolve();
-        } else {
-          reject(error);
+        if (error) {
+          return reject(error);
         }
+        if (response.statusCode !== 200) {
+          return reject(new Error('Fetching pool jwks error: ' + JSON.stringify(response?.body)));
+        }
+        this.pems = {};
+        const keys = body['keys'];
+        for (let i = 0; i < keys.length; i++) {
+          const key_id = keys[i].kid;
+          const modulus = keys[i].n;
+          const exponent = keys[i].e;
+          const key_type = keys[i].kty;
+          const jwk = { kty: key_type, n: modulus, e: exponent };
+          const pem = jwkToPem(jwk);
+          this.pems[key_id] = pem;
+        }
+        resolve();
       });
     });
   }
@@ -337,7 +338,6 @@ export abstract class UserPoolsManager {
       poolInfo.attributes,
       process.env['RLN_COGNITO_AUTH_ACCESS_KEY_ID'],
       process.env['RLN_COGNITO_AUTH_SECRET_ACCESS_KEY'],
-
     ));
     return Promise.all(this.pools.map(async pool => await pool.init()));
   }

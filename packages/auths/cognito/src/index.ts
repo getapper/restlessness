@@ -46,8 +46,10 @@ class CognitoAuthorizer extends AuthorizerPackage {
   }
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
-    const appUserPoolsManager: UserPoolsManager = require(path.join(PathResolver.getDistPath, 'models', 'AppUserPoolsManager')).default;
-    await appUserPoolsManager.init();
+    if (process.env['ENV_NAME'] !== 'test') {
+      const appUserPoolsManager: UserPoolsManager = require(path.join(PathResolver.getDistPath, 'models', 'AppUserPoolsManager')).default;
+      await appUserPoolsManager.init();
+    }
   }
 
   async postEnvCreated(envName: string): Promise<void> {
