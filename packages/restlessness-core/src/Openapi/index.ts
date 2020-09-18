@@ -118,7 +118,7 @@ export default class Openapi {
       const validationsRoutePath = path.join(folderPath, 'validations');
 
       try {
-        const validationYUP = require(validationsRoutePath).default;
+        const validationYUP = require(validationsRoutePath).default();
 
         if (validationYUP.payload) {
           const properties = {};
