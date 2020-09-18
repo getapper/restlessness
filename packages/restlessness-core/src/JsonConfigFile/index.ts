@@ -1,6 +1,4 @@
 import { promises as fs } from 'fs';
-import { promisify } from 'util';
-import lockfile from 'lockfile';
 
 export interface JsonConfigEntry {
   id: string
@@ -12,16 +10,12 @@ export default abstract class JsonConfigFile<T extends JsonConfigEntry> {
   abstract get jsonPath(): string;
 
   async read(): Promise<void> {
-    await promisify<string, any>(lockfile.lock)(this.jsonPath + '.lock', { wait: 10 * 1000 });
     const file = await fs.readFile(this.jsonPath);
     this.entries = JSON.parse(file.toString());
-    await promisify(lockfile.unlock)(this.jsonPath + '.lock');
   }
 
   async write() {
-    await promisify<string, any>(lockfile.lock)(this.jsonPath + '.lock', { wait: 10 * 1000 });
     await fs.writeFile(this.jsonPath, JSON.stringify(this.entries, null, 2));
-    await promisify(lockfile.unlock)(this.jsonPath + '.lock');
   }
 
   async getEntryById(id: string): Promise<T> {

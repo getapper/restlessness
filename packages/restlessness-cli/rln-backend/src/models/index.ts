@@ -6,7 +6,6 @@ import Plugin from 'root/models/Plugin';
 import Model from 'root/models/Model';
 import Env from 'root/models/Env';
 import Authorizer from 'root/models/Authorizer';
-import Openapi from 'root/models/Openapi';
 
 export {
   BaseModel,
@@ -17,5 +16,4 @@ export {
   Plugin,
   Model,
   Env,
-  Openapi,
 };

@@ -99,7 +99,7 @@ export default class Openapi {
         openapi.paths[routeName] = {};
       }
       openapi.paths[routeName][routeMethod] = {
-        description: `${routeMethod}: ${routeName}`,
+        description: ep.description,
         tags: ['api'],
         responses: {
           200: {
@@ -151,12 +151,5 @@ export default class Openapi {
       }
     }
     Object.assign(this, openapi);
-    try {
-      await Openapi.saveOpenapi(openapi);
-    } catch (e) {}
-  }
-
-  static async saveOpenapi(openapi) {
-    await fs.writeFile(Openapi.openapiJsonPath, JSON.stringify(openapi, null, 2));
   }
 }

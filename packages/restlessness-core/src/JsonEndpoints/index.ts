@@ -30,6 +30,7 @@ export enum HttpMethod {
 export interface JsonEndpointsEntry extends JsonConfigEntry {
   route: string
   safeFunctionName: string
+  description?: string
   method: HttpMethod
   authorizerId?: string
   daoIds?: string[]
