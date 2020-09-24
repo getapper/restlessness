@@ -9,8 +9,16 @@ export default class PathResolver {
     return path.join(PathResolver.getPrjPath, 'package.json');
   }
 
-  static get getServerlessJsonPath(): string {
+  static get getServerlessJsonPath(): string { //@TODO remove it
     return path.join(PathResolver.getPrjPath, 'serverless.json');
+  }
+
+  static get getServicesJsonPath(): string {
+    return path.join(PathResolver.getPrjPath, 'serverless-services');
+  }
+
+  static get getSharedResourcesServerlessJsonPath(): string {
+    return path.join(PathResolver.getPrjPath, 'serverless-services', 'shared-resources.json');
   }
 
   static get getEnvsPath(): string {

@@ -1,13 +1,57 @@
-const generateServerlessJson = (serviceName: string): string => `{
-  "service": "${serviceName}",
+const generateSharedResourcesServerlessJson = (projectName: string) => `{
+  "service": "${projectName}-shared-resources",
   "provider": {
     "name": "aws",
     "runtime": "nodejs12.x"
   },
-  "package": {
-    "include": [
-      "serverless.json"
-    ]
+  "resources": {
+    "Resources": {
+      "SharedGW": {
+        "Type": "AWS::ApiGateway::RestApi",
+        "Properties": {
+          "Name": "SharedGW"
+        }
+      }
+    },
+    "Outputs": {
+      "apiGatewayRestApiId": {
+        "Value": {
+          "Ref": "SharedGW"
+        },
+        "Export": {
+          "Name": "${projectName}-SharedGW-restApiId"
+        }
+      },
+      "apiGatewayRestApiRootResourceId": {
+        "Value": {
+          "Fn::GetAtt": [
+            "SharedGW",
+            "RootResourceId"
+          ]
+        },
+        "Export": {
+          "Name": "${projectName}-SharedGW-rootResourceId"
+        }
+      }
+    }
+  }
+}
+`;
+
+// "service": "${projectName}-${serviceName}",
+const generateServiceServerlessJson = (projectName: string, serviceName: string): string => `{
+  "service": "${serviceName}",
+  "provider": {
+    "name": "aws",
+    "runtime": "nodejs12.x",
+    "apiGateway": {
+      "restApiId": {
+        "Fn::ImportValue": "${projectName}-SharedGW-restApiId"
+      },
+      "restApiRootResourceId": {
+        "Fn::ImportValue": "${projectName}-SharedGW-rootResourceId"
+      }
+    }
   },
   "plugins": [
     "serverless-offline",
@@ -81,5 +125,6 @@ const generateGitIgnore = (): string => `node_modules
 export {
   generateGitIgnore,
   generatePackageJson,
-  generateServerlessJson,
+  generateSharedResourcesServerlessJson,
+  generateServiceServerlessJson,
 };
