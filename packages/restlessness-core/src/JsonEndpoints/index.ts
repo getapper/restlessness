@@ -14,6 +14,7 @@ import Route from '../Route';
 import JsonAuthorizers from '../JsonAuthorizers';
 import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
 import JsonServerless, { FunctionEndpoint } from '../JsonServerless';
+import JsonServices from '../JsonServices';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
 import JsonDaos from '../JsonDaos';
@@ -35,6 +36,7 @@ export interface JsonEndpointsEntry extends JsonConfigEntry {
   authorizerId?: string
   daoIds?: string[]
   warmupEnabled: boolean
+  serviceName: string
 }
 
 class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
@@ -42,12 +44,15 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     return PathResolver.getEndpointsConfigPath;
   }
 
-  async create(routePath: string, method: HttpMethod, authorizerId?: string, daoIds?: string[], warmupEnabled?: boolean): Promise<JsonEndpointsEntry> {
-    const route = Route.parseFromText(routePath);
+  async create(endpoint: {
+    routePath: string, method: HttpMethod, authorizerId?: string, daoIds?: string[], warmupEnabled?: boolean, serviceName: string
+  }): Promise<JsonEndpointsEntry> {
+    const { routePath, method, authorizerId, daoIds, warmupEnabled, serviceName } = endpoint;
 
+    const route = Route.parseFromText(routePath);
     const id = method + route.functionName;
 
-    await JsonServerless.read();
+    await JsonServices.read();
 
     /**
      * The 4 xxxx stand for "dev" or "prod", based on which stage deployment will be selected
@@ -75,6 +80,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       authorizerId: null,
       daoIds: null,
       warmupEnabled,
+      serviceName,
     };
     const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
     let authorizerPackage: AuthorizerPackage = null;
@@ -120,13 +126,14 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
 
     // Add e new function handler in serverless.json read by serverless.yml
     // It also adds the authorizer handler, if it doesn't exist yet
-    await JsonServerless.addEndpoint(
-      jsonEndpointsEntry.safeFunctionName,
-      route.functionPath,
+    await JsonServices.addEndpoint({
+      safeFunctionName: jsonEndpointsEntry.safeFunctionName,
+      functionPath: route.functionPath,
       method,
       authorizerId,
       warmupEnabled,
-    );
+      serviceName,
+    });
     return jsonEndpointsEntry;
   }
 
