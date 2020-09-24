@@ -9,6 +9,7 @@ export default class Endpoint extends BaseModel {
   authorizer: Authorizer
   daos: Dao[]
   warmupEnabled: boolean
+  serviceName: string
 
   static get model() {
     return JsonEndpoints;
@@ -34,11 +35,23 @@ export default class Endpoint extends BaseModel {
       authorizerId: this.authorizer?.id,
       daoIds: this.daos.map(dao => dao.id),
       warmupEnabled: this.warmupEnabled,
+      serviceName: this.serviceName,
     };
   }
 
-  async create(route: Route, method: HttpMethod, authorizerId?: string, daoIds?: string[], warmupEnabled?: boolean) {
-    const entry = await JsonEndpoints.create(route.endpointRoute, method, authorizerId, daoIds, warmupEnabled);
+  async create(endpoint: { route: Route, method: HttpMethod, authorizerId?: string, daoIds?: string[], warmupEnabled?: boolean, serviceName: string }) {
+    const {
+      route, method, authorizerId,
+      daoIds, warmupEnabled, serviceName,
+    } = endpoint;
+    const entry = await JsonEndpoints.create({
+      routePath: route.endpointRoute,
+      method,
+      authorizerId,
+      daoIds,
+      warmupEnabled,
+      serviceName,
+    });
     await this.fromConfigEntry(entry);
   }
 }

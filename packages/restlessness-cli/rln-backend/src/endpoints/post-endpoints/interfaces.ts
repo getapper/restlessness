@@ -6,6 +6,7 @@ export interface Payload {
   authorizerId: string
   daoIds: string[]
   warmupEnabled: boolean
+  serviceName: string
 }
 
 export interface Request {
