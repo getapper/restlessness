@@ -38,6 +38,10 @@ interface JsonServerless {
 class JsonServices {
   services: { [key: string]: JsonServerless }
 
+  get OFFLINE_SERVICE_NAME() {
+    return 'offline';
+  }
+
   get jsonPath(): string {
     return PathResolver.getServicesJsonPath;
   }
