@@ -102,7 +102,8 @@ function spawnFrontend(): Promise<ChildProcess> {
 
 function spawnProject(name: string, env: ENV): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
-    const proc = spawn('serverless', ['offline', '--port', '4000'], {
+    // @TODO: 'serverless-services/offline.json' should be changed with `${PathResolver.getOfflineServerlessJsonPath}.json`
+    const proc = spawn('serverless', ['--config', 'serverless-services/offline.json', 'offline', '--port', '4000'], {
       env: {
         ...process.env,
         ...env,
