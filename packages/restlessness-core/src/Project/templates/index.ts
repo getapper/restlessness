@@ -76,7 +76,7 @@ const generatePackageJson = (name: string) => `{
     "REMOVE:staging": "serverless remove --stage dev",
     "DEPLOY:production": "npm run tsc && restlessness create-env production && serverless deploy --stage prod --verbose",
     "REMOVE:production": "serverless remove --stage prod",
-    "test": "restlessness create-env test && jest",
+    "test": "restlessness create-env test && jest --runInBand",
     "tsc": "rimraf dist && tsc -p tsconfig.json"
   },
   "dependencies": {
@@ -100,9 +100,11 @@ const generatePackageJson = (name: string) => `{
     "root": "dist"
   },
   "jest": {
+    "testTimeout": 10000,
     "rootDir": "dist",
     "moduleNameMapper": {
-      "root/(.*)$": "<rootDir>/$1"
+      "root/models/(.*)": "<rootDir>/models/$1",
+      "root/endpoints/(.*)": "<rootDir>/endpoints/$1"
     }
   }
 }
