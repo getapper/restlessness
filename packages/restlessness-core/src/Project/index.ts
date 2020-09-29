@@ -3,7 +3,12 @@ import path from 'path';
 import { execSync } from 'child_process';
 import rimraf from 'rimraf';
 import Misc from '../Misc';
-import { generatePackageJson, generateGitIgnore, generateSharedResourcesServerlessJson } from './templates';
+import {
+  generatePackageJson,
+  generateGitIgnore,
+  generateSharedResourcesServerlessJson,
+  generateOfflineServerlessJson,
+} from './templates';
 import { promisify } from 'util';
 import PathResolver from '../PathResolver';
 
@@ -34,6 +39,7 @@ export default class Project {
       await fs.writeFile(PathResolver.getPackageJsonPath, generatePackageJson(name));
       await fs.mkdir(PathResolver.getServicesJsonPath);
       await fs.writeFile(PathResolver.getSharedResourcesServerlessJsonPath, generateSharedResourcesServerlessJson(name));
+      await fs.writeFile(PathResolver.getOfflineServerlessJsonPath, generateOfflineServerlessJson(name));
       await fs.writeFile(path.join(projectPath, '.gitignore'), generateGitIgnore());
       if (mergedOptions.installNodemodules) {
         execSync('npm i', {

@@ -21,6 +21,10 @@ export default class PathResolver {
     return path.join(PathResolver.getPrjPath, 'serverless-services', 'shared-resources.json');
   }
 
+  static get getOfflineServerlessJsonPath(): string {
+    return path.join(PathResolver.getPrjPath, 'serverless-services', 'offline.json');
+  }
+
   static get getEnvsPath(): string {
     return path.join(PathResolver.getPrjPath, 'envs');
   }

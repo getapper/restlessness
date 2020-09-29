@@ -38,6 +38,26 @@ const generateSharedResourcesServerlessJson = (projectName: string) => `{
 }
 `;
 
+const generateOfflineServerlessJson = (projectName: string) => `{
+  "service": "${projectName}-offline",
+  "provider": {
+    "name": "aws",
+    "runtime": "nodejs12.x"
+  },
+  "plugins": [
+    "serverless-offline",
+    "serverless-plugin-warmup"
+  ],
+  "functions": {},
+  "custom": {
+    "warmup": {
+      "prewarm": true,
+      "enabled": true
+    }
+  }
+}
+`;
+
 // "service": "${projectName}-${serviceName}",
 const generateServiceServerlessJson = (projectName: string, serviceName: string): string => `{
   "service": "${serviceName}",
@@ -129,4 +149,5 @@ export {
   generatePackageJson,
   generateSharedResourcesServerlessJson,
   generateServiceServerlessJson,
+  generateOfflineServerlessJson,
 };
