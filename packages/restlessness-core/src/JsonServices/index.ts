@@ -3,6 +3,7 @@ import PathResolver from '../PathResolver';
 import { HttpMethod } from '../JsonEndpoints';
 import JsonAuthorizers from '../JsonAuthorizers';
 import _unset from 'lodash.unset';
+import _merge from 'lodash.merge';
 import path from 'path';
 import { promisify } from 'util';
 import { generateServiceServerlessJson } from '../Project/templates';
@@ -17,7 +18,7 @@ interface Event {
     path: string,
     method: HttpMethod,
     cors: boolean,
-    authorizer?: string
+    authorizer?: string | {[key: string]: any}
   }
 }
 
@@ -30,6 +31,7 @@ export interface FunctionEndpoint {
 interface JsonServerless {
   service: string
   provider: {[key: string]: any}
+  resources: {[key: string]: any}
   plugins: string[]
   functions: Functions
 }
@@ -39,6 +41,10 @@ class JsonServices {
 
   get OFFLINE_SERVICE_NAME() {
     return 'offline';
+  }
+
+  get SHARED_SERVICE_NAME() {
+    return 'shared-resources';
   }
 
   get jsonPath(): string {
@@ -88,7 +94,11 @@ class JsonServices {
 
     await this.read();
 
-    const functionEndpoint: FunctionEndpoint = {
+    if (!this.services[serviceName]) {
+      throw Error(`Service ${serviceName} does not exists!`);
+    }
+
+    this.services[serviceName].functions[safeFunctionName] = {
       handler: `dist/exporter.${safeFunctionName}`,
       events: [
         {
@@ -105,25 +115,38 @@ class JsonServices {
       },
     };
 
-    //@TODO authorizer
-    // if (authorizerId) {
-    //   functionEndpoint.events[0].http.authorizer = authorizerId;
-    //   if (!this.functions[authorizerId]) {
-    //     await this.createAuthorizerFunction(authorizerId);
-    //   }
-    // }
-    // this.functions[safeFunctionName] = functionEndpoint;
-    if (!this.services[serviceName]?.functions) {
-      throw Error(`Service ${serviceName} does not exists!`);
+    if (authorizerId) {
+      await this.setAuthorizerToFunction(serviceName, safeFunctionName, authorizerId);
     }
 
-    this.services[serviceName].functions[safeFunctionName] = functionEndpoint;
+    await this.save();
+  }
+
+  async getEndpoint(serviceName:string, safeFunctionName: string): Promise<FunctionEndpoint> {
+    await this.read();
+    return this.services[serviceName]?.functions[safeFunctionName];
+  }
+
+  async updateEndpoint(serviceName: string, functionName: string, authorizerId: string, warmupEnabled: boolean) {
+    if (!this[serviceName]?.functions[functionName]) {
+      throw Error(`${functionName} does not exists in service '${serviceName}'`);
+    }
+    // await this.setAuthorizer(functionName, authorizerId); @TODO
+    this.services[serviceName].functions[functionName].warmup = {
+      enabled: warmupEnabled,
+    };
+    await this.save();
+  }
+
+  async removeEndpoint(serviceName: string, safeFunctionName: string): Promise<void> {
+    await this.read();
+    _unset(this.services[serviceName], `functions.${safeFunctionName}`);
     await this.save();
   }
 
   async addService(serviceName: string) {
     await this.read();
-    if (this.services[serviceName]?.functions) {
+    if (this.services[serviceName]) {
       throw Error(`Service ${serviceName} already exists!`);
     }
     const { name: projectName } = await PackageJson.read();
@@ -137,57 +160,119 @@ class JsonServices {
     await this.save();
   }
 
-  async createAuthorizerFunction(authorizerId: string) {
-    // const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
-    // try {
-    //   const entry = require(path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, 'package.json')).main.replace('.js', '');
-    //   const absolutePath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package, `${entry}.authorizer`);
-    //   const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
-    //   this.functions[authorizerId] = {
-    //     handler: handlerRelativePath,
-    //   };
-    // } catch {
-    //   throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry?.package}!`);
-    // }
-  }
+  async createAuthorizerFunction(serviceName: string, authorizerId: string) {
+    const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
+    if (!jsonAuthorizersEntry) {
+      throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry?.package}!`);
+    }
+    if (!this.services[serviceName]) {
+      throw new Error(`Service ${serviceName} does not exist!`);
+    }
 
-  async setAuthorizer(functionName: string, authorizerId: string) {
-    // if (!authorizerId) {
-    //   return;
-    // }
-    // if (!this.functions[authorizerId]) {
-    //   await this.createAuthorizerFunction(authorizerId);
-    // }
-    // this.functions[functionName].events[0].http.authorizer = authorizerId;
-  }
+    const authorizerPath = path.join(PathResolver.getNodeModulesPath, jsonAuthorizersEntry.package);
+    const packageJsonPath = path.join(authorizerPath, 'package.json');
+    let entry = require(packageJsonPath).main || 'index.js';
+    entry = entry.replace('.js', '');
 
-  async getEndpoint(serviceName:string, safeFunctionName: string): Promise<FunctionEndpoint> {
-    await this.read();
-    return this.services[serviceName]?.functions[safeFunctionName];
-  }
+    const absolutePath = path.join(authorizerPath, `${entry}.authorizer`);
+    const handlerRelativePath = path.relative(PathResolver.getPrjPath, absolutePath);
 
-  async removeEndpoint(serviceName: string, safeFunctionName: string): Promise<void> {
-    await this.read();
-    _unset(this.services[serviceName], `functions.${safeFunctionName}`);
+    const serviceUpdate = {
+      functions: {},
+    };
+    serviceUpdate.functions[authorizerId] = {
+      handler: handlerRelativePath,
+    };
+    _merge(this.services[serviceName], serviceUpdate);
     await this.save();
   }
 
-  async addPlugin(pluginName: string): Promise<void> {
+  async createCustomAuthorizerForSharedService(
+    authorizerId: string,
+    identitySource = 'method.request.header.Auth',
+  ) {
+    await this.createAuthorizerFunction(this.SHARED_SERVICE_NAME, authorizerId);
+
+    const slsName = authorizerId[0].toUpperCase() + authorizerId.slice(1);
+    const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
+
+    const authResource = {
+      'Type': 'AWS::ApiGateway::Authorizer',
+      'Properties': {
+        'Name': slsName,
+        'AuthorizerUri': {
+          'Fn::Join': [
+            '',
+            [
+              'arn:aws:apigateway:',
+              {
+                'Ref': 'AWS::Region',
+              },
+              ':lambda:path/2015-03-31/functions/',
+              {
+                'Fn::GetAtt': [`${slsName}LambdaFunction`, 'Arn'],
+              },
+              '/invocations',
+            ],
+          ],
+        },
+        'Type': 'TOKEN',
+        'IdentitySource': identitySource,
+        'RestApiId': {
+          'Ref': 'SharedGW',
+        },
+      },
+    };
+
+    const authOutput = {
+      'Value': {
+        'Fn::GetAtt': [`${slsName}LambdaFunction`, 'Arn'],
+      },
+      'Export': {
+        'Name': jsonAuthorizersEntry.importKey,
+      },
+    };
+
+    const serviceUpdate = {
+      resources: { Resources: {}, Outputs: {} },
+    };
+    serviceUpdate.resources.Resources[slsName] = authResource;
+    serviceUpdate.resources.Outputs[slsName] = authOutput;
+
+    this.services[this.SHARED_SERVICE_NAME] = _merge(
+      this.services[this.SHARED_SERVICE_NAME],
+      serviceUpdate,
+    );
+
+    await this.save();
+  }
+
+  async setAuthorizerToFunction(serviceName: string, functionName: string, authorizerId: string) {
+    const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
+    if (!jsonAuthorizersEntry) {
+      throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry?.package}!`);
+    }
+    if (!this.services[serviceName]) {
+      throw new Error(`Service ${serviceName} does not exist!`);
+    }
+
+    if (jsonAuthorizersEntry.shared) {
+      this.services[serviceName].functions[functionName].events[0].http.authorizer = {
+        name: authorizerId,
+        arn: { 'Fn::ImportValue': jsonAuthorizersEntry.importKey },
+      };
+    } else {
+      //@TODO set authorizer to single service (not shared)
+    }
+
+    await this.save();
+  }
+
+  async addPlugin(serviceName:string, pluginName: string): Promise<void> {
     // if (!this.plugins.includes(pluginName)) {
     //   this.plugins.push(pluginName);
     //   await this.save();
     // }
-  }
-
-  async updateEndpoint(serviceName: string, functionName: string, authorizerId: string, warmupEnabled: boolean) {
-    if (!this[serviceName]?.functions[functionName]) {
-      throw Error(`${functionName} does not exists in service '${serviceName}'`);
-    }
-    // await this.setAuthorizer(functionName, authorizerId); @TODO
-    this.services[serviceName].functions[functionName].warmup = {
-      enabled: warmupEnabled,
-    };
-    await this.save();
   }
 }
 
