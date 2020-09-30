@@ -5,8 +5,7 @@ import JsonAuthorizers from '../JsonAuthorizers';
 import _unset from 'lodash.unset';
 import _merge from 'lodash.merge';
 import path from 'path';
-import { promisify } from 'util';
-import { generateServiceServerlessJson } from '../Project/templates';
+import { generateServiceServerlessJson } from './templates';
 import PackageJson from '../PackageJson';
 
 interface Functions {
