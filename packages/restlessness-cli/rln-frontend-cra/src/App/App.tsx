@@ -1,15 +1,11 @@
 import React from "react";
-import {
-  MuiThemeProvider,
-  AppBar,
-  Toolbar,
-  Breadcrumbs,
-  Link,
-  Typography,
-} from "@material-ui/core";
+import { MuiThemeProvider, AppBar, Toolbar } from "@material-ui/core";
 import useAppHooks from "./App.hooks";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
+import Dashboard from "../scenes/Dashboard";
 import ServicesList from "../scenes/ServicesList";
+import EndpointsList from "../scenes/EndpointsList";
+import AppBreadcrumbs from "../components/AppBreadcrumbs";
 
 const App: React.FC = () => {
   const { classes, theme } = useAppHooks();
@@ -18,22 +14,20 @@ const App: React.FC = () => {
     <MuiThemeProvider theme={theme}>
       <AppBar>
         <Toolbar variant="dense">
-          <Breadcrumbs aria-label="breadcrumb">
-            <Link color="inherit" href="/">
-              Material-UI
-            </Link>
-            <Link color="inherit" href="/getting-started/installation/">
-              Core
-            </Link>
-            <Typography color="textPrimary">Breadcrumb</Typography>
-          </Breadcrumbs>
+          <AppBreadcrumbs />
         </Toolbar>
       </AppBar>
       <div className={classes.routerContainer}>
         <Router>
           <Switch>
-            <Route path="/">
+            <Route path="/endpoints">
+              <EndpointsList />
+            </Route>
+            <Route path="/services">
               <ServicesList />
+            </Route>
+            <Route path="/">
+              <Dashboard />
             </Route>
           </Switch>
         </Router>

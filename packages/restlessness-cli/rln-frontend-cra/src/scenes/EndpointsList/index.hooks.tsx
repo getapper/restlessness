@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import useStyles from "./index.styles";
 
-const useServicesList = () => {
+const useEndpointsList = () => {
   const classes = useStyles();
   const derivedClasses = useMemo(() => ({}), []);
 
@@ -11,4 +11,4 @@ const useServicesList = () => {
   };
 };
 
-export default useServicesList;
+export default useEndpointsList;
