@@ -1,0 +1,33 @@
+html {
+  font-size: 20px;
+}
+
+@media all and (max-width: 1440px) {
+  html {
+    font-size: 18px;
+  }
+}
+
+@media all and (max-width: 1280px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media all and (max-width: 1024px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media all and (max-width: 800px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
