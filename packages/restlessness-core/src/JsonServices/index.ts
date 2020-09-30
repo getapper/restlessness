@@ -5,7 +5,6 @@ import JsonAuthorizers from '../JsonAuthorizers';
 import _unset from 'lodash.unset';
 import path from 'path';
 import { promisify } from 'util';
-import lockfile from 'lockfile';
 import { generateServiceServerlessJson } from '../Project/templates';
 import PackageJson from '../PackageJson';
 
@@ -64,12 +63,6 @@ class JsonServices {
       acc[serviceName] = item;
       return acc;
     }, {});
-
-    //@TODO concurrency
-    // await promisify<string, any>(lockfile.lock)(this.jsonPath + '.lock', { wait: 10 * 1000 });
-    // const file = await fs.readFile(this.jsonPath);
-    // Object.assign(this, JSON.parse(file.toString()));
-    // await promisify(lockfile.unlock)(this.jsonPath + '.lock');
   }
 
   async save(): Promise<void> {
@@ -78,10 +71,6 @@ class JsonServices {
       const serviceFileContent = JSON.stringify(this.services[serviceName], null, 2);
       await fs.writeFile(serviceFilePath, serviceFileContent);
     }
-    //@TODO concurrency
-    // await promisify<string, any>(lockfile.lock)(this.jsonPath + '.lock', { wait: 10 * 1000 });
-    // await fs.writeFile(this.jsonPath, JSON.stringify(this, null, 2));
-    // await promisify(lockfile.unlock)(this.jsonPath + '.lock');
   }
 
   async addEndpoint(endpoint: {
