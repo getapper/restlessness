@@ -9,6 +9,8 @@ import {
   PathResolver,
   SessionModelInstance,
   SessionModelInterface,
+  JsonServices,
+  JsonEnvs,
 } from '@restlessness/core';
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
@@ -26,18 +28,34 @@ class JwtAuthorizer extends AuthorizerPackage {
     this.authorizer = this.authorizer.bind(this);
   }
 
+  getSessionModelName(): string {
+      return 'JwtSession';
+  }
+  getSessionModelImport(): string {
+    return 'import { JwtSession } from \'@restlessness/auth-jwt\';';
+  }
+
   async postInstall(): Promise<void> {
     const jsonAuthorizer: JsonAuthorizersEntry = {
       id: 'jwt',
       name: 'JWT',
       package: '@restlessness/auth-jwt',
-      sessionModelName: 'JwtSession',
+      shared: true,
     };
     if (await JsonAuthorizers.getEntryById(jsonAuthorizer.id)) {
       console.warn(`${jsonAuthorizer.id} Auth already found inside authorizers.json!`);
     }
     await JsonAuthorizers.addEntry(jsonAuthorizer);
     await JsonModels.create('JwtSession', null, jwtSessionModelTemplate());
+
+    await JsonEnvs.read();
+    for (let env of JsonEnvs.entries) {
+      const envFile = new EnvFile(env.id);
+      await envFile.setParametricValue('RLN_AUTH_JWT_SECRET');
+    }
+
+    await JsonServices.read();
+    await JsonServices.createCustomAuthorizerForSharedService(jsonAuthorizer.id);
   }
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
@@ -87,6 +105,21 @@ class JwtAuthorizer extends AuthorizerPackage {
   async parseSession<T extends SessionModelInterface<SessionModelInstance>>(session: string): Promise<T> {
     const JwtSession = require(path.join(PathResolver.getDistPath, 'models', 'JwtSession')).default;
     return await JwtSession.deserialize(session) as T;
+  }
+}
+
+export class JwtSession {
+  ['constructor']: typeof JwtSession
+  id: string
+
+  async serialize(): Promise<string> {
+    return JSON.stringify(this);
+  }
+
+  static async deserialize(session: string): Promise<JwtSession> {
+    const jwtSession = new JwtSession();
+    Object.assign(jwtSession, JSON.parse(session));
+    return jwtSession;
   }
 }
 

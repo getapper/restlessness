@@ -18,3 +18,4 @@ export * from './ResponseHandler';
 export { default as EnvironmentHandler } from './EnvironmentHandler';
 export { default as Openapi } from './Openapi';
 export * from './TestHandler';
+export { default as JsonServices } from './JsonServices';

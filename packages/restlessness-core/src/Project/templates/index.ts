@@ -58,9 +58,8 @@ const generateOfflineServerlessJson = (projectName: string) => `{
 }
 `;
 
-// "service": "${projectName}-${serviceName}",
 const generateServiceServerlessJson = (projectName: string, serviceName: string): string => `{
-  "service": "${serviceName}",
+  "service": "${projectName}-${serviceName}",
   "provider": {
     "name": "aws",
     "runtime": "nodejs12.x",
