@@ -121,18 +121,20 @@ class JsonServices {
     await this.save();
   }
 
-  async createService(serviceName: string) {
+  async addService(serviceName: string) {
     await this.read();
     if (this.services[serviceName]?.functions) {
       throw Error(`Service ${serviceName} already exists!`);
     }
-
     const { name: projectName } = await PackageJson.read();
-    await fs.writeFile(
-      path.join(PathResolver.getServicesJsonPath),
-      generateServiceServerlessJson(projectName, serviceName),
-    );
+    this.services[serviceName] = JSON.parse(generateServiceServerlessJson(projectName, serviceName));
+    await this.save();
+  }
+
+  async removeService(serviceName: string) {
     await this.read();
+    _unset(this.services, serviceName);
+    await this.save();
   }
 
   async createAuthorizerFunction(authorizerId: string) {
@@ -164,10 +166,10 @@ class JsonServices {
     return this.services[serviceName]?.functions[safeFunctionName];
   }
 
-  async removeEndpoint(safeFunctionName: string): Promise<void> {
-    // await this.read();
-    // _unset(this, `functions.${safeFunctionName}`);
-    // await this.save();
+  async removeEndpoint(serviceName: string, safeFunctionName: string): Promise<void> {
+    await this.read();
+    _unset(this.services[serviceName], `functions.${safeFunctionName}`);
+    await this.save();
   }
 
   async addPlugin(pluginName: string): Promise<void> {
@@ -177,12 +179,15 @@ class JsonServices {
     // }
   }
 
-  async updateEndpoint(functionName: string, authorizerId: string, warmupEnabled: boolean) {
-    // await this.setAuthorizer(functionName, authorizerId);
-    // this.functions[functionName].warmup = {
-    //   enabled: warmupEnabled,
-    // };
-    // await this.save();
+  async updateEndpoint(serviceName: string, functionName: string, authorizerId: string, warmupEnabled: boolean) {
+    if (!this[serviceName]?.functions[functionName]) {
+      throw Error(`${functionName} does not exists in service '${serviceName}'`);
+    }
+    // await this.setAuthorizer(functionName, authorizerId); @TODO
+    this.services[serviceName].functions[functionName].warmup = {
+      enabled: warmupEnabled,
+    };
+    await this.save();
   }
 }
 

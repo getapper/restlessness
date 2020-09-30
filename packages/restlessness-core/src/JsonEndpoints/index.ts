@@ -164,8 +164,8 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     // Re-generate exporter file after removing the endpoint
     await this.generateExporter();
 
-    // Renove function handler in serverless.json read by serverless.yml
-    await JsonServerless.removeEndpoint(jsonEndpointsEntry.safeFunctionName);
+    // Remove function handler in serverless.json read by serverless.yml
+    await JsonServices.removeEndpoint(jsonEndpointsEntry.serviceName, jsonEndpointsEntry.safeFunctionName);
   }
 
   private async generateExporter(): Promise<void> {

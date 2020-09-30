@@ -24,6 +24,7 @@ export default class Endpoint extends BaseModel {
       const daos = entry.daoIds?.map(id => Dao.getById(id));
       this.daos = daos ? await Promise.all(daos) : [];
       this.warmupEnabled = entry.warmupEnabled;
+      this.serviceName = entry.serviceName;
   }
 
   protected async toConfigEntry(): Promise<JsonEndpointsEntry> {
