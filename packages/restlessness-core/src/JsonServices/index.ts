@@ -251,8 +251,8 @@ class JsonServices {
     if (!jsonAuthorizersEntry) {
       throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry?.package}!`);
     }
-    if (!this.services[serviceName]) {
-      throw new Error(`Service ${serviceName} does not exist!`);
+    if (!this.services[serviceName]?.functions[functionName]) {
+      throw new Error(`Function ${functionName} does not exist on service ${serviceName}!`);
     }
 
     if (jsonAuthorizersEntry.shared) {
@@ -261,7 +261,10 @@ class JsonServices {
         arn: { 'Fn::ImportValue': jsonAuthorizersEntry.importKey },
       };
     } else {
-      //@TODO set authorizer to single service (not shared)
+      if (!this.services[serviceName].functions[authorizerId]) {
+        await this.createAuthorizerFunction(serviceName, authorizerId);
+      }
+      this.services[serviceName].functions[functionName].events[0].http.authorizer = authorizerId;
     }
 
     await this.save();
