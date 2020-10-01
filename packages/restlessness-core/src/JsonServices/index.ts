@@ -7,33 +7,8 @@ import _merge from 'lodash.merge';
 import path from 'path';
 import { generateServiceServerlessJson } from './templates';
 import PackageJson from '../PackageJson';
-
-interface Functions {
-  [key: string]: FunctionEndpoint
-}
-
-interface Event {
-  http: {
-    path: string,
-    method: HttpMethod,
-    cors: boolean,
-    authorizer?: string | {[key: string]: any}
-  }
-}
-
-export interface FunctionEndpoint {
-  handler: string,
-  events?: Event[],
-  warmup?: {[key: string]: any, enabled: boolean}
-}
-
-interface JsonServerless {
-  service: string
-  provider: {[key: string]: any}
-  resources: {[key: string]: any}
-  plugins: string[]
-  functions: Functions
-}
+import { FunctionEndpoint, JsonServerless } from './interfaces';
+export * from './interfaces';
 
 class JsonServices {
   services: { [key: string]: JsonServerless }
