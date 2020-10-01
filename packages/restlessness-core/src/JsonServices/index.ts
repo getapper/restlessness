@@ -68,11 +68,7 @@ class JsonServices {
 
     await this.read();
 
-    if (!this.services[serviceName]) {
-      throw Error(`Service ${serviceName} does not exists!`);
-    }
-
-    this.services[serviceName].functions[safeFunctionName] = {
+    const functionEndpoint: FunctionEndpoint = {
       handler: `dist/exporter.${safeFunctionName}`,
       events: [
         {
@@ -88,6 +84,7 @@ class JsonServices {
         enabled: warmupEnabled ?? true,
       },
     };
+    this.setFunctionToService(serviceName, safeFunctionName, functionEndpoint);
 
     if (authorizerId) {
       await this.setAuthorizerToFunction(serviceName, safeFunctionName, authorizerId);
@@ -105,8 +102,11 @@ class JsonServices {
     if (!this[serviceName]?.functions[functionName]) {
       throw Error(`${functionName} does not exists in service '${serviceName}'`);
     }
-    // await this.setAuthorizer(functionName, authorizerId); @TODO
+    await this.setAuthorizerToFunction(serviceName, functionName, authorizerId);
     this.services[serviceName].functions[functionName].warmup = {
+      enabled: warmupEnabled,
+    };
+    this.services[this.OFFLINE_SERVICE_NAME].functions[functionName].warmup = {
       enabled: warmupEnabled,
     };
     await this.save();
@@ -115,6 +115,7 @@ class JsonServices {
   async removeEndpoint(serviceName: string, safeFunctionName: string): Promise<void> {
     await this.read();
     _unset(this.services[serviceName], `functions.${safeFunctionName}`);
+    _unset(this.services[this.OFFLINE_SERVICE_NAME], `functions.${safeFunctionName}`);
     await this.save();
   }
 
@@ -158,7 +159,7 @@ class JsonServices {
       handler: handlerRelativePath,
     };
     _merge(this.services[serviceName], serviceUpdate);
-    await this.save();
+    _merge(this.services[this.OFFLINE_SERVICE_NAME], serviceUpdate);
   }
 
   async createCustomAuthorizerForSharedService(
@@ -213,12 +214,17 @@ class JsonServices {
     serviceUpdate.resources.Resources[slsName] = authResource;
     serviceUpdate.resources.Outputs[slsName] = authOutput;
 
-    this.services[this.SHARED_SERVICE_NAME] = _merge(
-      this.services[this.SHARED_SERVICE_NAME],
-      serviceUpdate,
-    );
+    _merge(this.services[this.SHARED_SERVICE_NAME], serviceUpdate);
+  }
 
-    await this.save();
+  setFunctionToService(serviceName: string, functionName: string, functionEndpoint: FunctionEndpoint) {
+    if (!this.services[serviceName]) {
+      throw Error(`Service ${serviceName} does not exists!`);
+    }
+    const functionUpdate = {};
+    functionUpdate[functionName] = functionEndpoint;
+    _merge(this.services[serviceName].functions, functionUpdate);
+    _merge(this.services[this.OFFLINE_SERVICE_NAME].functions, functionUpdate);
   }
 
   async setAuthorizerToFunction(serviceName: string, functionName: string, authorizerId: string) {
@@ -242,7 +248,11 @@ class JsonServices {
       this.services[serviceName].functions[functionName].events[0].http.authorizer = authorizerId;
     }
 
-    await this.save();
+    const offlineService = this.services[this.OFFLINE_SERVICE_NAME];
+    if (!offlineService.functions[authorizerId]) {
+      await this.createAuthorizerFunction(this.OFFLINE_SERVICE_NAME, authorizerId);
+    }
+    offlineService.functions[functionName].events[0].http.authorizer = authorizerId;
   }
 
   async addPlugin(serviceName:string, pluginName: string): Promise<void> {

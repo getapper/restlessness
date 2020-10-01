@@ -124,17 +124,6 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     // Re-generate exporter file with considering the new endpoint
     await this.generateExporter();
 
-    // Add e new function handler in serverless offline json that will be used for local development
-    // It also adds the authorizer handler, if it doesn't exist yet
-    await JsonServices.addEndpoint({
-      safeFunctionName: jsonEndpointsEntry.safeFunctionName,
-      functionPath: route.functionPath,
-      method,
-      authorizerId,
-      warmupEnabled,
-      serviceName: JsonServices.OFFLINE_SERVICE_NAME,
-    });
-
     // Add e new function handler in serverless service json that will be deployed
     // It also adds the authorizer handler, if it doesn't exist yet
     await JsonServices.addEndpoint({
