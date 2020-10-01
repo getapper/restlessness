@@ -2,12 +2,12 @@
   "name": "restlessness-rest-api",
   "version": "0.0.0",
   "scripts": {
-    "dev:server": "npm run tsc && serverless offline --port 4123",
+    "dev:server": "npm run tsc && RLN_PROJECT_PATH=/Users/antoniogiordano/Documents/tt/introducely/introducely-backend serverless offline --port 4123",
     "tsc": "rimraf dist && tsc -p tsconfig.json",
     "update-deps": "npm i @restlessness/core@latest -S -E"
   },
   "dependencies": {
-    "@restlessness/core": "0.3.15",
+    "@restlessness/core": "file:../../restlessness-core",
     "jest": "26.0.1",
     "module-alias": "2.2.2",
     "yup": "0.28.3"

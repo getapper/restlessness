@@ -4,6 +4,7 @@ import {
   PrepareAction,
 } from "@reduxjs/toolkit";
 import { Action } from "redux";
+import { Endpoint } from "../../slices/endpoint/interfaces";
 
 enum HttpMethod {
   GET = "get",
@@ -83,31 +84,23 @@ const apiActionBuilder = <ApiRequestParams, ApiResponseData>(
   cancel: createAction(`${api}/cancel`),
 });
 
-export interface PatchTokensApiParams {
-  idToken: string;
-  refreshToken: string;
+export interface GetEndpointsApiParams {}
+export interface GetEndpointsResponseData {
+  endpoints: Endpoint[];
 }
-export interface PatchTokensApiResponseData {
-  idToken: string;
-  accessToken: string;
-  refreshToken: string;
-}
-export const patchTokensApi = apiActionBuilder<
-  PatchTokensApiParams,
-  PatchTokensApiResponseData
+export const getEndpointsApi = apiActionBuilder<
+  GetEndpointsApiParams,
+  GetEndpointsResponseData
 >(
-  "apis/tokens/patch",
+  "apis/endpoints/get",
   (
-    params: PatchTokensApiParams,
+    params: GetEndpointsApiParams,
     options?: ApiRequestPayloadBuilderOptions
   ) => ({
     payload: apiRequestPayloadBuilder(
       {
-        path: "/tokens",
-        method: HttpMethod.PATCH,
-        body: {
-          ...params,
-        },
+        path: "/endpoints",
+        method: HttpMethod.GET,
       },
       options
     ),
