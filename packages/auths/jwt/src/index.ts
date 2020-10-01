@@ -56,6 +56,7 @@ class JwtAuthorizer extends AuthorizerPackage {
 
     await JsonServices.read();
     await JsonServices.createCustomAuthorizerForSharedService(jsonAuthorizer.id);
+    await JsonServices.save();
   }
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {

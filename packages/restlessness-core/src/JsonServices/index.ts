@@ -5,36 +5,10 @@ import JsonAuthorizers from '../JsonAuthorizers';
 import _unset from 'lodash.unset';
 import _merge from 'lodash.merge';
 import path from 'path';
-import { promisify } from 'util';
-import { generateServiceServerlessJson } from '../Project/templates';
+import { generateServiceServerlessJson } from './templates';
 import PackageJson from '../PackageJson';
-
-interface Functions {
-  [key: string]: FunctionEndpoint
-}
-
-interface Event {
-  http: {
-    path: string,
-    method: HttpMethod,
-    cors: boolean,
-    authorizer?: string | {[key: string]: any}
-  }
-}
-
-export interface FunctionEndpoint {
-  handler: string,
-  events?: Event[],
-  warmup?: {[key: string]: any, enabled: boolean}
-}
-
-interface JsonServerless {
-  service: string
-  provider: {[key: string]: any}
-  resources: {[key: string]: any}
-  plugins: string[]
-  functions: Functions
-}
+import { FunctionEndpoint, JsonServerless } from './interfaces';
+export * from './interfaces';
 
 class JsonServices {
   services: { [key: string]: JsonServerless }
@@ -94,11 +68,7 @@ class JsonServices {
 
     await this.read();
 
-    if (!this.services[serviceName]) {
-      throw Error(`Service ${serviceName} does not exists!`);
-    }
-
-    this.services[serviceName].functions[safeFunctionName] = {
+    const functionEndpoint: FunctionEndpoint = {
       handler: `dist/exporter.${safeFunctionName}`,
       events: [
         {
@@ -114,6 +84,7 @@ class JsonServices {
         enabled: warmupEnabled ?? true,
       },
     };
+    this.setFunctionToService(serviceName, safeFunctionName, functionEndpoint);
 
     if (authorizerId) {
       await this.setAuthorizerToFunction(serviceName, safeFunctionName, authorizerId);
@@ -131,8 +102,11 @@ class JsonServices {
     if (!this[serviceName]?.functions[functionName]) {
       throw Error(`${functionName} does not exists in service '${serviceName}'`);
     }
-    // await this.setAuthorizer(functionName, authorizerId); @TODO
+    await this.setAuthorizerToFunction(serviceName, functionName, authorizerId);
     this.services[serviceName].functions[functionName].warmup = {
+      enabled: warmupEnabled,
+    };
+    this.services[this.OFFLINE_SERVICE_NAME].functions[functionName].warmup = {
       enabled: warmupEnabled,
     };
     await this.save();
@@ -141,6 +115,7 @@ class JsonServices {
   async removeEndpoint(serviceName: string, safeFunctionName: string): Promise<void> {
     await this.read();
     _unset(this.services[serviceName], `functions.${safeFunctionName}`);
+    _unset(this.services[this.OFFLINE_SERVICE_NAME], `functions.${safeFunctionName}`);
     await this.save();
   }
 
@@ -184,7 +159,7 @@ class JsonServices {
       handler: handlerRelativePath,
     };
     _merge(this.services[serviceName], serviceUpdate);
-    await this.save();
+    _merge(this.services[this.OFFLINE_SERVICE_NAME], serviceUpdate);
   }
 
   async createCustomAuthorizerForSharedService(
@@ -239,12 +214,17 @@ class JsonServices {
     serviceUpdate.resources.Resources[slsName] = authResource;
     serviceUpdate.resources.Outputs[slsName] = authOutput;
 
-    this.services[this.SHARED_SERVICE_NAME] = _merge(
-      this.services[this.SHARED_SERVICE_NAME],
-      serviceUpdate,
-    );
+    _merge(this.services[this.SHARED_SERVICE_NAME], serviceUpdate);
+  }
 
-    await this.save();
+  setFunctionToService(serviceName: string, functionName: string, functionEndpoint: FunctionEndpoint) {
+    if (!this.services[serviceName]) {
+      throw Error(`Service ${serviceName} does not exists!`);
+    }
+    const functionUpdate = {};
+    functionUpdate[functionName] = functionEndpoint;
+    _merge(this.services[serviceName].functions, functionUpdate);
+    _merge(this.services[this.OFFLINE_SERVICE_NAME].functions, functionUpdate);
   }
 
   async setAuthorizerToFunction(serviceName: string, functionName: string, authorizerId: string) {
@@ -252,8 +232,8 @@ class JsonServices {
     if (!jsonAuthorizersEntry) {
       throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry?.package}!`);
     }
-    if (!this.services[serviceName]) {
-      throw new Error(`Service ${serviceName} does not exist!`);
+    if (!this.services[serviceName]?.functions[functionName]) {
+      throw new Error(`Function ${functionName} does not exist on service ${serviceName}!`);
     }
 
     if (jsonAuthorizersEntry.shared) {
@@ -262,10 +242,17 @@ class JsonServices {
         arn: { 'Fn::ImportValue': jsonAuthorizersEntry.importKey },
       };
     } else {
-      //@TODO set authorizer to single service (not shared)
+      if (!this.services[serviceName].functions[authorizerId]) {
+        await this.createAuthorizerFunction(serviceName, authorizerId);
+      }
+      this.services[serviceName].functions[functionName].events[0].http.authorizer = authorizerId;
     }
 
-    await this.save();
+    const offlineService = this.services[this.OFFLINE_SERVICE_NAME];
+    if (!offlineService.functions[authorizerId]) {
+      await this.createAuthorizerFunction(this.OFFLINE_SERVICE_NAME, authorizerId);
+    }
+    offlineService.functions[functionName].events[0].http.authorizer = authorizerId;
   }
 
   async addPlugin(serviceName:string, pluginName: string): Promise<void> {
