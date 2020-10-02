@@ -48,7 +48,7 @@ class MongoDaoPackage extends DaoPackage {
   }
 
   addProxyPermissions() {
-    for (let service of JsonServices.services) {
+    for (let service of Object.values(JsonServices.services)) {
       const { provider } = service;
       if (provider.name === 'aws') {
         const statement = provider.iamRoleStatements?.find(
