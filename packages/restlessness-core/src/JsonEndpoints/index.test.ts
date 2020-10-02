@@ -5,7 +5,7 @@ import { promises as fs } from 'fs';
 import Project from '../Project';
 import JsonEndpoints, { JsonEndpointsEntry, HttpMethod } from '.';
 import PathResolver from '../PathResolver';
-import PackageJson from '../PackageJson';
+import JsonServices from '../JsonServices';
 
 const PROJECT_NAME = 'tmp-json-endpoints';
 
@@ -29,7 +29,7 @@ describe('JsonEndpoints model', () => {
   });
 
   test('it should create a new endpoint',  async (done) => {
-    await JsonEndpoints.create('/tests', HttpMethod.GET);
+    await JsonEndpoints.create({ routePath: '/tests', method: HttpMethod.GET, serviceName: JsonServices.SHARED_SERVICE_NAME });
     await JsonEndpoints.read();
     const endpoints: JsonEndpointsEntry[] = JsonEndpoints.entries;
     expect(endpoints?.length).toBe(1);
@@ -41,7 +41,11 @@ describe('JsonEndpoints model', () => {
   });
 
   test('it should create a new long endpoint',  async (done) => {
-    await JsonEndpoints.create('/really/long/api/with/a/lot/of/params/that/triggers/aws/checks/and/fails', HttpMethod.GET);
+    await JsonEndpoints.create({
+      routePath: '/really/long/api/with/a/lot/of/params/that/triggers/aws/checks/and/fails',
+      method: HttpMethod.GET,
+      serviceName: JsonServices.SHARED_SERVICE_NAME,
+    });
     const jsonEndpointEntry = await JsonEndpoints.getEntryById('getReallyLongApiWithALotOfParamsThatTriggersAwsChecksAndFails');
     expect(jsonEndpointEntry.id).not.toBe(jsonEndpointEntry.safeFunctionName);
     done();
