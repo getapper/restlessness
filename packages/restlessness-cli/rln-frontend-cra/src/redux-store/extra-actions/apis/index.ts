@@ -5,8 +5,10 @@ import {
 } from "@reduxjs/toolkit";
 import { Action } from "redux";
 import { Endpoint } from "../../slices/endpoint/interfaces";
+import { Dao } from "../../slices/dao/interfaces";
+import { Authorizer } from "../../slices/authorizer/interfaces";
 
-enum HttpMethod {
+export enum HttpMethod {
   GET = "get",
   POST = "post",
   PUT = "put",
@@ -64,8 +66,10 @@ export interface ApiFailAction extends Action {
   payload: ApiFailData;
 }
 
+export type ApiID = string;
+
 const apiActionBuilder = <ApiRequestParams, ApiResponseData>(
-  api: string,
+  api: ApiID,
   prepare: PrepareAction<ApiRequestPayloadType>
 ) => ({
   api,
@@ -101,6 +105,83 @@ export const getEndpointsApi = apiActionBuilder<
       {
         path: "/endpoints",
         method: HttpMethod.GET,
+      },
+      options
+    ),
+  })
+);
+
+export interface GetDaosApiParams {}
+export interface GetDaosResponseData {
+  daos: Dao[];
+}
+export const getDaosApi = apiActionBuilder<
+  GetDaosApiParams,
+  GetDaosResponseData
+>(
+  "apis/daos/get",
+  (params: GetDaosApiParams, options?: ApiRequestPayloadBuilderOptions) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: "/daos",
+        method: HttpMethod.GET,
+      },
+      options
+    ),
+  })
+);
+
+export interface GetAuthorizersApiParams {}
+export interface GetAuthorizersResponseData {
+  authorizers: Authorizer[];
+}
+export const getAuthorizersApi = apiActionBuilder<
+  GetAuthorizersApiParams,
+  GetAuthorizersResponseData
+>(
+  "apis/authorizers/get",
+  (
+    params: GetAuthorizersApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: "/authorizers",
+        method: HttpMethod.GET,
+      },
+      options
+    ),
+  })
+);
+
+export interface PutEndpointsByEndpointIdApiPayload {
+  route: string;
+  method: HttpMethod;
+  authorizerId: string | null;
+  daoIds: string[];
+  warmupEnabled: boolean;
+}
+export interface PutEndpointsByEndpointIdApiParams {
+  endpointId: string;
+  endpointData: PutEndpointsByEndpointIdApiPayload;
+}
+export interface PutEndpointsByEndpointIdResponseData {
+  endpoint: Endpoint[];
+}
+export const putEndpointByEndpointIdsApi = apiActionBuilder<
+  PutEndpointsByEndpointIdApiParams,
+  PutEndpointsByEndpointIdResponseData
+>(
+  "apis/endpoints/{endpointId}/put",
+  (
+    params: PutEndpointsByEndpointIdApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: `/endpoints/${params.endpointId}`,
+        method: HttpMethod.PUT,
+        body: params.endpointData,
       },
       options
     ),

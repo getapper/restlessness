@@ -5,6 +5,7 @@ import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import Dashboard from "../scenes/Dashboard";
 import ServicesList from "../scenes/ServicesList";
 import EndpointsList from "../scenes/EndpointsList";
+import EndpointDetails from "../scenes/EndpointDetails";
 import Header from "../components/Header";
 
 const App: React.FC = () => {
@@ -16,6 +17,9 @@ const App: React.FC = () => {
       <div className={classes.routerContainer}>
         <Router>
           <Switch>
+            <Route path="/endpoints/:endpointId">
+              <EndpointDetails />
+            </Route>
             <Route path="/endpoints">
               <EndpointsList />
             </Route>

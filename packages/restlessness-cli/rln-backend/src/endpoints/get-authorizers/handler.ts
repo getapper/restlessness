@@ -13,7 +13,7 @@ export default async (req: Request) => {
     emptyAuthorizer.id = null;
     emptyAuthorizer.name = 'None';
     authorizers.push(emptyAuthorizer);
-    return ResponseHandler.json(authorizers, StatusCodes.OK, {
+    return ResponseHandler.json({ authorizers }, StatusCodes.OK, {
       headers: {
         'Access-Control-Expose-Headers': 'content-range',
         'content-range': `${authorizers.length}`,
