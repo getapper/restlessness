@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useStyles from "./index.styles";
 import {
@@ -14,7 +15,6 @@ import { getEndpointsList } from "../../redux-store/slices/endpoint/selectors";
 import { getDaosList } from "../../redux-store/slices/dao/selectors";
 import { getAuthorizersList } from "../../redux-store/slices/authorizer/selectors";
 import { getAjaxIsLoadingByApi } from "../../redux-store/slices/ajax/selectors";
-import * as React from "react";
 
 interface RouteParams {
   endpointId: string;
@@ -95,13 +95,13 @@ const useEndpointDetails = () => {
 
   useEffect(() => {
     setPayloadData({
-      route: endpointData?.route ?? payloadData.route,
-      method: endpointData?.method ?? payloadData.method,
-      warmupEnabled: endpointData?.warmupEnabled ?? payloadData.warmupEnabled,
-      daoIds: endpointData?.daos?.map((d) => d.id) ?? payloadData.daoIds,
-      authorizerId: endpointData?.authorizer?.id ?? payloadData.authorizerId,
+      route: endpointData?.route ?? "",
+      method: endpointData?.method ?? HttpMethod.GET,
+      warmupEnabled: endpointData?.warmupEnabled ?? false,
+      daoIds: endpointData?.daos?.map((d) => d.id) ?? [],
+      authorizerId: endpointData?.authorizer?.id ?? null,
     });
-  }, [endpointData, payloadData]);
+  }, [endpointData]);
 
   return {
     classes,
