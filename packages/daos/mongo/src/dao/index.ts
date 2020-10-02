@@ -9,7 +9,7 @@ import {
 } from 'mongodb';
 import Bson from 'bson';
 import { Lambda } from 'aws-sdk';
-import { JsonServerless, JsonEnvs, PathResolver } from '@restlessness/core';
+import { JsonServices, JsonEnvs, PathResolver } from '@restlessness/core';
 import path from 'path';
 
 interface ProxyRequest {
@@ -43,13 +43,12 @@ class MongoDao {
   }
 
   private async invokeLambda(serializedRequest: string) {
-    await JsonServerless.read();
-    const serviceName = JsonServerless.service;
+    await JsonServices.read();
     await JsonEnvs.read();
     const jsonEnvsEntry = await JsonEnvs.getEntryById(process.env['ENV_NAME']);
     const stage = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
     return await this.mongoProxy.invoke({
-      FunctionName: `${serviceName}-${stage}-${this.proxyFunctionName}`,
+      FunctionName: `${JsonServices.sharedService.service}-${stage}-${this.proxyFunctionName}`,
       InvocationType: 'RequestResponse',
       Payload: serializedRequest,
     }).promise();

@@ -4,10 +4,9 @@ import { ObjectId } from 'mongodb';
 import * as yup from 'yup';
 import path from 'path';
 import { PathResolver, JsonEnvsEntry } from '@restlessness/core';
-import { DaoPackage, JsonDaos, JsonEnvs, EnvFile } from '@restlessness/core';
+import { DaoPackage, JsonDaos, JsonEnvs, EnvFile, JsonServices } from '@restlessness/core';
 import { modelTemplate } from './templates';
 import AWSLambda from 'aws-lambda';
-import { JsonServerless } from '@restlessness/core/dist';
 
 class ObjectIdSchema extends yup.mixed {
   constructor() {
@@ -35,8 +34,9 @@ class MongoDaoPackage extends DaoPackage {
     });
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(this.addEnv));
-    await JsonServerless.read();
-    await JsonServerless.addPlugin('serverless-mongo-proxy');
+    await JsonServices.read();
+    await JsonServices.addPlugin(JsonServices.SHARED_SERVICE_NAME, 'serverless-mongo-proxy');
+    await JsonServices.save();
   }
 
   async postEnvCreated(envName: string): Promise<void> {
