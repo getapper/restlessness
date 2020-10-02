@@ -13,7 +13,6 @@ import {
 import Route from '../Route';
 import JsonAuthorizers from '../JsonAuthorizers';
 import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
-import JsonServerless, { FunctionEndpoint } from '../JsonServerless';
 import JsonServices from '../JsonServices';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
@@ -53,6 +52,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     const id = method + route.functionName;
 
     await JsonServices.read();
+    const fullServiceName = JsonServices.services[serviceName].service;
 
     /**
      * The 4 xxxx stand for "dev" or "prod", based on which stage deployment will be selected
@@ -65,10 +65,10 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       const hash = crypto.createHash('md5').update(id).digest('hex');
       safeFunctionName = `${id.substring(0, 21)}${hash.substring(0, 3)}${id.substring(id.length - 21)}`;
     }
-    const awsFunctionName: string = `${JsonServerless.service}-xxxx-${id}`;
+    const awsFunctionName: string = `${fullServiceName}-xxxx-${id}`;
     if (awsFunctionName.length > 63) {
       const hash = crypto.createHash('md5').update(id).digest('hex');
-      const chars = Math.floor((64 - `${JsonServerless.service}-xxxx-`.length - 10) / 2);
+      const chars = Math.floor((64 - `${fullServiceName}-xxxx-`.length - 10) / 2);
       safeFunctionName = `${id.substring(0, chars)}${hash.substring(0, 3)}${id.substring(id.length - chars)}`;
     }
 
@@ -186,8 +186,9 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
 
     // side effects
 
-    await JsonServerless.read();
-    await JsonServerless.updateEndpoint(
+    await JsonServices.read();
+    await JsonServices.updateEndpoint(
+      jsonEndpointsEntry.serviceName,
       jsonEndpointsEntry.safeFunctionName,
       jsonEndpointsEntry.authorizerId,
       jsonEndpointsEntry.warmupEnabled,
