@@ -140,6 +140,7 @@ class JsonServices {
   async removeService(serviceName: string) {
     await this.read();
     _unset(this.services, serviceName);
+    await fs.unlink(path.join(PathResolver.getServicesJsonPath, `${serviceName}.json`));
     await this.save();
   }
 
