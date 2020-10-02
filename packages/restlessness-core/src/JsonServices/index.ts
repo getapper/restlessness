@@ -21,6 +21,14 @@ class JsonServices {
     return 'shared-resources';
   }
 
+  get offlineService() {
+    return this.services[this.OFFLINE_SERVICE_NAME];
+  }
+
+  get sharedService() {
+    return this.services[this.SHARED_SERVICE_NAME];
+  }
+
   get jsonPath(): string {
     return PathResolver.getServicesJsonPath;
   }
@@ -106,7 +114,7 @@ class JsonServices {
     this.services[serviceName].functions[functionName].warmup = {
       enabled: warmupEnabled,
     };
-    this.services[this.OFFLINE_SERVICE_NAME].functions[functionName].warmup = {
+    this.offlineService.functions[functionName].warmup = {
       enabled: warmupEnabled,
     };
     await this.save();
@@ -115,7 +123,7 @@ class JsonServices {
   async removeEndpoint(serviceName: string, safeFunctionName: string): Promise<void> {
     await this.read();
     _unset(this.services[serviceName], `functions.${safeFunctionName}`);
-    _unset(this.services[this.OFFLINE_SERVICE_NAME], `functions.${safeFunctionName}`);
+    _unset(this.offlineService, `functions.${safeFunctionName}`);
     await this.save();
   }
 
@@ -159,7 +167,7 @@ class JsonServices {
       handler: handlerRelativePath,
     };
     _merge(this.services[serviceName], serviceUpdate);
-    _merge(this.services[this.OFFLINE_SERVICE_NAME], serviceUpdate);
+    _merge(this.offlineService, serviceUpdate);
   }
 
   async createCustomAuthorizerForSharedService(
@@ -214,7 +222,7 @@ class JsonServices {
     serviceUpdate.resources.Resources[slsName] = authResource;
     serviceUpdate.resources.Outputs[slsName] = authOutput;
 
-    _merge(this.services[this.SHARED_SERVICE_NAME], serviceUpdate);
+    _merge(this.sharedService, serviceUpdate);
   }
 
   setFunctionToService(serviceName: string, functionName: string, functionEndpoint: FunctionEndpoint) {
@@ -224,7 +232,7 @@ class JsonServices {
     const functionUpdate = {};
     functionUpdate[functionName] = functionEndpoint;
     _merge(this.services[serviceName].functions, functionUpdate);
-    _merge(this.services[this.OFFLINE_SERVICE_NAME].functions, functionUpdate);
+    _merge(this.offlineService.functions, functionUpdate);
   }
 
   async setAuthorizerToFunction(serviceName: string, functionName: string, authorizerId: string) {
@@ -248,18 +256,26 @@ class JsonServices {
       this.services[serviceName].functions[functionName].events[0].http.authorizer = authorizerId;
     }
 
-    const offlineService = this.services[this.OFFLINE_SERVICE_NAME];
-    if (!offlineService.functions[authorizerId]) {
+    if (!this.offlineService.functions[authorizerId]) {
       await this.createAuthorizerFunction(this.OFFLINE_SERVICE_NAME, authorizerId);
     }
-    offlineService.functions[functionName].events[0].http.authorizer = authorizerId;
+    this.offlineService.functions[functionName].events[0].http.authorizer = authorizerId;
   }
 
   async addPlugin(serviceName:string, pluginName: string): Promise<void> {
-    // if (!this.plugins.includes(pluginName)) {
-    //   this.plugins.push(pluginName);
-    //   await this.save();
-    // }
+    const service = this.services[serviceName];
+    if (!service) {
+      throw new Error(`Service ${serviceName} does not exists!`);
+    }
+    if (!service.plugins) {
+      service.plugins = [];
+    }
+    if (!service.plugins.includes(pluginName)) {
+      service.plugins.push(pluginName);
+    }
+    if (!this.offlineService.plugins.includes(pluginName)) {
+      this.offlineService.plugins.push(pluginName);
+    }
   }
 }
 
