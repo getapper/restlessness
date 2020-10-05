@@ -55,6 +55,33 @@ describe('JsonServices', () => {
     expect(JsonServices.services['testService']).toBeFalsy();
     done();
   });
+
+  test('Add/Remove Plugin', async done => {
+    const service1 = 'testService-1';
+    const service2 = 'testService-2';
+    const pluginName = 'serverless-plugin-test';
+    await JsonServices.read();
+    await JsonServices.addService(service1);
+    await JsonServices.addService(service2);
+    await JsonServices.addPlugin(service1, pluginName);
+    await JsonServices.save();
+    await JsonServices.read();
+    expect(JsonServices.services[service1].plugins.includes(pluginName)).toBe(true);
+    expect(JsonServices.offlineService.plugins.includes(pluginName)).toBe(true);
+    await JsonServices.addPlugin(service2, pluginName);
+    await JsonServices.removePlugin(service1, pluginName);
+    await JsonServices.save();
+    await JsonServices.read();
+    expect(JsonServices.services[service1].plugins.includes(pluginName)).toBeFalsy();
+    expect(JsonServices.services[service2].plugins.includes(pluginName)).toBe(true);
+    expect(JsonServices.offlineService.plugins.includes(pluginName)).toBe(true);
+    await JsonServices.removePlugin(service2, pluginName);
+    await JsonServices.save();
+    await JsonServices.read();
+    expect(JsonServices.services[service2].plugins.includes(pluginName)).toBeFalsy();
+    expect(JsonServices.offlineService.plugins.includes(pluginName)).toBeFalsy();
+    done();
+  });
 });
 
 afterAll(async (done) => {
