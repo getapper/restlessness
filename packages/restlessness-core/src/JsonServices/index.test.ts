@@ -5,6 +5,8 @@ import { promises as fs } from 'fs';
 import Project from '../Project';
 import JsonServices from '../JsonServices';
 import { HttpMethod } from '../JsonEndpoints';
+import JsonAuthorizers, { JsonAuthorizersEntry } from '../JsonAuthorizers';
+import { execSync } from 'child_process';
 
 const PROJECT_NAME = 'tmp-json-services';
 
@@ -82,6 +84,18 @@ describe('JsonServices', () => {
     expect(JsonServices.offlineService.plugins.includes(pluginName)).toBeFalsy();
     done();
   });
+
+  test('Create Simple Authorizer', async done => {
+    const authorizer = await createTestAuthorizer();
+    const serviceName = 'auth-service-test';
+    await JsonServices.addService(serviceName);
+    await JsonServices.createAuthorizerFunction(serviceName, authorizer.id);
+    await JsonServices.save();
+    await JsonServices.read();
+    expect(JsonServices.services[serviceName]?.functions[authorizer.id]).toBeDefined();
+    expect(JsonServices.offlineService?.functions[authorizer.id]).toBeDefined();
+    done();
+  });
 });
 
 afterAll(async (done) => {
@@ -89,3 +103,15 @@ afterAll(async (done) => {
   done();
 });
 
+async function createTestAuthorizer() {
+  const authorizer: JsonAuthorizersEntry = {
+    id: 'authorizer-test',
+    name: 'auth-test',
+    package: 'package-test',
+    shared: false,
+  };
+  const packagePath = `${projectPath}/node_modules/${authorizer.package}`;
+  execSync(`mkdir -p ${packagePath} && cd ${packagePath} && npm init -y`);
+  await JsonAuthorizers.addEntry(authorizer);
+  return authorizer;
+}
