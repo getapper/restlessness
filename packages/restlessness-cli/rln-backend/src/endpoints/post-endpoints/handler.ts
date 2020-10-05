@@ -12,6 +12,7 @@ export default async (req: Request) => {
     authorizerId,
     daoIds,
     warmupEnabled,
+    serviceName,
   } = payload;
   let route: Route;
   try {
@@ -24,6 +25,6 @@ export default async (req: Request) => {
     return ResponseHandler.json({ message: 'Route already exists' }, StatusCodes.BadRequest);
   }
   const endpoint = new Endpoint();
-  await endpoint.create(route, method, authorizerId, daoIds, warmupEnabled);
+  await endpoint.create({ route, method, authorizerId, daoIds, warmupEnabled, serviceName });
   return ResponseHandler.json(endpoint);
 };

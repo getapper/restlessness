@@ -5,17 +5,14 @@ export default class Authorizer extends BaseModel {
   id: string
   name: string
   package: string
-  sessionModelName: string
+  shared: boolean
 
   static get model() {
     return JsonAuthorizers;
   }
 
   protected async fromConfigEntry(entry: JsonAuthorizersEntry): Promise<void> {
-    const { id, name, package: pkg } = entry;
-    this.id = id;
-    this.name = name;
-    this.package = pkg;
+    Object.assign(this, entry);
   }
 
   protected async toConfigEntry(): Promise<JsonAuthorizersEntry> {

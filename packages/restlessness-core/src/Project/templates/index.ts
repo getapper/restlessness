@@ -1,13 +1,48 @@
-const generateServerlessJson = (serviceName: string): string => `{
-  "service": "${serviceName}",
+const generateSharedResourcesServerlessJson = (projectName: string) => `{
+  "service": "${projectName}-shared-resources",
   "provider": {
     "name": "aws",
     "runtime": "nodejs12.x"
   },
-  "package": {
-    "include": [
-      "serverless.json"
-    ]
+  "resources": {
+    "Resources": {
+      "SharedGW": {
+        "Type": "AWS::ApiGateway::RestApi",
+        "Properties": {
+          "Name": "SharedGW"
+        }
+      }
+    },
+    "Outputs": {
+      "apiGatewayRestApiId": {
+        "Value": {
+          "Ref": "SharedGW"
+        },
+        "Export": {
+          "Name": "${projectName}-SharedGW-restApiId"
+        }
+      },
+      "apiGatewayRestApiRootResourceId": {
+        "Value": {
+          "Fn::GetAtt": [
+            "SharedGW",
+            "RootResourceId"
+          ]
+        },
+        "Export": {
+          "Name": "${projectName}-SharedGW-rootResourceId"
+        }
+      }
+    }
+  }
+}
+`;
+
+const generateOfflineServerlessJson = (projectName: string) => `{
+  "service": "${projectName}-offline",
+  "provider": {
+    "name": "aws",
+    "runtime": "nodejs12.x"
   },
   "plugins": [
     "serverless-offline",
@@ -32,7 +67,7 @@ const generatePackageJson = (name: string) => `{
     "REMOVE:staging": "serverless remove --stage dev",
     "DEPLOY:production": "npm run tsc && restlessness create-env production && serverless deploy --stage prod --verbose",
     "REMOVE:production": "serverless remove --stage prod",
-    "test": "restlessness create-env test && jest",
+    "test": "restlessness create-env test && jest --runInBand",
     "tsc": "rimraf dist && tsc -p tsconfig.json"
   },
   "dependencies": {
@@ -56,9 +91,11 @@ const generatePackageJson = (name: string) => `{
     "root": "dist"
   },
   "jest": {
+    "testTimeout": 10000,
     "rootDir": "dist",
     "moduleNameMapper": {
-      "root/(.*)$": "<rootDir>/$1"
+      "root/models/(.*)": "<rootDir>/models/$1",
+      "root/endpoints/(.*)": "<rootDir>/endpoints/$1"
     }
   }
 }
@@ -81,5 +118,6 @@ const generateGitIgnore = (): string => `node_modules
 export {
   generateGitIgnore,
   generatePackageJson,
-  generateServerlessJson,
+  generateSharedResourcesServerlessJson,
+  generateOfflineServerlessJson,
 };

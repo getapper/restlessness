@@ -13,7 +13,7 @@ import {
 import Route from '../Route';
 import JsonAuthorizers from '../JsonAuthorizers';
 import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
-import JsonServerless, { FunctionEndpoint } from '../JsonServerless';
+import JsonServices from '../JsonServices';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
 import JsonDaos from '../JsonDaos';
@@ -35,6 +35,7 @@ export interface JsonEndpointsEntry extends JsonConfigEntry {
   authorizerId?: string
   daoIds?: string[]
   warmupEnabled: boolean
+  serviceName: string
 }
 
 class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
@@ -42,12 +43,16 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     return PathResolver.getEndpointsConfigPath;
   }
 
-  async create(routePath: string, method: HttpMethod, authorizerId?: string, daoIds?: string[], warmupEnabled?: boolean): Promise<JsonEndpointsEntry> {
-    const route = Route.parseFromText(routePath);
+  async create(endpoint: {
+    routePath: string, method: HttpMethod, authorizerId?: string, daoIds?: string[], warmupEnabled?: boolean, serviceName: string
+  }): Promise<JsonEndpointsEntry> {
+    const { routePath, method, authorizerId, daoIds, warmupEnabled, serviceName } = endpoint;
 
+    const route = Route.parseFromText(routePath);
     const id = method + route.functionName;
 
-    await JsonServerless.read();
+    await JsonServices.read();
+    const fullServiceName = JsonServices.services[serviceName].service;
 
     /**
      * The 4 xxxx stand for "dev" or "prod", based on which stage deployment will be selected
@@ -60,10 +65,10 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       const hash = crypto.createHash('md5').update(id).digest('hex');
       safeFunctionName = `${id.substring(0, 21)}${hash.substring(0, 3)}${id.substring(id.length - 21)}`;
     }
-    const awsFunctionName: string = `${JsonServerless.service}-xxxx-${id}`;
+    const awsFunctionName: string = `${fullServiceName}-xxxx-${id}`;
     if (awsFunctionName.length > 63) {
       const hash = crypto.createHash('md5').update(id).digest('hex');
-      const chars = Math.floor((64 - `${JsonServerless.service}-xxxx-`.length - 10) / 2);
+      const chars = Math.floor((64 - `${fullServiceName}-xxxx-`.length - 10) / 2);
       safeFunctionName = `${id.substring(0, chars)}${hash.substring(0, 3)}${id.substring(id.length - chars)}`;
     }
 
@@ -75,6 +80,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
       authorizerId: null,
       daoIds: null,
       warmupEnabled,
+      serviceName,
     };
     const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
     let authorizerPackage: AuthorizerPackage = null;
@@ -118,15 +124,16 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     // Re-generate exporter file with considering the new endpoint
     await this.generateExporter();
 
-    // Add e new function handler in serverless.json read by serverless.yml
+    // Add e new function handler in serverless service json that will be deployed
     // It also adds the authorizer handler, if it doesn't exist yet
-    await JsonServerless.addEndpoint(
-      jsonEndpointsEntry.safeFunctionName,
-      route.functionPath,
+    await JsonServices.addEndpoint({
+      safeFunctionName: jsonEndpointsEntry.safeFunctionName,
+      functionPath: route.functionPath,
       method,
       authorizerId,
       warmupEnabled,
-    );
+      serviceName,
+    });
     return jsonEndpointsEntry;
   }
 
@@ -146,8 +153,8 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     // Re-generate exporter file after removing the endpoint
     await this.generateExporter();
 
-    // Renove function handler in serverless.json read by serverless.yml
-    await JsonServerless.removeEndpoint(jsonEndpointsEntry.safeFunctionName);
+    // Remove function handler in serverless.json read by serverless.yml
+    await JsonServices.removeEndpoint(jsonEndpointsEntry.serviceName, jsonEndpointsEntry.safeFunctionName);
   }
 
   private async generateExporter(): Promise<void> {
@@ -179,8 +186,9 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
 
     // side effects
 
-    await JsonServerless.read();
-    await JsonServerless.updateEndpoint(
+    await JsonServices.read();
+    await JsonServices.updateEndpoint(
+      jsonEndpointsEntry.serviceName,
       jsonEndpointsEntry.safeFunctionName,
       jsonEndpointsEntry.authorizerId,
       jsonEndpointsEntry.warmupEnabled,

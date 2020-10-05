@@ -1,5 +1,5 @@
 import path from 'path';
-import { JsonServerless, PathResolver, Response } from '../';
+import {JsonEndpoints, JsonServices, PathResolver, Response} from '../';
 import { APIGatewayEventRequestContextWithAuthorizer, ClientContext, CognitoIdentity } from 'aws-lambda';
 import EnvironmentHandler from '../EnvironmentHandler';
 
@@ -73,7 +73,9 @@ export class TestHandler {
       throw new Error(`Wrong api name: ${apiName}. Supported api names: ${Object.keys(exporter)}`);
     }
 
-    const endpoint = await JsonServerless.getEndpoint(apiName);
+    await JsonEndpoints.read();
+    const jsonEndpointsEntry = await JsonEndpoints.getEntryById(apiName);
+    const endpoint = await JsonServices.getEndpoint(jsonEndpointsEntry.serviceName, apiName);
 
     let requestContext: APIGatewayEventRequestContextWithAuthorizer<TAuthorizerContext> = null;
     if (authorizer) {
