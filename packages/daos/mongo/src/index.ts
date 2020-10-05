@@ -40,7 +40,7 @@ class MongoDaoPackage extends DaoPackage {
   }
 
   async installProxy() {
-    await promisify(exec)('npm i -E serverless-mongo-proxy');
+    await promisify(exec)('npm i -E serverless-mongo-proxy', { cwd: PathResolver.getPrjPath });
     await JsonServices.read();
     await JsonServices.addPlugin(JsonServices.SHARED_SERVICE_NAME, 'serverless-mongo-proxy');
     this.addProxyPermissions();
