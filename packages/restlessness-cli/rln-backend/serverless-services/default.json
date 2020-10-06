@@ -197,6 +197,38 @@
       "warmup": {
         "enabled": false
       }
+    },
+    "getServicesByName": {
+      "handler": "dist/exporter.getServicesByName",
+      "events": [
+        {
+          "http": {
+            "path": "services/{name}",
+            "method": "get",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
+    },
+    "deleteServicesByName": {
+      "handler": "dist/exporter.deleteServicesByName",
+      "events": [
+        {
+          "http": {
+            "path": "services/{name}",
+            "method": "delete",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
     }
   }
 }

@@ -103,5 +103,15 @@
     "daoIds": null,
     "warmupEnabled": false,
     "serviceName": "default"
+  },
+  {
+    "id": "getServicesByName",
+    "safeFunctionName": "getServicesByName",
+    "route": "/services/{name}",
+    "method": "get",
+    "authorizerId": null,
+    "daoIds": null,
+    "warmupEnabled": false,
+    "serviceName": "default"
   }
 ]
