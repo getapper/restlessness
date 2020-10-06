@@ -1,65 +1,89 @@
 [
   {
     "id": "postEndpoints",
+    "safeFunctionName": "postEndpoints",
     "route": "/endpoints",
-    "method": "post"
+    "method": "post",
+    "serviceName": "default"
   },
   {
     "id": "getEndpoints",
+    "safeFunctionName": "getEndpoints",
     "route": "/endpoints",
-    "method": "get"
+    "method": "get",
+    "serviceName": "default"
   },
   {
     "id": "postModels",
+    "safeFunctionName": "postModels",
     "route": "/models",
-    "method": "post"
+    "method": "post",
+    "serviceName": "default"
   },
   {
     "id": "getModels",
+    "safeFunctionName": "getModels",
     "route": "/models",
-    "method": "get"
+    "method": "get",
+    "serviceName": "default"
   },
   {
     "id": "getDaos",
+    "safeFunctionName": "getDaos",
     "route": "/daos",
-    "method": "get"
+    "method": "get",
+    "serviceName": "default"
   },
   {
     "id": "getEnvs",
+    "safeFunctionName": "getEnvs",
     "route": "/envs",
-    "method": "get"
+    "method": "get",
+    "serviceName": "default"
   },
   {
     "id": "postEnvs",
+    "safeFunctionName": "postEnvs",
     "route": "/envs",
-    "method": "post"
+    "method": "post",
+    "serviceName": "default"
   },
   {
     "id": "getOpenapi",
+    "safeFunctionName": "getOpenapi",
     "route": "/openapi",
-    "method": "get"
+    "method": "get",
+    "serviceName": "default"
   },
   {
+    "id": "getPlugins",
+    "safeFunctionName": "getPlugins",
     "route": "/plugins",
     "method": "get",
-    "id": "getPlugins"
+    "serviceName": "default"
   },
   {
+    "id": "getAuthorizers",
+    "safeFunctionName": "getAuthorizers",
     "route": "/authorizers",
     "method": "get",
-    "id": "getAuthorizers"
+    "serviceName": "default"
   },
   {
     "id": "getEndpointsById",
+    "safeFunctionName": "getEndpointsById",
     "route": "/endpoints/{id}",
     "method": "get",
-    "authorizerId": null
+    "authorizerId": null,
+    "serviceName": "default"
   },
   {
     "id": "deleteEndpointsById",
+    "safeFunctionName": "deleteEndpointsById",
     "route": "/endpoints/{id}",
     "method": "delete",
-    "authorizerId": null
+    "authorizerId": null,
+    "serviceName": "default"
   },
   {
     "id": "putEndpointsById",
@@ -67,6 +91,7 @@
     "route": "/endpoints/{id}",
     "method": "put",
     "authorizerId": null,
-    "daoIds": null
+    "daoIds": null,
+    "serviceName": "default"
   }
 ]

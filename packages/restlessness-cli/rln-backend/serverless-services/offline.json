@@ -1,5 +1,5 @@
 {
-  "service": "restlessness-rest-api",
+  "service": "restlessness-rest-api-offline",
   "provider": {
     "name": "aws",
     "runtime": "nodejs12.x"
