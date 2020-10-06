@@ -181,6 +181,22 @@
       "warmup": {
         "enabled": true
       }
+    },
+    "getServices": {
+      "handler": "dist/exporter.getServices",
+      "events": [
+        {
+          "http": {
+            "path": "services",
+            "method": "get",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
     }
   }
 }

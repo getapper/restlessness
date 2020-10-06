@@ -12,6 +12,7 @@ import getAuthorizers from 'root/endpoints/get-authorizers';
 import getEndpointsById from 'root/endpoints/get-endpoints-by-id';
 import deleteEndpointsById from 'root/endpoints/delete-endpoints-by-id';
 import putEndpointsById from 'root/endpoints/put-endpoints-by-id';
+import getServices from 'root/endpoints/get-services';
 
 export {
   postEndpoints,
@@ -27,5 +28,6 @@ export {
   getEndpointsById,
   deleteEndpointsById,
   putEndpointsById,
+  getServices,
 };
 

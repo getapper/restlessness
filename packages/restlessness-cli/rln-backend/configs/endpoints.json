@@ -93,5 +93,15 @@
     "authorizerId": null,
     "daoIds": null,
     "serviceName": "default"
+  },
+  {
+    "id": "getServices",
+    "safeFunctionName": "getServices",
+    "route": "/services",
+    "method": "get",
+    "authorizerId": null,
+    "daoIds": null,
+    "warmupEnabled": false,
+    "serviceName": "default"
   }
 ]
