@@ -9,6 +9,10 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: "2rem",
       boxSizing: "border-box",
     },
+    endpointEdit: {
+      marginTop: "2rem",
+      padding: "2rem",
+    },
   })
 );
 

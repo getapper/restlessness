@@ -9,11 +9,8 @@ export default async (req: Request) => {
     } = req;
 
     const daos = await Dao.getList();
-    const emptyDao = new Dao();
-    emptyDao.id = 'null';
-    emptyDao.name = 'None';
-    daos.push(emptyDao);
-    return ResponseHandler.json(daos, StatusCodes.OK, {
+
+    return ResponseHandler.json({ daos }, StatusCodes.OK, {
       headers: {
         'Access-Control-Expose-Headers': 'content-range',
         'content-range': `${daos.length}`,
