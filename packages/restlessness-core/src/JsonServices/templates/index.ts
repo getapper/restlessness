@@ -13,7 +13,6 @@ export const generateServiceServerlessJson = (projectName: string, serviceName: 
     }
   },
   "plugins": [
-    "serverless-offline",
     "serverless-plugin-warmup"
   ],
   "functions": {},
