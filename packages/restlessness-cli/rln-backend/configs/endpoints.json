@@ -113,5 +113,15 @@
     "daoIds": null,
     "warmupEnabled": false,
     "serviceName": "default"
+  },
+  {
+    "id": "deleteServicesByName",
+    "safeFunctionName": "deleteServicesByName",
+    "route": "/services/{name}",
+    "method": "delete",
+    "authorizerId": null,
+    "daoIds": null,
+    "warmupEnabled": false,
+    "serviceName": "default"
   }
 ]
