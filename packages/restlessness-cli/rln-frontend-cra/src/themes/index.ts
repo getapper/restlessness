@@ -21,22 +21,22 @@ const themeBase = {
       fontSize: "3rem",
     },
     h2: {
-      fontSize: "1.125rem",
+      fontSize: "2rem",
     },
     h3: {
-      fontSize: "4.25rem",
+      fontSize: "1.75rem",
     },
     h4: {
-      fontSize: "2.25rem",
+      fontSize: "1.5rem",
     },
     h5: {
       fontSize: "1.3125rem",
     },
     h6: {
-      fontSize: "2.5rem",
+      fontSize: "1.25rem",
     },
     subtitle1: {
-      fontSize: "1.5rem",
+      fontSize: "1.2rem",
     },
     subtitle2: {
       fontSize: "0.75rem",
