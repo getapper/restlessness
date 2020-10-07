@@ -217,6 +217,22 @@
       "warmup": {
         "enabled": false
       }
+    },
+    "postServices": {
+      "handler": "dist/exporter.postServices",
+      "events": [
+        {
+          "http": {
+            "path": "services",
+            "method": "post",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ export default class Service {
     await JsonServices.read();
     await JsonServices.addService(serviceName);
     await JsonServices.save();
+    return this.getService(serviceName);
   }
 
   static async removeService(serviceName: string) {

@@ -123,5 +123,15 @@
     "daoIds": null,
     "warmupEnabled": false,
     "serviceName": "default"
+  },
+  {
+    "id": "postServices",
+    "safeFunctionName": "postServices",
+    "route": "/services",
+    "method": "post",
+    "authorizerId": null,
+    "daoIds": null,
+    "warmupEnabled": false,
+    "serviceName": "default"
   }
 ]
