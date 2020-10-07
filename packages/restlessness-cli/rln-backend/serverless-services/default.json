@@ -1,0 +1,250 @@
+{
+  "service": "restlessness-rest-api-default",
+  "provider": {
+    "name": "aws",
+    "runtime": "nodejs12.x",
+    "apiGateway": {
+      "restApiId": {
+        "Fn::ImportValue": "restlessness-rest-api-SharedGW-restApiId"
+      },
+      "restApiRootResourceId": {
+        "Fn::ImportValue": "restlessness-rest-api-SharedGW-rootResourceId"
+      }
+    }
+  },
+  "plugins": [],
+  "custom": {
+    "warmup": {
+      "prewarm": true,
+      "enabled": true
+    }
+  },
+  "functions": {
+    "postEndpoints": {
+      "handler": "dist/exporter.postEndpoints",
+      "events": [
+        {
+          "http": {
+            "path": "endpoints",
+            "method": "post",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getEndpoints": {
+      "handler": "dist/exporter.getEndpoints",
+      "events": [
+        {
+          "http": {
+            "path": "endpoints",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "postModels": {
+      "handler": "dist/exporter.postModels",
+      "events": [
+        {
+          "http": {
+            "path": "models",
+            "method": "post",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getModels": {
+      "handler": "dist/exporter.getModels",
+      "events": [
+        {
+          "http": {
+            "path": "models",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getDaos": {
+      "handler": "dist/exporter.getDaos",
+      "events": [
+        {
+          "http": {
+            "path": "daos",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getEnvs": {
+      "handler": "dist/exporter.getEnvs",
+      "events": [
+        {
+          "http": {
+            "path": "envs",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "postEnvs": {
+      "handler": "dist/exporter.postEnvs",
+      "events": [
+        {
+          "http": {
+            "path": "envs",
+            "method": "post",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getOpenapi": {
+      "handler": "dist/exporter.getOpenapi",
+      "events": [
+        {
+          "http": {
+            "path": "openapi",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getPlugins": {
+      "handler": "dist/exporter.getPlugins",
+      "events": [
+        {
+          "http": {
+            "path": "plugins",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getAuthorizers": {
+      "handler": "dist/exporter.getAuthorizers",
+      "events": [
+        {
+          "http": {
+            "path": "authorizers",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getEndpointsById": {
+      "handler": "dist/exporter.getEndpointsById",
+      "events": [
+        {
+          "http": {
+            "path": "endpoints/{id}",
+            "method": "get",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ]
+    },
+    "deleteEndpointsById": {
+      "handler": "dist/exporter.deleteEndpointsById",
+      "events": [
+        {
+          "http": {
+            "path": "endpoints/{id}",
+            "method": "delete",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ]
+    },
+    "putEndpointsById": {
+      "handler": "dist/exporter.putEndpointsById",
+      "events": [
+        {
+          "http": {
+            "path": "endpoints/{id}",
+            "method": "put",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": true
+      }
+    },
+    "getServices": {
+      "handler": "dist/exporter.getServices",
+      "events": [
+        {
+          "http": {
+            "path": "services",
+            "method": "get",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
+    },
+    "getServicesByName": {
+      "handler": "dist/exporter.getServicesByName",
+      "events": [
+        {
+          "http": {
+            "path": "services/{name}",
+            "method": "get",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
+    },
+    "deleteServicesByName": {
+      "handler": "dist/exporter.deleteServicesByName",
+      "events": [
+        {
+          "http": {
+            "path": "services/{name}",
+            "method": "delete",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
+    },
+    "postServices": {
+      "handler": "dist/exporter.postServices",
+      "events": [
+        {
+          "http": {
+            "path": "services",
+            "method": "post",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
+    }
+  }
+}

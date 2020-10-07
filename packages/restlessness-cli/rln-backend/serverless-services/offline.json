@@ -1,5 +1,5 @@
 {
-  "service": "restlessness-rest-api",
+  "service": "restlessness-rest-api-offline",
   "provider": {
     "name": "aws",
     "runtime": "nodejs12.x"
@@ -168,6 +168,70 @@
       ],
       "warmup": {
         "enabled": true
+      }
+    },
+    "getServices": {
+      "handler": "dist/exporter.getServices",
+      "events": [
+        {
+          "http": {
+            "path": "services",
+            "method": "get",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
+    },
+    "getServicesByName": {
+      "handler": "dist/exporter.getServicesByName",
+      "events": [
+        {
+          "http": {
+            "path": "services/{name}",
+            "method": "get",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
+    },
+    "deleteServicesByName": {
+      "handler": "dist/exporter.deleteServicesByName",
+      "events": [
+        {
+          "http": {
+            "path": "services/{name}",
+            "method": "delete",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
+    },
+    "postServices": {
+      "handler": "dist/exporter.postServices",
+      "events": [
+        {
+          "http": {
+            "path": "services",
+            "method": "post",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
       }
     }
   }

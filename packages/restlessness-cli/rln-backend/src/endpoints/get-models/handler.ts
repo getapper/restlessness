@@ -1,6 +1,6 @@
-import { ResponseHandler, StatusCodes } from '@restlessness/core';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
-import { Model } from 'root/models';
+import { Model } from '../../models';
 
 export default async (req: Request) => {
   try {

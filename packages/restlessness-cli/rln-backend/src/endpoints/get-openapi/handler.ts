@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { ResponseHandler, StatusCodes, Openapi } from '@restlessness/core';
+import { ResponseHandler, StatusCodes, Openapi } from '@restlessness/core';
 import { Request } from './interfaces';
 
 export default async (req: Request) => {
