@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { EndpointState } from "./interfaces";
 import * as selectors from "./selectors";
+import * as sagas from "./sagas";
 import * as extraActions from "../../extra-actions";
 import {
   ApiSuccessAction,
@@ -25,4 +26,4 @@ export const endpointStore = createSlice({
   },
 });
 
-export { selectors };
+export { selectors, sagas };

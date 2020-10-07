@@ -2,6 +2,8 @@ import { JsonServices } from '@restlessness/core';
 import Endpoint from '../../models/Endpoint';
 
 export default class Service {
+  id: string
+
   static async addService(serviceName: string) {
     await JsonServices.read();
     await JsonServices.addService(serviceName);
@@ -24,10 +26,13 @@ export default class Service {
     return JsonServices.services[serviceName];
   }
 
-  static async getServiceNameList(): Promise<string[]> {
+  static async getServiceNameList(): Promise<Service[]> {
     await JsonServices.read();
     return Object.keys(JsonServices.services)
       .filter(s => s !== JsonServices.OFFLINE_SERVICE_NAME)
-      .filter(s => s !== JsonServices.SHARED_SERVICE_NAME);
+      .filter(s => s !== JsonServices.SHARED_SERVICE_NAME)
+      .map(s => ({
+        id: s,
+      }));
   }
 };

@@ -5,6 +5,7 @@ import {
   getAuthorizersApi,
   getDaosApi,
   getEndpointsApi,
+  getServicesApi,
   HttpMethod,
   postEndpointsApi,
   PostEndpointsApiParams,
@@ -13,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getDaosList } from "../../redux-store/slices/dao/selectors";
 import { getAuthorizersList } from "../../redux-store/slices/authorizer/selectors";
 import { getAjaxIsLoadingByApi } from "../../redux-store/slices/ajax/selectors";
+import { getServicesList } from "../../redux-store/slices/service/selectors";
 
 interface RouteParams {
   endpointId: string;
@@ -31,23 +33,28 @@ const useEndpointCreate = () => {
   const dispatch = useDispatch();
   const daosList = useSelector(getDaosList);
   const authorizersList = useSelector(getAuthorizersList);
+  const servicesList = useSelector(getServicesList);
   const [payloadData, setPayloadData] = useState<PostEndpointsApiParams>({
     warmupEnabled: false,
     authorizerId: null,
     daoIds: [],
     route: "",
     method: HttpMethod.PUT,
-    serviceId: null,
+    serviceName: null,
   });
   const isLoadingDaos = useSelector(getAjaxIsLoadingByApi(getDaosApi.api));
+  const isLoadingServices = useSelector(
+    getAjaxIsLoadingByApi(getServicesApi.api)
+  );
   const isLoadingAuthorizers = useSelector(
     getAjaxIsLoadingByApi(getAuthorizersApi.api)
   );
   const isSaving = useSelector(getAjaxIsLoadingByApi(postEndpointsApi.api));
 
   const isLoading = useMemo(
-    () => isLoadingAuthorizers || isLoadingDaos || isSaving,
-    [isLoadingAuthorizers, isLoadingDaos, isSaving]
+    () =>
+      isLoadingAuthorizers || isLoadingDaos || isLoadingServices || isSaving,
+    [isLoadingAuthorizers, isLoadingDaos, isLoadingServices, isSaving]
   );
 
   const onWarmUpChange = useCallback(
@@ -83,6 +90,19 @@ const useEndpointCreate = () => {
     [payloadData]
   );
 
+  const onServiceChange = useCallback(
+    (
+      event: React.ChangeEvent<{ name?: string; value: unknown }>,
+      child: React.ReactNode
+    ) => {
+      setPayloadData({
+        ...payloadData,
+        serviceName: event.target.value as string,
+      });
+    },
+    [payloadData]
+  );
+
   const onSave = useCallback(() => {
     dispatch(postEndpointsApi.request(payloadData));
   }, [dispatch, payloadData]);
@@ -91,6 +111,7 @@ const useEndpointCreate = () => {
     dispatch(getEndpointsApi.request({}));
     dispatch(getAuthorizersApi.request({}));
     dispatch(getDaosApi.request({}));
+    dispatch(getServicesApi.request({}));
   }, [dispatch]);
 
   return {
@@ -98,11 +119,13 @@ const useEndpointCreate = () => {
     derivedClasses,
     daosList,
     authorizersList,
+    servicesList,
     payloadData,
     isLoading,
     onWarmUpChange,
     onRouteChange,
     onMethodChange,
+    onServiceChange,
     onSave,
   };
 };

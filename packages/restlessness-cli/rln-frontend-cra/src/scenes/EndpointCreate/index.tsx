@@ -43,10 +43,12 @@ const EndpointCreate = () => {
     payloadData,
     daosList,
     authorizersList,
+    servicesList,
     isLoading,
     onWarmUpChange,
     onRouteChange,
     onMethodChange,
+    onServiceChange,
     onSave,
   } = useEndpointCreate();
 
@@ -54,12 +56,32 @@ const EndpointCreate = () => {
     <div className={classes.container}>
       <Typography variant="h2">Create endpoint</Typography>
       <Paper elevation={4} classes={derivedClasses.endpointEdit}>
+        <Typography variant="h4">Service</Typography>
+        <FormControl fullWidth style={{ marginTop: "1rem" }}>
+          <Select
+            disabled={isLoading}
+            value={payloadData.serviceName}
+            onChange={onServiceChange}
+          >
+            {servicesList.map((service) => (
+              <MenuItem key={service.id} value={service.id}>
+                {service.id}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Typography variant="h4" style={{ marginTop: "1rem" }}>
+          Route
+        </Typography>
         <TextField
           label="Route"
           fullWidth
           value={payloadData.route}
           onChange={onRouteChange}
         />
+        <Typography variant="h4" style={{ marginTop: "1rem" }}>
+          Method
+        </Typography>
         <FormControl fullWidth style={{ marginTop: "1rem" }}>
           <Select
             disabled={isLoading}

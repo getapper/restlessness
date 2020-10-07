@@ -12,6 +12,7 @@ const useEndpointsList = () => {
 
   const columns = useMemo(
     () => [
+      { field: "serviceName", headerName: "Service", width: 200 },
       { field: "route", headerName: "Route", width: 400 },
       { field: "method", headerName: "Method", width: 150 },
       { field: "safeFunctionName", headerName: "AWS name", width: 300 },

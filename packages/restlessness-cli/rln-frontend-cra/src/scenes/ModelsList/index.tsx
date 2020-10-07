@@ -1,35 +1,30 @@
 import React, { memo } from "react";
 import { DataGrid } from "@material-ui/data-grid";
-import useServicesList from "./index.hooks";
+import useModelsList from "./index.hooks";
 import { Button } from "@material-ui/core";
 
-const ServicesList = () => {
-  const {
-    columns,
-    classes,
-    servicesList,
-    onServiceSelected,
-  } = useServicesList();
+const ModelsList = () => {
+  const { columns, classes, modelsList, onModelSelected } = useModelsList();
 
   return (
     <div className={classes.container}>
       <Button
         color="primary"
         variant="contained"
-        href="#/services/create"
+        href="#/models/create"
         style={{ marginBottom: "1rem" }}
       >
         Create
       </Button>
       <DataGrid
-        rows={servicesList}
+        rows={modelsList}
         columns={columns}
         disableMultipleSelection
         autoPageSize
-        onRowSelected={onServiceSelected}
+        onRowSelected={onModelSelected}
       />
     </div>
   );
 };
 
-export default memo(ServicesList);
+export default memo(ModelsList);

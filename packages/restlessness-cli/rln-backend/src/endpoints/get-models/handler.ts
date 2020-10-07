@@ -9,7 +9,7 @@ export default async (req: Request) => {
     } = req;
 
     const models = await Model.getList();
-    return ResponseHandler.json(models, StatusCodes.OK, {
+    return ResponseHandler.json({ models }, StatusCodes.OK, {
       headers: {
         'Access-Control-Expose-Headers': 'content-range',
         'content-range': `${models.length}`,

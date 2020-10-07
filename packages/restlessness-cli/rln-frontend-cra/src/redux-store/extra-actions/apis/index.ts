@@ -7,6 +7,8 @@ import { Action } from "redux";
 import { Endpoint } from "../../slices/endpoint/interfaces";
 import { Dao } from "../../slices/dao/interfaces";
 import { Authorizer } from "../../slices/authorizer/interfaces";
+import { Service } from "../../slices/service/interfaces";
+import { Model } from "../../slices/model/interfaces";
 
 export enum HttpMethod {
   GET = "get",
@@ -194,10 +196,10 @@ export interface PostEndpointsApiParams {
   authorizerId: string | null;
   daoIds: string[];
   warmupEnabled: boolean;
-  serviceId: string | null;
+  serviceName: string | null;
 }
 export interface PostEndpointsResponseData {
-  endpoint: Endpoint[];
+  endpoint: Endpoint;
 }
 export const postEndpointsApi = apiActionBuilder<
   PostEndpointsApiParams,
@@ -211,6 +213,99 @@ export const postEndpointsApi = apiActionBuilder<
     payload: apiRequestPayloadBuilder(
       {
         path: `/endpoints`,
+        method: HttpMethod.POST,
+        body: params,
+      },
+      options
+    ),
+  })
+);
+
+export interface GetServicesApiParams {}
+export interface GetServicesResponseData {
+  services: Service[];
+}
+export const getServicesApi = apiActionBuilder<
+  GetServicesApiParams,
+  GetServicesResponseData
+>(
+  "apis/services/get",
+  (
+    params: GetServicesApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: "/services",
+        method: HttpMethod.GET,
+      },
+      options
+    ),
+  })
+);
+
+export interface PostServicesApiParams {
+  name: string | null;
+}
+export interface PostServicesResponseData {
+  service: Service;
+}
+export const postServicesApi = apiActionBuilder<
+  PostServicesApiParams,
+  PostServicesResponseData
+>(
+  "apis/services/post",
+  (
+    params: PostServicesApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: `/services`,
+        method: HttpMethod.POST,
+        body: params,
+      },
+      options
+    ),
+  })
+);
+
+export interface GetModelsApiParams {}
+export interface GetModelsResponseData {
+  models: Model[];
+}
+export const getModelsApi = apiActionBuilder<
+  GetModelsApiParams,
+  GetModelsResponseData
+>(
+  "apis/models/get",
+  (params: GetModelsApiParams, options?: ApiRequestPayloadBuilderOptions) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: "/models",
+        method: HttpMethod.GET,
+      },
+      options
+    ),
+  })
+);
+
+export interface PostModelsApiParams {
+  name: string | null;
+  daoId: string | null;
+}
+export interface PostModelsResponseData {
+  model: Model;
+}
+export const postModelsApi = apiActionBuilder<
+  PostModelsApiParams,
+  PostModelsResponseData
+>(
+  "apis/models/post",
+  (params: PostModelsApiParams, options?: ApiRequestPayloadBuilderOptions) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: `/models`,
         method: HttpMethod.POST,
         body: params,
       },
