@@ -15,6 +15,7 @@ import getServices from './endpoints/get-services';
 import getServicesByName from './endpoints/get-services-by-name';
 import deleteServicesByName from './endpoints/delete-services-by-name';
 import postServices from './endpoints/post-services';
+import putServicesByName from './endpoints/put-services-by-name';
 
 export {
   postEndpoints,
@@ -34,5 +35,6 @@ export {
   getServicesByName,
   deleteServicesByName,
   postServices,
+  putServicesByName,
 };
 

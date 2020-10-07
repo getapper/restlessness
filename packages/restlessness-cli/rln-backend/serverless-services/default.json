@@ -245,6 +245,22 @@
       "warmup": {
         "enabled": false
       }
+    },
+    "putServicesByName": {
+      "handler": "dist/exporter.putServicesByName",
+      "events": [
+        {
+          "http": {
+            "path": "services/{name}",
+            "method": "put",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
     }
   }
 }
