@@ -9,6 +9,7 @@ import {
   PathResolver,
   JsonEnvs,
   SessionModelInstance,
+  JsonServices,
 } from '@restlessness/core';
 import AWSLambda from 'aws-lambda';
 import jwt from 'jsonwebtoken';
@@ -28,6 +29,7 @@ class CognitoAuthorizer extends AuthorizerPackage {
       id: 'cognito',
       name: 'AWS Cognito',
       package: '@restlessness/auth-cognito',
+      shared: true,
     };
     if (await JsonAuthorizers.getEntryById(jsonAuthorizer.id)) {
       console.warn(`${jsonAuthorizer.id} Auth already found inside authorizers.json!`);
@@ -43,6 +45,10 @@ class CognitoAuthorizer extends AuthorizerPackage {
       await envFile.setParametricValue('RLN_COGNITO_AUTH_ACCESS_KEY_ID');
       await envFile.setParametricValue('RLN_COGNITO_AUTH_SECRET_ACCESS_KEY');
     }));
+
+    await JsonServices.read();
+    await JsonServices.createCustomAuthorizerForSharedService(jsonAuthorizer.id);
+    await JsonServices.save();
   }
 
   async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
