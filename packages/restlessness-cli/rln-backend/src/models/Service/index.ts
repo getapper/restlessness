@@ -26,7 +26,7 @@ export default class Service {
   static async getServiceNameList(): Promise<string[]> {
     await JsonServices.read();
     return Object.keys(JsonServices.services)
-      //@TODO show offline-service ui-side?
-      .filter(s => s !== JsonServices.OFFLINE_SERVICE_NAME);
+      .filter(s => s !== JsonServices.OFFLINE_SERVICE_NAME)
+      .filter(s => s !== JsonServices.SHARED_SERVICE_NAME);
   }
 };
