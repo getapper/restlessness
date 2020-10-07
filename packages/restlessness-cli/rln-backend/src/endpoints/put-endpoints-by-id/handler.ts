@@ -1,7 +1,6 @@
-import 'module-alias/register';
-import { ResponseHandler, StatusCodes } from '@restlessness/core';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
-import { Endpoint, Dao, Authorizer } from 'root/models';
+import { Endpoint, Dao, Authorizer } from '../../models';
 
 export default async (req: Request) => {
   try {

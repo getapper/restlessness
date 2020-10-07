@@ -1,5 +1,5 @@
 import { JsonServices } from '@restlessness/core';
-import Endpoint from 'root/models/Endpoint';
+import Endpoint from '../../models/Endpoint';
 
 export default class Service {
   static async addService(serviceName: string) {

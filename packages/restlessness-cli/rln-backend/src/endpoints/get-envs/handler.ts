@@ -1,5 +1,5 @@
-import { Env } from 'root/models';
-import { ResponseHandler, StatusCodes } from '@restlessness/core';
+import { Env } from '../../models';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 
 export default async (req: Request) => {
