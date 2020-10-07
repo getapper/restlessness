@@ -187,3 +187,34 @@ export const putEndpointByEndpointIdsApi = apiActionBuilder<
     ),
   })
 );
+
+export interface PostEndpointsApiParams {
+  route: string | null;
+  method: HttpMethod;
+  authorizerId: string | null;
+  daoIds: string[];
+  warmupEnabled: boolean;
+  serviceId: string | null;
+}
+export interface PostEndpointsResponseData {
+  endpoint: Endpoint[];
+}
+export const postEndpointsApi = apiActionBuilder<
+  PostEndpointsApiParams,
+  PostEndpointsResponseData
+>(
+  "apis/endpoints/post",
+  (
+    params: PostEndpointsApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: `/endpoints`,
+        method: HttpMethod.POST,
+        body: params,
+      },
+      options
+    ),
+  })
+);

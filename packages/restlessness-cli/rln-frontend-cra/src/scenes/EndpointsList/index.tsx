@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { DataGrid } from "@material-ui/data-grid";
 import useEndpointsList from "./index.hooks";
+import { Button } from "@material-ui/core";
 
 const EndpointsList = () => {
   const {
@@ -12,6 +13,14 @@ const EndpointsList = () => {
 
   return (
     <div className={classes.container}>
+      <Button
+        color="primary"
+        variant="contained"
+        href="#/endpoints/create"
+        style={{ marginBottom: "1rem" }}
+      >
+        Create
+      </Button>
       <DataGrid
         rows={endpointsList}
         columns={columns}

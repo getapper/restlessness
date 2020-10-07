@@ -7,6 +7,7 @@ import ServicesList from "../scenes/ServicesList";
 import EndpointsList from "../scenes/EndpointsList";
 import EndpointDetails from "../scenes/EndpointDetails";
 import Header from "../components/Header";
+import EndpointCreate from "../scenes/EndpointCreate";
 
 const App: React.FC = () => {
   const { classes, theme } = useAppHooks();
@@ -17,6 +18,9 @@ const App: React.FC = () => {
       <div className={classes.routerContainer}>
         <Router>
           <Switch>
+            <Route path="/endpoints/create">
+              <EndpointCreate />
+            </Route>
             <Route path="/endpoints/:endpointId">
               <EndpointDetails />
             </Route>
