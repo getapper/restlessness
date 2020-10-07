@@ -17,7 +17,11 @@ const ServicesList = () => {
         color="primary"
         variant="contained"
         href="#/services/create"
-        style={{ marginBottom: "1rem" }}
+        style={{
+          position: "absolute",
+          top: "2.4rem",
+          right: "2.4rem",
+        }}
       >
         Create
       </Button>

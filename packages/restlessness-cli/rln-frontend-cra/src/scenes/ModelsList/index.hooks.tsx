@@ -12,8 +12,13 @@ const useModelsList = () => {
 
   const columns = useMemo(
     () => [
-      { field: "id", headerName: "Name", width: 400 },
-      { field: "dao", headerName: "DAO", width: 150 },
+      { field: "id", headerName: "Name", width: 300 },
+      {
+        field: "dao",
+        headerName: "DAO",
+        width: 300,
+        valueGetter: (val: any) => val.data?.dao?.name ?? "",
+      },
     ],
     []
   );
