@@ -226,7 +226,7 @@ class JsonServices {
     _merge(this.sharedService, serviceUpdate);
   }
 
-  setFunctionToService(serviceName: string, functionName: string, functionEndpoint: FunctionEndpoint) {
+  private setFunctionToService(serviceName: string, functionName: string, functionEndpoint: FunctionEndpoint) {
     if (!this.services[serviceName]) {
       throw Error(`Service ${serviceName} does not exists!`);
     }
@@ -236,7 +236,7 @@ class JsonServices {
     _merge(this.offlineService.functions, functionUpdate);
   }
 
-  async setAuthorizerToFunction(serviceName: string, functionName: string, authorizerId: string) {
+  private async setAuthorizerToFunction(serviceName: string, functionName: string, authorizerId: string) {
     const jsonAuthorizersEntry = await JsonAuthorizers.getEntryById(authorizerId);
     if (!jsonAuthorizersEntry) {
       throw new Error(`Cannot find authorizer ${jsonAuthorizersEntry?.package}!`);
@@ -276,6 +276,26 @@ class JsonServices {
     }
     if (!this.offlineService.plugins.includes(pluginName)) {
       this.offlineService.plugins.push(pluginName);
+    }
+  }
+
+  async removePlugin(serviceName: string, pluginName: string) {
+    const service = this.services[serviceName];
+    if (!service) {
+      throw new Error(`Service ${serviceName} does not exists!`);
+    }
+    const pluginIdx = service.plugins.indexOf(pluginName);
+    if (pluginIdx !== -1) {
+      service.plugins.splice(pluginIdx, 1);
+    }
+
+    const servicesIncludingPlugin = Object.keys(this.services)
+      .filter(s => s !== this.OFFLINE_SERVICE_NAME)
+      .filter(s => this.services[s].plugins?.includes(pluginName));
+
+    const offlinePluginIdx = this.offlineService.plugins.indexOf(pluginName);
+    if (offlinePluginIdx !== -1 && servicesIncludingPlugin.length === 0) {
+      this.offlineService.plugins.splice(offlinePluginIdx, 1);
     }
   }
 }
