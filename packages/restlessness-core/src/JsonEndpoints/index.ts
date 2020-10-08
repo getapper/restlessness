@@ -181,6 +181,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     }
     jsonEndpointsEntry.authorizerId = entry.authorizerId;
     jsonEndpointsEntry.warmupEnabled = entry.warmupEnabled;
+    jsonEndpointsEntry.serviceName = entry.serviceName;
 
     await super.updateEntry(jsonEndpointsEntry);
 

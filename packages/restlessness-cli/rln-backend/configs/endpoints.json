@@ -133,5 +133,15 @@
     "daoIds": null,
     "warmupEnabled": false,
     "serviceName": "default"
+  },
+  {
+    "id": "putServicesByName",
+    "safeFunctionName": "putServicesByName",
+    "route": "/services/{name}",
+    "method": "put",
+    "authorizerId": null,
+    "daoIds": null,
+    "warmupEnabled": false,
+    "serviceName": "default"
   }
 ]

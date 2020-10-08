@@ -21,9 +21,26 @@ export default class Service {
     await Promise.all(endpoints.map(e => e.remove()));
   }
 
+  static async renameService(serviceName: string, newServiceName) {
+    await JsonServices.read();
+    await JsonServices.renameService(serviceName, newServiceName);
+    await JsonServices.save();
+
+    const endpoints = await Endpoint.getList();
+    await Promise.all(endpoints
+      .filter(e => e.serviceName === serviceName)
+      .map(e => {
+        e.serviceName = newServiceName;
+        return e.update();
+      }));
+  }
+
   static async getService(serviceName) {
     await JsonServices.read();
-    return JsonServices.services[serviceName];
+    return {
+      ...JsonServices.services[serviceName],
+      service: serviceName,
+    };
   }
 
   static async getServiceNameList(): Promise<Service[]> {
