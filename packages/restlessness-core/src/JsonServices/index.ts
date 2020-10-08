@@ -107,10 +107,12 @@ class JsonServices {
   }
 
   async updateEndpoint(serviceName: string, functionName: string, authorizerId: string, warmupEnabled: boolean) {
-    if (!this[serviceName]?.functions[functionName]) {
+    if (!this.services[serviceName]?.functions[functionName]) {
       throw Error(`${functionName} does not exists in service '${serviceName}'`);
     }
-    await this.setAuthorizerToFunction(serviceName, functionName, authorizerId);
+    if (authorizerId) {
+      await this.setAuthorizerToFunction(serviceName, functionName, authorizerId);
+    }
     this.services[serviceName].functions[functionName].warmup = {
       enabled: warmupEnabled,
     };
@@ -125,6 +127,23 @@ class JsonServices {
     _unset(this.services[serviceName], `functions.${safeFunctionName}`);
     _unset(this.offlineService, `functions.${safeFunctionName}`);
     await this.save();
+  }
+
+  async renameService(serviceName: string, newServiceName) {
+    this.services[newServiceName] = {
+      ...this.services[serviceName],
+      service: this.services[serviceName].service.replace(serviceName, newServiceName),
+    };
+    _unset(this.services, serviceName);
+    await fs.unlink(path.join(PathResolver.getServicesJsonPath, `${serviceName}.json`));
+    await this.save();
+  }
+
+  async changeEndpointService(serviceName: string, newServiceName: string, functionName: string) {
+    const functionUpdate = {};
+    functionUpdate[functionName] = this.services[serviceName].functions[functionName];
+    _merge(this.services[newServiceName].functions, functionUpdate);
+    _unset(this.services[serviceName].functions, functionName);
   }
 
   async addService(serviceName: string) {

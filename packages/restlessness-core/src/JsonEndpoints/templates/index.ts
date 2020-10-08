@@ -43,7 +43,7 @@ const handlerTemplate = (
   vars: string[],
   authorizerPackage: AuthorizerPackage,
 ): string => `import 'module-alias/register';
-import { ResponseHandler, StatusCodes } from '@restlessness/core';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Request } from './interfaces';
 
 export default async (req: Request) => {

@@ -2,29 +2,25 @@
   "name": "restlessness-rest-api",
   "version": "0.0.0",
   "scripts": {
-    "dev:server": "npm run tsc && RLN_PROJECT_PATH=/Users/antoniogiordano/Documents/tt/introducely/introducely-backend serverless offline --port 4123",
+    "dev:server": "serverless offline --config serverless-services/offline.json --port 4123",
     "tsc": "rimraf dist && tsc -p tsconfig.json",
     "update-deps": "npm i @restlessness/core@latest -S -E"
   },
   "dependencies": {
-    "@restlessness/core": "file:../../restlessness-core",
-    "jest": "26.0.1",
-    "module-alias": "2.2.2",
     "yup": "0.28.3"
   },
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
+    "@restlessness/core": "0.4.2",
     "@types/aws-lambda": "8.10.51",
     "@types/jest": "26.0.0",
     "@types/node": "12.7.2",
     "@typescript-eslint/parser": "2.1.0",
     "eslint": "6.8.0",
+    "jest": "26.0.1",
     "rimraf": "3.0.2",
     "serverless-offline": "5.12.1",
     "typescript": "3.8.3"
-  },
-  "_moduleAliases": {
-    "root": "dist"
   }
 }

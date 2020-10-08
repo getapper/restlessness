@@ -14,5 +14,9 @@
   {
     "id": "Plugin",
     "daoId": null
+  },
+  {
+    "id": "Service",
+    "daoId": null
   }
 ]

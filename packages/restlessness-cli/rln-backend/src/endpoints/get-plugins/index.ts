@@ -1,4 +1,3 @@
-import 'module-alias/register';
 import LambdaHandler from '../../services/LambdaHandler';
 import handler from './handler';
 import validations from './validations';

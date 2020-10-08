@@ -1,4 +1,4 @@
-import { ResponseHandler, StatusCodes } from '@restlessness/core';
+import { ResponseHandler, StatusCodes } from '@restlessness/core';
 import { Dao } from '../../models';
 import { Request } from './interfaces';
 

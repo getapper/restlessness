@@ -80,6 +80,7 @@ class MongoDaoPackage extends DaoPackage {
   private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {
     const envFile = new EnvFile(jsonEnvsEntry.id);
     await envFile.setParametricValue('MONGO_URI');
+    await envFile.setParametricValue('MONGO_DB_NAME');
     const stageName = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
     await envFile.setValue('STAGE_NAME', stageName);
     if (jsonEnvsEntry.type === 'test') {

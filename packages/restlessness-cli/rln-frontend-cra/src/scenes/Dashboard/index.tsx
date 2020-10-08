@@ -12,6 +12,22 @@ const Dashboard = () => {
         <Button color="primary" variant="contained" href="#/endpoints">
           Endpoints
         </Button>
+        <Button
+          color="primary"
+          variant="contained"
+          href="#/services"
+          style={{ marginLeft: "1rem" }}
+        >
+          Services
+        </Button>
+        <Button
+          color="primary"
+          variant="contained"
+          href="#/models"
+          style={{ marginLeft: "1rem" }}
+        >
+          Models
+        </Button>
       </Paper>
     </div>
   );

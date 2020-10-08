@@ -1,11 +1,11 @@
-import BaseModel from 'root/models/BaseModel';
-import Endpoint from 'root/models/Endpoint';
-import Route from 'root/models/Route';
-import Dao from 'root/models/Dao';
-import Plugin from 'root/models/Plugin';
-import Model from 'root/models/Model';
-import Env from 'root/models/Env';
-import Authorizer from 'root/models/Authorizer';
+import BaseModel from '../models/BaseModel';
+import Endpoint from '../models/Endpoint';
+import Route from '../models/Route';
+import Dao from '../models/Dao';
+import Plugin from '../models/Plugin';
+import Model from '../models/Model';
+import Env from '../models/Env';
+import Authorizer from '../models/Authorizer';
 
 export {
   BaseModel,

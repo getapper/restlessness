@@ -1,4 +1,3 @@
-import 'module-alias/register';
 import postEndpoints from './endpoints/post-endpoints';
 import getEndpoints from './endpoints/get-endpoints';
 import postModels from './endpoints/post-models';
@@ -11,7 +10,12 @@ import getPlugins from './endpoints/get-plugins';
 import getAuthorizers from './endpoints/get-authorizers';
 import getEndpointsById from './endpoints/get-endpoints-by-id';
 import deleteEndpointsById from './endpoints/delete-endpoints-by-id';
-import putEndpointsById from 'root/endpoints/put-endpoints-by-id';
+import putEndpointsById from './endpoints/put-endpoints-by-id';
+import getServices from './endpoints/get-services';
+import getServicesByName from './endpoints/get-services-by-name';
+import deleteServicesByName from './endpoints/delete-services-by-name';
+import postServices from './endpoints/post-services';
+import putServicesByName from './endpoints/put-services-by-name';
 
 export {
   postEndpoints,
@@ -27,5 +31,10 @@ export {
   getEndpointsById,
   deleteEndpointsById,
   putEndpointsById,
+  getServices,
+  getServicesByName,
+  deleteServicesByName,
+  postServices,
+  putServicesByName,
 };
 

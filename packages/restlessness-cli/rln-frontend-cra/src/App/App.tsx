@@ -4,9 +4,13 @@ import useAppHooks from "./App.hooks";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import Dashboard from "../scenes/Dashboard";
 import ServicesList from "../scenes/ServicesList";
+import ServiceCreate from "../scenes/ServiceCreate";
 import EndpointsList from "../scenes/EndpointsList";
 import EndpointDetails from "../scenes/EndpointDetails";
 import Header from "../components/Header";
+import EndpointCreate from "../scenes/EndpointCreate";
+import ModelsList from "../scenes/ModelsList";
+import ModelCreate from "../scenes/ModelCreate";
 
 const App: React.FC = () => {
   const { classes, theme } = useAppHooks();
@@ -17,14 +21,26 @@ const App: React.FC = () => {
       <div className={classes.routerContainer}>
         <Router>
           <Switch>
+            <Route path="/endpoints/create">
+              <EndpointCreate />
+            </Route>
             <Route path="/endpoints/:endpointId">
               <EndpointDetails />
             </Route>
             <Route path="/endpoints">
               <EndpointsList />
             </Route>
+            <Route path="/services/create">
+              <ServiceCreate />
+            </Route>
             <Route path="/services">
               <ServicesList />
+            </Route>
+            <Route path="/models/create">
+              <ModelCreate />
+            </Route>
+            <Route path="/models">
+              <ModelsList />
             </Route>
             <Route path="/">
               <Dashboard />
