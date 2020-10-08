@@ -42,7 +42,7 @@ The ChildProcess object is returned through a promise, with some callbacks alrea
 
 function spawnBackend(): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
-    const proc = spawn('serverless', ['offline', '--port', '4123'], {
+    const proc = spawn('serverless', ['offline', '--config', 'serverless-services/offline.json', '--port', '4123'], {
       cwd: path.join(__dirname, '..', '..', '..', 'lib', 'assets', 'backend'),
       env: {
         ...process.env,

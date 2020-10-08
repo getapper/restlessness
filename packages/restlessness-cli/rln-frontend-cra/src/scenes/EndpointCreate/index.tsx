@@ -49,6 +49,7 @@ const EndpointCreate = () => {
     onRouteChange,
     onMethodChange,
     onServiceChange,
+    onAuthorizerChange,
     onSave,
   } = useEndpointCreate();
 
@@ -127,7 +128,11 @@ const EndpointCreate = () => {
           Authorizer
         </Typography>
         <FormControl fullWidth style={{ marginTop: "1rem" }}>
-          <Select disabled={isLoading}>
+          <Select
+            value={payloadData.authorizerId}
+            onChange={onAuthorizerChange}
+            disabled={isLoading}
+          >
             {authorizersList.map((authorizer) => (
               <MenuItem key={authorizer.id} value={authorizer.id}>
                 {authorizer.name}

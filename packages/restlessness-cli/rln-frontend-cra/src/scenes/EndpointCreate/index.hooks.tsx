@@ -103,6 +103,19 @@ const useEndpointCreate = () => {
     [payloadData]
   );
 
+  const onAuthorizerChange = useCallback(
+    (
+      event: React.ChangeEvent<{ name?: string; value: unknown }>,
+      child: React.ReactNode
+    ) => {
+      setPayloadData({
+        ...payloadData,
+        authorizerId: event.target.value as string,
+      });
+    },
+    [payloadData]
+  );
+
   const onSave = useCallback(() => {
     dispatch(postEndpointsApi.request(payloadData));
   }, [dispatch, payloadData]);
@@ -126,6 +139,7 @@ const useEndpointCreate = () => {
     onRouteChange,
     onMethodChange,
     onServiceChange,
+    onAuthorizerChange,
     onSave,
   };
 };

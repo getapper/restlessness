@@ -19,8 +19,8 @@ const EndpointsList = () => {
         href="#/endpoints/create"
         style={{
           position: "absolute",
-          top: "2.4rem",
-          right: "2.4rem",
+          top: 5,
+          right: "3rem",
         }}
       >
         Create

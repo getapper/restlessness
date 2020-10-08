@@ -41,7 +41,7 @@ function copyFolderRecursiveSync( source, target ) {
 const backendRoot = path.join(__dirname, '..', 'lib', 'assets', 'backend');
 const frontendRoot = path.join(__dirname, '..', 'lib', 'assets', 'frontend');
 const sourceBackendRoot = path.join(__dirname, '..', 'rln-backend');
-const sourceFrontendRoot = path.join(__dirname, '..', 'rln-frontend');
+const sourceFrontendRoot = path.join(__dirname, '..', 'rln-frontend-cra');
 
 const exec = async () => {
   rimraf.sync(backendRoot);
@@ -54,7 +54,7 @@ const exec = async () => {
   }
   copyFolderRecursiveSync(path.join(sourceBackendRoot, 'dist'), backendRoot);
   copyFolderRecursiveSync(path.join(sourceBackendRoot, 'configs'), backendRoot);
-  copyFileSync(path.join(sourceBackendRoot, 'serverless.json'), backendRoot);
+  copyFolderRecursiveSync(path.join(sourceBackendRoot, 'serverless-services'), backendRoot);
   copyFolderRecursiveSync(path.join(sourceFrontendRoot, 'build'), frontendRoot);
 };
 

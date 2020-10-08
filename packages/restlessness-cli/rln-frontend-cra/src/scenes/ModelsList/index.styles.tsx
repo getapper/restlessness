@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme: Theme) =>
     container: {
       width: "100%",
       height: "calc(100vh - 48px)",
-      padding: "2rem",
+      padding: "3rem",
       boxSizing: "border-box",
     },
   })
