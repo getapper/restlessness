@@ -4,10 +4,9 @@ import { YupShapeByInterface } from '@restlessness/core';
 
 const queryStringParametersValidations = (): YupShapeByInterface<QueryStringParameters>  => ({});
 const payloadValidations = (): YupShapeByInterface<Payload> => ({
-  route: yup.string(),
-  warmupEnabled: yup.boolean(),
-  method: yup.string(),
+  warmupEnabled: yup.boolean().required(),
   authorizerId: yup.string().nullable(),
+  serviceName: yup.string().required(),
   daoIds: yup.array().of(yup.string()).nullable(),
 });
 const pathParametersValidations = (): YupShapeByInterface<PathParameters> => ({

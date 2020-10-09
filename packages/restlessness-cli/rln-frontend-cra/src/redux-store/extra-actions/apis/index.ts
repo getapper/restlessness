@@ -157,11 +157,10 @@ export const getAuthorizersApi = apiActionBuilder<
 );
 
 export interface PutEndpointsByEndpointIdApiPayload {
-  route: string;
-  method: HttpMethod;
   authorizerId: string | null;
   daoIds: string[];
   warmupEnabled: boolean;
+  serviceName: string | null;
 }
 export interface PutEndpointsByEndpointIdApiParams {
   endpointId: string;

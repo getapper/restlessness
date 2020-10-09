@@ -43,11 +43,11 @@ const useEndpointCreate = () => {
     serviceName: null,
   });
   const isLoadingDaos = useSelector(getAjaxIsLoadingByApi(getDaosApi.api));
-  const isLoadingServices = useSelector(
-    getAjaxIsLoadingByApi(getServicesApi.api)
-  );
   const isLoadingAuthorizers = useSelector(
     getAjaxIsLoadingByApi(getAuthorizersApi.api)
+  );
+  const isLoadingServices = useSelector(
+    getAjaxIsLoadingByApi(getServicesApi.api)
   );
   const isSaving = useSelector(getAjaxIsLoadingByApi(postEndpointsApi.api));
 

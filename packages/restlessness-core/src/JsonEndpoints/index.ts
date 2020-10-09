@@ -181,13 +181,16 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
     }
     jsonEndpointsEntry.authorizerId = entry.authorizerId;
     jsonEndpointsEntry.warmupEnabled = entry.warmupEnabled;
+    const currentServiceName = jsonEndpointsEntry.serviceName;
     jsonEndpointsEntry.serviceName = entry.serviceName;
 
     await super.updateEntry(jsonEndpointsEntry);
 
     // side effects
-
     await JsonServices.read();
+    if (currentServiceName !== jsonEndpointsEntry.serviceName) {
+      await JsonServices.changeEndpointService(currentServiceName, jsonEndpointsEntry.serviceName, jsonEndpointsEntry.safeFunctionName);
+    }
     await JsonServices.updateEndpoint(
       jsonEndpointsEntry.serviceName,
       jsonEndpointsEntry.safeFunctionName,

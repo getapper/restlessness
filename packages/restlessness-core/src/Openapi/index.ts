@@ -69,8 +69,8 @@ export default class Openapi {
     const openapi = {
       openapi: '3.0.0',
       servers: [{
-        url: 'http://localhost:4000',
-        description: 'local server',
+        url: process.env['API_BASE_URL'],
+        description: 'Api Gateway',
       }],
       info: {
         title: 'RLN Swagger API overview',
@@ -100,7 +100,7 @@ export default class Openapi {
       }
       openapi.paths[routeName][routeMethod] = {
         description: ep.description,
-        tags: ['api'],
+        tags: [ep.serviceName],
         responses: {
           200: {
             description: 'Success',

@@ -11,6 +11,7 @@ export interface Endpoint {
   authorizer: Authorizer;
   daos: Dao[];
   warmupEnabled: boolean;
+  serviceName: string;
 }
 
 export interface EndpointState {

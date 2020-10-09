@@ -15,7 +15,7 @@ export default async (req: Request) => {
     }
 
     const { id } = pathParameters;
-    const { daoIds, authorizerId, warmupEnabled } = payload;
+    const { daoIds, authorizerId, warmupEnabled, serviceName } = payload;
 
     const endpoint = await Endpoint.getById(id);
     if (!endpoint) {
@@ -30,9 +30,11 @@ export default async (req: Request) => {
 
     endpoint.authorizer = authorizerId ? await Authorizer.getById(authorizerId) : null;
     endpoint.warmupEnabled = warmupEnabled;
+    endpoint.serviceName = serviceName;
+    console.log(endpoint);
     await endpoint.update();
 
-    return ResponseHandler.json(endpoint);
+    return ResponseHandler.json({ endpoint });
   } catch (e) {
     console.error(e);
     return ResponseHandler.json({}, StatusCodes.InternalServerError);

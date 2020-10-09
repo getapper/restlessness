@@ -28,6 +28,14 @@ const Dashboard = () => {
         >
           Models
         </Button>
+        <Button
+          color="primary"
+          variant="contained"
+          href="#/swagger"
+          style={{ marginLeft: "1rem" }}
+        >
+          Swagger
+        </Button>
       </Paper>
     </div>
   );

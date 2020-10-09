@@ -18,9 +18,11 @@ const EndpointDetails = () => {
     endpointData,
     payloadData,
     daosList,
+    servicesList,
     authorizersList,
     isLoading,
     onWarmUpChange,
+    onServiceChange,
     onSave,
   } = useEndpointDetails();
 
@@ -28,7 +30,22 @@ const EndpointDetails = () => {
     <div className={classes.container}>
       <Typography variant="h2">Endpoint: {endpointData?.id}</Typography>
       <Paper elevation={4} classes={derivedClasses.endpointEdit}>
+        <Typography variant="h4">Service</Typography>
+        <FormControl fullWidth style={{ marginTop: "1rem" }}>
+          <Select
+            disabled={isLoading}
+            value={payloadData.serviceName}
+            onChange={onServiceChange}
+          >
+            {servicesList.map((service) => (
+              <MenuItem key={service.id} value={service.id}>
+                {service.id}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <FormControlLabel
+          style={{ marginTop: "1rem" }}
           control={
             <Switch
               disabled={isLoading}

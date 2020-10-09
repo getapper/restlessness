@@ -12,7 +12,7 @@
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
-    "@restlessness/core": "0.4.2",
+    "@restlessness/core": "0.4.3",
     "@types/aws-lambda": "8.10.51",
     "@types/jest": "26.0.0",
     "@types/node": "12.7.2",
