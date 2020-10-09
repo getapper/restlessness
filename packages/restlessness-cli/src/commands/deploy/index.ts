@@ -43,8 +43,11 @@ export default async (argv: minimist.ParsedArgs) => {
     deploymentStage = argv.stage;
   }
 
+  const outputPath = path.join(PathResolver.getPrjPath, '.serverless-outputs');
+  await fs.rmdir(outputPath, { recursive: true });
+
   for (let serviceName of servicesToDeploy) {
-    const packagePath = path.relative(process.cwd(), path.join(PathResolver.getPrjPath, '.serverless-packages', serviceName));
+    const packagePath = path.relative(process.cwd(), path.join(outputPath, serviceName));
     await fs.mkdir(packagePath, { recursive: true });
     const servicePath = path.relative(process.cwd(), path.join(PathResolver.getServicesJsonPath, `${serviceName}.json`));
 
@@ -53,7 +56,7 @@ export default async (argv: minimist.ParsedArgs) => {
     await spawnAsyncWithInheritStdio('serverless', packageArgs);
 
     console.log(chalk.blue('Restlessness:'), 'Deploying service', serviceName);
-    const deployArgs = ['--config', servicePath, 'deploy', '--package', packagePath, '--verbose'];
+    const deployArgs = ['--config', servicePath, 'deploy', '--package', packagePath, '--stage', deploymentStage, '--verbose'];
     await spawnAsyncWithInheritStdio('serverless', deployArgs);
   }
 };
