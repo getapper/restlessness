@@ -3,7 +3,7 @@ export const generateServiceServerlessJson = (projectName: string, serviceName: 
   "provider": {
     "name": "aws",
     "runtime": "nodejs12.x",
-    "stage": "\${opt:stage, 'dev'}"
+    "stage": "\${opt:stage, 'dev'}",
     "apiGateway": {
       "restApiId": {
         "Fn::ImportValue": "${projectName}-SharedGW-restApiId-\${self:provider.stage}"
