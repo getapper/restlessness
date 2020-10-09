@@ -31,7 +31,6 @@ export default async (req: Request) => {
     endpoint.authorizer = authorizerId ? await Authorizer.getById(authorizerId) : null;
     endpoint.warmupEnabled = warmupEnabled;
     endpoint.serviceName = serviceName;
-    console.log(endpoint);
     await endpoint.update();
 
     return ResponseHandler.json({ endpoint });

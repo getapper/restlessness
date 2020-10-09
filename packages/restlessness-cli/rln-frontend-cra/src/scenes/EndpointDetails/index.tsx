@@ -23,6 +23,7 @@ const EndpointDetails = () => {
     isLoading,
     onWarmUpChange,
     onServiceChange,
+    onAuthorizerChange,
     onSave,
   } = useEndpointDetails();
 
@@ -78,10 +79,18 @@ const EndpointDetails = () => {
         <FormControl fullWidth style={{ marginTop: "1rem" }}>
           <Select
             disabled={isLoading}
-            value={authorizersList?.length ? payloadData?.authorizerId : null}
+            value={
+              authorizersList?.length
+                ? payloadData?.authorizerId ?? "null"
+                : null
+            }
+            onChange={onAuthorizerChange}
           >
             {authorizersList.map((authorizer) => (
-              <MenuItem key={authorizer.id} value={authorizer.id}>
+              <MenuItem
+                key={authorizer.id ?? "null"}
+                value={authorizer.id ?? "null"}
+              >
                 {authorizer.name}
               </MenuItem>
             ))}

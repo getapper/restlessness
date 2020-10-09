@@ -104,6 +104,19 @@ const useEndpointDetails = () => {
     [payloadData]
   );
 
+  const onAuthorizerChange = useCallback(
+    (
+      event: React.ChangeEvent<{ name?: string; value: unknown }>,
+      child: React.ReactNode
+    ) => {
+      setPayloadData({
+        ...payloadData,
+        authorizerId: event.target.value as string,
+      });
+    },
+    [payloadData]
+  );
+
   const onSave = useCallback(() => {
     if (endpointData?.id) {
       dispatch(
@@ -126,7 +139,10 @@ const useEndpointDetails = () => {
     setPayloadData({
       warmupEnabled: endpointData?.warmupEnabled ?? false,
       daoIds: endpointData?.daos?.map((d) => d.id) ?? [],
-      authorizerId: endpointData?.authorizer?.id ?? null,
+      authorizerId:
+        endpointData?.authorizer?.id === "null"
+          ? null
+          : endpointData?.authorizer?.id ?? null,
       serviceName: endpointData?.serviceName ?? null,
     });
   }, [endpointData]);
@@ -142,6 +158,7 @@ const useEndpointDetails = () => {
     isLoading,
     onWarmUpChange,
     onServiceChange,
+    onAuthorizerChange,
     onSave,
   };
 };
