@@ -7,6 +7,7 @@ import dev from './commands/dev';
 import createEnv from './commands/create-env';
 import addDao from './commands/add-dao';
 import addAuth from './commands/add-auth';
+import deploy from './commands/deploy';
 
 const cli = async () => {
   const majorVersion: number = parseInt((/^(\d+)(\.\d+){0,2}$/.exec(process.versions.node))[1], 10);
@@ -32,6 +33,9 @@ const cli = async () => {
       break;
     case 'add-auth':
       await addAuth(argv);
+      break;
+    case 'deploy':
+      await deploy(argv);
       break;
     default:
       console.log(chalk.red('Wrong invocation of RLN'));

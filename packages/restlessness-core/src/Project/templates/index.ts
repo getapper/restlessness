@@ -2,14 +2,20 @@ const generateSharedResourcesServerlessJson = (projectName: string) => `{
   "service": "${projectName}-shared-resources",
   "provider": {
     "name": "aws",
-    "runtime": "nodejs12.x"
+    "runtime": "nodejs12.x",
+    "stage": "\${opt:stage, 'dev'}"
+  },
+  "package": {
+    "exclude": [
+      ".serverless-outputs/**"
+    ]
   },
   "resources": {
     "Resources": {
       "SharedGW": {
         "Type": "AWS::ApiGateway::RestApi",
         "Properties": {
-          "Name": "SharedGW"
+          "Name": "\${self:provider.stage}-${projectName}"
         }
       }
     },
@@ -19,7 +25,7 @@ const generateSharedResourcesServerlessJson = (projectName: string) => `{
           "Ref": "SharedGW"
         },
         "Export": {
-          "Name": "${projectName}-SharedGW-restApiId"
+          "Name": "${projectName}-SharedGW-restApiId-\${self:provider.stage}"
         }
       },
       "apiGatewayRestApiRootResourceId": {
@@ -30,7 +36,7 @@ const generateSharedResourcesServerlessJson = (projectName: string) => `{
           ]
         },
         "Export": {
-          "Name": "${projectName}-SharedGW-rootResourceId"
+          "Name": "${projectName}-SharedGW-rootResourceId-\${self:provider.stage}"
         }
       }
     }
