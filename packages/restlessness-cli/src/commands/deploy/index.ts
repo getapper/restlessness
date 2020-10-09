@@ -44,7 +44,9 @@ export default async (argv: minimist.ParsedArgs) => {
   }
 
   const outputPath = path.join(PathResolver.getPrjPath, '.serverless-outputs');
-  await fs.rmdir(outputPath, { recursive: true });
+  try {
+    await fs.rmdir(outputPath, { recursive: true });
+  } catch (ex) {}
 
   for (let serviceName of servicesToDeploy) {
     const packagePath = path.relative(process.cwd(), path.join(outputPath, serviceName));
