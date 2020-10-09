@@ -17,7 +17,7 @@ class JsonAuthorizers extends JsonConfigFile<JsonAuthorizersEntry> {
   async addEntry(entry: JsonAuthorizersEntry): Promise<void> {
     if (entry.shared) {
       const { name: projectName } = await PackageJson.read();
-      entry.importKey = `${projectName}-${entry.id}`;
+      entry.importKey = `${projectName}-${entry.id}-\${self:provider.stage}`;
     }
     return super.addEntry(entry);
   }
