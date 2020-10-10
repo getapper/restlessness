@@ -192,7 +192,7 @@ class JsonServices {
 
   async createCustomAuthorizerForSharedService(
     authorizerId: string,
-    identitySource = 'method.request.header.Auth',
+    identitySource = 'method.request.header.Authorization',
   ) {
     await this.createAuthorizerFunction(this.SHARED_SERVICE_NAME, authorizerId);
 
@@ -227,9 +227,23 @@ class JsonServices {
       },
     };
 
+    const authPermissionResource = {
+      'Type': 'AWS::Lambda::Permission',
+      'Properties': {
+        'Action': 'lambda:InvokeFunction',
+        'FunctionName': {
+          'Fn::GetAtt': [
+            `${slsName}LambdaFunction`,
+            'Arn',
+          ],
+        },
+        'Principal': 'apigateway.amazonaws.com',
+      },
+    };
+
     const authOutput = {
       'Value': {
-        'Fn::GetAtt': [`${slsName}LambdaFunction`, 'Arn'],
+        'Ref': slsName,
       },
       'Export': {
         'Name': jsonAuthorizersEntry.importKey,
@@ -240,6 +254,7 @@ class JsonServices {
       resources: { Resources: {}, Outputs: {} },
     };
     serviceUpdate.resources.Resources[slsName] = authResource;
+    serviceUpdate.resources.Resources[`${slsName}Permission`] = authPermissionResource;
     serviceUpdate.resources.Outputs[slsName] = authOutput;
 
     _merge(this.sharedService, serviceUpdate);
@@ -266,8 +281,10 @@ class JsonServices {
 
     if (jsonAuthorizersEntry.shared) {
       this.services[serviceName].functions[functionName].events[0].http.authorizer = {
-        name: authorizerId,
-        arn: { 'Fn::ImportValue': jsonAuthorizersEntry.importKey },
+        type: 'CUSTOM',
+        authorizerId: {
+          'Fn::ImportValue': jsonAuthorizersEntry.importKey,
+        },
       };
     } else {
       if (!this.services[serviceName].functions[authorizerId]) {
