@@ -7,7 +7,7 @@
     "update-deps": "npm i @restlessness/core@latest -S -E"
   },
   "dependencies": {
-    "@restlessness/core": "0.4.4",
+    "@restlessness/core": "0.4.5",
     "yup": "0.28.3"
   },
   "author": "Getapper",

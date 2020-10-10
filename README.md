@@ -1,11 +1,11 @@
 # restlessness
-A framework to easy develop and deploy serverless AWS lambdas REST APIs
-
-*Warning! This is still WIP!*
+A framework to easy *develop, test and deploy serverless RESTFul APIs* on AWS API Gateway + Lambda Functions services through [serverless.com](www.serverless.com) framework
 
 ## Why
 
-We believe that [serverless.com](www.serverless.com) framework is great, because it allows you to easily deploy RESTFul APIs.
+[serverless.com](www.serverless.com) framework is great, because it allows you to easily deploy RESTFul APIs.
+
+But the overall developer experience is not 100% satisfing 
 
 But still filling the serverless.yml file by hand is tedious, as is creating and organizing a folder tree that contains the single lambda files.
 
