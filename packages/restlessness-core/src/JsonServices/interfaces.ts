@@ -20,6 +20,8 @@ export interface FunctionEndpoint {
 }
 
 export interface JsonServerless {
+  organization?: string
+  app?: string
   service: string
   provider: { [key: string]: any }
   resources: { [key: string]: any }

@@ -12,6 +12,7 @@ import EndpointCreate from "../scenes/EndpointCreate";
 import ModelsList from "../scenes/ModelsList";
 import ModelCreate from "../scenes/ModelCreate";
 import Swagger from "../scenes/Swagger";
+import InfosDetails from "../scenes/InfosDetails";
 
 const App: React.FC = () => {
   const { classes, theme } = useAppHooks();
@@ -45,6 +46,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/swagger">
               <Swagger />
+            </Route>
+            <Route path="/infos">
+              <InfosDetails />
             </Route>
             <Route path="/">
               <Dashboard />

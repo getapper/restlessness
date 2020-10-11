@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/core",
-  "version": "0.0.0",
+  "version": "0.4.7",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "author": "Getapper",

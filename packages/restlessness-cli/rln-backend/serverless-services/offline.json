@@ -20,6 +20,18 @@
         }
       ]
     },
+    "getInfos": {
+      "handler": "dist/exporter.getInfos",
+      "events": [
+        {
+          "http": {
+            "path": "infos",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
     "getEndpoints": {
       "handler": "dist/exporter.getEndpoints",
       "events": [
@@ -165,10 +177,20 @@
             "authorizer": null
           }
         }
-      ],
-      "warmup": {
-        "enabled": true
-      }
+      ]
+    },
+    "putInfos": {
+      "handler": "dist/exporter.putInfos",
+      "events": [
+        {
+          "http": {
+            "path": "infos",
+            "method": "put",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ]
     },
     "getServices": {
       "handler": "dist/exporter.getServices",

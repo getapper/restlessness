@@ -6,6 +6,7 @@ import * as endpoint from "./endpoint";
 import * as dao from "./dao";
 import * as authorizer from "./authorizer";
 import * as service from "./service";
+import * as info from "./info";
 import * as model from "./model";
 
 export const reducers = {
@@ -16,6 +17,7 @@ export const reducers = {
   dao: dao.daoStore.reducer,
   authorizer: authorizer.authorizerStore.reducer,
   service: service.serviceStore.reducer,
+  info: info.infoStore.reducer,
   model: model.modelStore.reducer,
 };
 
@@ -28,6 +30,7 @@ export const actions = {
   ...dao.daoStore.actions,
   ...authorizer.authorizerStore.actions,
   ...service.serviceStore.actions,
+  ...info.infoStore.actions,
   ...model.modelStore.actions,
 };
 
@@ -39,6 +42,7 @@ export const selectors = {
   ...dao.selectors,
   ...authorizer.selectors,
   ...service.selectors,
+  ...info.selectors,
   ...model.selectors,
 };
 
@@ -46,6 +50,7 @@ export const sagas = {
   ...ajax.sagas,
   ...feedback.sagas,
   ...service.sagas,
+  ...info.sagas,
   ...endpoint.sagas,
   ...model.sagas,
 };

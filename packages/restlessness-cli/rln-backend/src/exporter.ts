@@ -12,10 +12,12 @@ import getEndpointsById from './endpoints/get-endpoints-by-id';
 import deleteEndpointsById from './endpoints/delete-endpoints-by-id';
 import putEndpointsById from './endpoints/put-endpoints-by-id';
 import getServices from './endpoints/get-services';
+import getInfos from './endpoints/get-infos';
 import getServicesByName from './endpoints/get-services-by-name';
 import deleteServicesByName from './endpoints/delete-services-by-name';
 import postServices from './endpoints/post-services';
 import putServicesByName from './endpoints/put-services-by-name';
+import putInfos from './endpoints/put-infos';
 
 export {
   postEndpoints,
@@ -32,9 +34,11 @@ export {
   deleteEndpointsById,
   putEndpointsById,
   getServices,
+  getInfos,
   getServicesByName,
   deleteServicesByName,
   postServices,
   putServicesByName,
+  putInfos,
 };
 

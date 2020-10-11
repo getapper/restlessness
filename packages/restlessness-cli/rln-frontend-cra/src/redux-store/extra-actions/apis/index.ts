@@ -312,3 +312,53 @@ export const postModelsApi = apiActionBuilder<
     ),
   })
 );
+
+export interface GetInfosApiParams {}
+export interface GetInfosResponseData {
+  projectName: string;
+  organization: string | undefined;
+  app: string | undefined;
+  region: string | undefined;
+}
+export const getInfosApi = apiActionBuilder<
+  GetInfosApiParams,
+  GetInfosResponseData
+>(
+  "apis/infos/get",
+  (params: GetInfosApiParams, options?: ApiRequestPayloadBuilderOptions) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: "/infos",
+        method: HttpMethod.GET,
+      },
+      options
+    ),
+  })
+);
+
+export interface PutInfosApiParams {
+  organization?: string | undefined;
+  app?: string | undefined;
+  region?: string | undefined;
+}
+export interface PutInfosApiResponseData {
+  organization: string | undefined;
+  app: string | undefined;
+  region: string | undefined;
+}
+export const putInfosApi = apiActionBuilder<
+  PutInfosApiParams,
+  PutInfosApiResponseData
+>(
+  "apis/infos/{endpointId}/put",
+  (params: PutInfosApiParams, options?: ApiRequestPayloadBuilderOptions) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: `/infos`,
+        method: HttpMethod.PUT,
+        body: params,
+      },
+      options
+    ),
+  })
+);

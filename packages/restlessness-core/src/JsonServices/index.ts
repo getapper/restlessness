@@ -8,6 +8,7 @@ import path from 'path';
 import { generateServiceServerlessJson } from './templates';
 import PackageJson from '../PackageJson';
 import { FunctionEndpoint, JsonServerless } from './interfaces';
+import Project from '../Project';
 export * from './interfaces';
 
 class JsonServices {
@@ -18,7 +19,7 @@ class JsonServices {
   }
 
   get SHARED_SERVICE_NAME() {
-    return 'shared-resources';
+    return 'shared';
   }
 
   get offlineService() {
@@ -151,8 +152,17 @@ class JsonServices {
     if (this.services[serviceName]) {
       throw Error(`Service ${serviceName} already exists!`);
     }
-    const { name: projectName } = await PackageJson.read();
+    const projectName = await Project.getProjectName();
     this.services[serviceName] = JSON.parse(generateServiceServerlessJson(projectName, serviceName));
+    if (this.sharedService.organization) {
+      this.services[serviceName].organization = this.sharedService.organization;
+    }
+    if (this.sharedService.app) {
+      this.services[serviceName].app = this.sharedService.app;
+    }
+    if (this.sharedService.provider.region) {
+      this.services[serviceName].provider.region = this.sharedService.provider.region;
+    }
     await this.save();
   }
 
@@ -333,6 +343,30 @@ class JsonServices {
     if (offlinePluginIdx !== -1 && servicesIncludingPlugin.length === 0) {
       this.offlineService.plugins.splice(offlinePluginIdx, 1);
     }
+  }
+
+  setOrganization(organization: string) {
+    Object.keys(this.services).forEach(serviceName => {
+      if (serviceName !== this.OFFLINE_SERVICE_NAME) {
+        this.services[serviceName].organization = organization;
+      }
+    });
+  }
+
+  setApp(app: string) {
+    Object.keys(this.services).forEach(serviceName => {
+      if (serviceName !== this.OFFLINE_SERVICE_NAME) {
+        this.services[serviceName].app = app;
+      }
+    });
+  }
+
+  setRegion(region: string) {
+    Object.keys(this.services).forEach(serviceName => {
+      if (serviceName !== this.OFFLINE_SERVICE_NAME) {
+        this.services[serviceName].provider.region = region;
+      }
+    });
   }
 }
 

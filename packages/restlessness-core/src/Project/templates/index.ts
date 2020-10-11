@@ -1,5 +1,5 @@
 const generateSharedResourcesServerlessJson = (projectName: string) => `{
-  "service": "${projectName}-shared-resources",
+  "service": "${projectName}-shared",
   "provider": {
     "name": "aws",
     "runtime": "nodejs12.x",

@@ -25,7 +25,7 @@
   "author": "Getapper",
   "license": "ISC",
   "dependencies": {
-    "@restlessness/core": "0.4.5",
+    "@restlessness/core": "0.4.7",
     "chalk": "3.0.0",
     "minimist": "1.2.3",
     "module-alias": "2.2.0",

@@ -11,10 +11,11 @@ import {
 } from './templates';
 import { promisify } from 'util';
 import PathResolver from '../PathResolver';
+import PackageJson from '../PackageJson';
 
 interface CreateOptions {
   installNodemodules?: boolean
-};
+}
 
 export default class Project {
   static get defaultCreateOptions(): CreateOptions {
@@ -80,6 +81,11 @@ export default class Project {
       cwd: PathResolver.getDeployPath,
       stdio: 'inherit',
     });
+  }
+
+  static async getProjectName(): Promise<string> {
+    const { name } = await PackageJson.read();
+    return name;
   }
 }
 
