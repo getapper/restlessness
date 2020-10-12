@@ -15,11 +15,11 @@ export default async (req: Request) => {
 
     await JsonServices.read();
 
-    const { organization, app } = JsonServices.sharedService;
+    const { org, app } = JsonServices.sharedService;
 
     return ResponseHandler.json({
       projectName: await Project.getProjectName(),
-      organization,
+      org,
       app,
       region: JsonServices.sharedService.provider.region,
     });

@@ -31,7 +31,7 @@ const InfosDetails = () => {
         <Typography variant="h4">Organization</Typography>
         <TextField
           fullWidth
-          value={payloadData.organization}
+          value={payloadData.org}
           onChange={onOrganizationChange}
         />
         <Typography variant="h4" style={{ marginTop: "1rem" }}>

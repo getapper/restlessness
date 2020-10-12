@@ -3,7 +3,7 @@ import { RequestI, HttpMethod } from '@restlessness/core';
 export interface QueryStringParameters {}
 
 export interface Payload {
-  organization?: string | undefined
+  org?: string | undefined
   app?: string | undefined
   region?: string | undefined
 }

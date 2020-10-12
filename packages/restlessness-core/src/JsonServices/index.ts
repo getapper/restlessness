@@ -154,8 +154,8 @@ class JsonServices {
     }
     const projectName = await Project.getProjectName();
     this.services[serviceName] = JSON.parse(generateServiceServerlessJson(projectName, serviceName));
-    if (this.sharedService.organization) {
-      this.services[serviceName].organization = this.sharedService.organization;
+    if (this.sharedService.org) {
+      this.services[serviceName].org = this.sharedService.org;
     }
     if (this.sharedService.app) {
       this.services[serviceName].app = this.sharedService.app;
@@ -345,10 +345,10 @@ class JsonServices {
     }
   }
 
-  setOrganization(organization: string) {
+  setOrganization(org: string) {
     Object.keys(this.services).forEach(serviceName => {
       if (serviceName !== this.OFFLINE_SERVICE_NAME) {
-        this.services[serviceName].organization = organization;
+        this.services[serviceName].org = org;
       }
     });
   }

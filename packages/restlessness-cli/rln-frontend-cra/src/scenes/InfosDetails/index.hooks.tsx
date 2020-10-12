@@ -50,7 +50,7 @@ const useInfosDetails = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setPayloadData({
         ...payloadData,
-        organization: event.target.value,
+        org: event.target.value,
       });
     },
     [payloadData]
@@ -76,7 +76,7 @@ const useInfosDetails = () => {
 
   useEffect(() => {
     setPayloadData({
-      organization: infos?.organization,
+      org: infos?.org,
       app: infos?.app,
       region: infos?.region,
     });

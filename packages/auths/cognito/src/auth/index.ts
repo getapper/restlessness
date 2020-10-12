@@ -7,7 +7,7 @@ import {
   ISignUpResult,
   CognitoRefreshToken,
 } from 'amazon-cognito-identity-js';
-import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
+import AWS, { CognitoIdentityServiceProvider, CognitoIdentityCredentials } from 'aws-sdk';
 import { promisify } from 'util';
 import request from 'request';
 import jwkToPem from 'jwk-to-pem';
@@ -24,6 +24,7 @@ export interface AwsJwt {
     alg: string
   },
   payload: {
+    sub: string
     iss: string
     email: string
     event_id: string
@@ -34,9 +35,17 @@ export interface CognitoUserCustom extends CognitoUser {
   Session?: CognitoUserSession
 }
 
+export interface CognitoTokens {
+  idToken: string
+  accessToken: string
+  refreshToken: string
+}
+
 export class UserPoolManager {
   id: string
   clientId: string
+  authDomain: string
+  redirectUri: string
   userPool: CognitoUserPool
   attributesList: string[]
   region: string
@@ -48,6 +57,8 @@ export class UserPoolManager {
     id: string,
     userPoolId: string,
     clientId: string,
+    authDomain: string,
+    redirectUri: string,
     region: string,
     attributesList: string[],
     accessKeyId?,
@@ -59,6 +70,8 @@ export class UserPoolManager {
       ClientId: clientId,
     });
     this.clientId = clientId;
+    this.authDomain = authDomain;
+    this.redirectUri = redirectUri;
     this.attributesList = attributesList;
     this.region = region;
     this.iss = `https://cognito-idp.${this.region}.amazonaws.com/${this.userPool.getUserPoolId()}`;
@@ -139,6 +152,37 @@ export class UserPoolManager {
           reject(e);
           // resolve(cognitoUser);
         },
+      });
+    });
+  }
+
+  async getOAuth2TokensFromCode (
+    code: string,
+  ): Promise<CognitoTokens> {
+    return new Promise((resolve, reject) => {
+      request({
+        url: `https://${this.authDomain}/oauth2/token`,
+        method: 'POST',
+        form: {
+          grant_type: 'authorization_code',
+          code,
+          client_id: this.clientId,
+          redirect_uri: this.redirectUri,
+        },
+      }, (error, response, body) => {
+        if (error) {
+          return reject(error);
+        }
+        if (response.statusCode !== 200) {
+          return reject(new Error('Getting oAuth2 tokens error: ' + JSON.stringify(response?.body)));
+        }
+        const jsonBody = JSON.parse(body);
+
+        resolve({
+          idToken: jsonBody.id_token,
+          accessToken: jsonBody.access_token,
+          refreshToken: jsonBody.refresh_token,
+        });
       });
     });
   }
@@ -334,6 +378,8 @@ export abstract class UserPoolsManager {
       poolInfo.id,
       process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_POOL_ID`],
       process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_CLIENT_ID`],
+      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_AUTH_DOMAIN`],
+      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REDIRECT_URI`],
       process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REGION`],
       poolInfo.attributes,
       process.env['RLN_COGNITO_AUTH_ACCESS_KEY_ID'],

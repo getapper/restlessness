@@ -4,7 +4,7 @@ import { YupShapeByInterface } from '@restlessness/core';
 
 const queryStringParametersValidations = (): YupShapeByInterface<QueryStringParameters>  => ({});
 const payloadValidations = (): YupShapeByInterface<Payload> => ({
-  organization: yup.string(),
+  org: yup.string(),
   app: yup.string(),
   region: yup.string(),
 });

@@ -15,17 +15,17 @@ export default async (req: Request) => {
       return ResponseHandler.json({ message: validationResult.message }, StatusCodes.BadRequest);
     }
 
-    const { organization, app, region } = payload;
+    const { org, app, region } = payload;
 
     await JsonServices.read();
-    JsonServices.setOrganization(organization);
+    JsonServices.setOrganization(org);
     JsonServices.setApp(app);
     JsonServices.setRegion(region);
     await JsonServices.save();
     await JsonServices.read();
 
     return ResponseHandler.json({
-      organization: JsonServices.sharedService.provider.organization,
+      org: JsonServices.sharedService.provider.org,
       app: JsonServices.sharedService.provider.app,
       region: JsonServices.sharedService.provider.region,
     });

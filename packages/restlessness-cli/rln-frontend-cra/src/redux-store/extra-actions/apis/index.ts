@@ -211,7 +211,7 @@ export const postEndpointsApi = apiActionBuilder<
   ) => ({
     payload: apiRequestPayloadBuilder(
       {
-        path: `/endpoints`,
+        path: "/endpoints",
         method: HttpMethod.POST,
         body: params,
       },
@@ -260,7 +260,7 @@ export const postServicesApi = apiActionBuilder<
   ) => ({
     payload: apiRequestPayloadBuilder(
       {
-        path: `/services`,
+        path: "/services",
         method: HttpMethod.POST,
         body: params,
       },
@@ -304,7 +304,7 @@ export const postModelsApi = apiActionBuilder<
   (params: PostModelsApiParams, options?: ApiRequestPayloadBuilderOptions) => ({
     payload: apiRequestPayloadBuilder(
       {
-        path: `/models`,
+        path: "/models",
         method: HttpMethod.POST,
         body: params,
       },
@@ -316,7 +316,7 @@ export const postModelsApi = apiActionBuilder<
 export interface GetInfosApiParams {}
 export interface GetInfosResponseData {
   projectName: string;
-  organization: string | undefined;
+  org: string | undefined;
   app: string | undefined;
   region: string | undefined;
 }
@@ -337,12 +337,12 @@ export const getInfosApi = apiActionBuilder<
 );
 
 export interface PutInfosApiParams {
-  organization?: string | undefined;
+  org?: string | undefined;
   app?: string | undefined;
   region?: string | undefined;
 }
 export interface PutInfosApiResponseData {
-  organization: string | undefined;
+  org: string | undefined;
   app: string | undefined;
   region: string | undefined;
 }
@@ -354,7 +354,7 @@ export const putInfosApi = apiActionBuilder<
   (params: PutInfosApiParams, options?: ApiRequestPayloadBuilderOptions) => ({
     payload: apiRequestPayloadBuilder(
       {
-        path: `/infos`,
+        path: "/infos",
         method: HttpMethod.PUT,
         body: params,
       },

@@ -1,6 +1,6 @@
 export interface InfoState {
   projectName: string;
-  organization?: string | undefined;
+  org?: string | undefined;
   app?: string | undefined;
   region?: string | undefined;
 }

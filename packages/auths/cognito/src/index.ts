@@ -42,6 +42,7 @@ class CognitoAuthorizer extends AuthorizerPackage {
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_POOL_ID');
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_CLIENT_ID');
       await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_REGION');
+      await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_REDIRECT_URI');
       await envFile.setParametricValue('RLN_COGNITO_AUTH_ACCESS_KEY_ID');
       await envFile.setParametricValue('RLN_COGNITO_AUTH_SECRET_ACCESS_KEY');
     }));
@@ -63,6 +64,9 @@ class CognitoAuthorizer extends AuthorizerPackage {
     await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_POOL_ID');
     await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_CLIENT_ID');
     await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_REGION');
+    await envFile.setParametricValue('RLN_COGNITO_AUTH_USER_REDIRECT_URI');
+    await envFile.setParametricValue('RLN_COGNITO_AUTH_ACCESS_KEY_ID');
+    await envFile.setParametricValue('RLN_COGNITO_AUTH_SECRET_ACCESS_KEY');
   }
 
   async verifyToken(event: AuthorizerEvent): Promise<AuthorizerResult> {
@@ -91,7 +95,7 @@ class CognitoAuthorizer extends AuthorizerPackage {
                 });
               });
               authResult.granted = true;
-              authResult.principalId = decodedJwt.payload.event_id;
+              authResult.principalId = decodedJwt?.payload?.event_id ?? decodedJwt?.payload?.sub;
               const cognito = new CognitoSession();
               Object.assign(cognito, decodedJwt.payload);
               cognito.id = authResult.principalId;

@@ -25,7 +25,7 @@ export const infoStore = createSlice({
       { payload }: ApiSuccessAction<GetInfosResponseData>
     ) => {
       state.projectName = payload.data.projectName;
-      state.organization = payload.data.organization;
+      state.org = payload.data.org;
       state.app = payload.data.app;
       state.region = payload.data.region;
     },
@@ -33,7 +33,7 @@ export const infoStore = createSlice({
       state,
       { payload }: ApiSuccessAction<PutInfosApiResponseData>
     ) => {
-      state.organization = payload.data.organization;
+      state.org = payload.data.org;
       state.app = payload.data.app;
       state.region = payload.data.region;
     },

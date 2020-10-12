@@ -10,7 +10,7 @@ const Dashboard = () => {
     <div className={classes.container}>
       <Typography variant="h1">{projectInfos?.projectName}</Typography>
       <Typography variant="h4" style={{ marginTop: "1rem" }}>
-        Organization: {projectInfos?.organization ?? "NOT SET!"}
+        Organization: {projectInfos?.org ?? "NOT SET!"}
       </Typography>
       <Typography variant="h4" style={{ marginTop: "1rem" }}>
         App: {projectInfos?.app ?? "NOT SET!"}
