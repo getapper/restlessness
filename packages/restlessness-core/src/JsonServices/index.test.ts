@@ -1,12 +1,9 @@
 import path from 'path';
-import rimraf from 'rimraf';
-import { promisify } from 'util';
-import { promises as fs } from 'fs';
-import Project from '../Project';
 import JsonServices from '../JsonServices';
 import JsonEndpoints, { HttpMethod } from '../JsonEndpoints';
 import JsonAuthorizers, { JsonAuthorizersEntry } from '../JsonAuthorizers';
 import { execSync } from 'child_process';
+import * as TestUtils from '../TestUtils';
 
 const PROJECT_NAME = 'tmp-json-services';
 
@@ -14,11 +11,7 @@ const projectPath = path.join(process.cwd(), PROJECT_NAME);
 process.env['RLN_PROJECT_PATH'] = projectPath;
 
 beforeAll(async (done) => {
-  await promisify(rimraf)(projectPath);
-  await Project.create(projectPath, {
-    installNodemodules: false,
-  });
-  expect((await fs.lstat(projectPath)).isDirectory()).toBe(true);
+  await TestUtils.createProject(projectPath);
   done();
 });
 
@@ -135,7 +128,7 @@ describe('JsonServices', () => {
 });
 
 afterAll(async (done) => {
-  await promisify(rimraf)(projectPath);
+  await TestUtils.deleteProject(projectPath);
   done();
 });
 
