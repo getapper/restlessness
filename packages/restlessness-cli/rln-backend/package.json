@@ -8,7 +8,7 @@
     "local-dev": "npm uninstall @restlessness/core && npm i ../../restlessness-core"
   },
   "dependencies": {
-    "@restlessness/core": "0.4.8",
+    "@restlessness/core": "0.4.9",
     "yup": "0.28.3"
   },
   "author": "Getapper",
