@@ -20,6 +20,11 @@ export default class Openapi {
           properties: {},
         };
         Openapi.getParameters(fields[fieldKey].fields, allKeys[fieldKey].properties, inValue);
+      } else if (fields[fieldKey]._type === 'array') {
+        allKeys[fieldKey] = {
+          type: 'array',
+        };
+        Openapi.getParameters({ items: fields[fieldKey].innerType }, allKeys[fieldKey], inValue);
       } else {
         let type = fields[fieldKey]._type;
         if (fields[fieldKey]._type === 'number') {
@@ -47,6 +52,11 @@ export default class Openapi {
           properties: {},
         };
         Openapi.getPropertiesRequestBody(fields[fieldKey].fields, allKeys[fieldKey].properties);
+      } else if (fields[fieldKey]._type === 'array') {
+        allKeys[fieldKey] = {
+          type: 'array',
+        };
+        Openapi.getPropertiesRequestBody({ items: fields[fieldKey].innerType }, allKeys[fieldKey]);
       } else {
         let type = fields[fieldKey]._type;
         if (fields[fieldKey]._type === 'number') {
