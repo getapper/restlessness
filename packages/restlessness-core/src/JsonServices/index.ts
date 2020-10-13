@@ -379,8 +379,7 @@ class JsonServices {
     });
 
     Object.keys(this.services)
-      .filter(s => s !== this.OFFLINE_SERVICE_NAME)
-      .filter(s => s !== this.SHARED_SERVICE_NAME)
+      .filter(s => s !== this.OFFLINE_SERVICE_NAME && s !== this.SHARED_SERVICE_NAME)
       .forEach(s => {
         fieldsToCheck.forEach(field => {
           if (_get(this.sharedService, field) !== _get(this.services[s], field)) {
