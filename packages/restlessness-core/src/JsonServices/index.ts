@@ -4,6 +4,7 @@ import { HttpMethod } from '../JsonEndpoints';
 import JsonAuthorizers from '../JsonAuthorizers';
 import _unset from 'lodash.unset';
 import _merge from 'lodash.merge';
+import _get from 'lodash.get';
 import path from 'path';
 import { generateServiceServerlessJson } from './templates';
 import PackageJson from '../PackageJson';
@@ -367,6 +368,36 @@ class JsonServices {
         this.services[serviceName].provider.region = region;
       }
     });
+  }
+
+  servicesHealthCheck() {
+    const fieldsToCheck = ['org', 'app', 'provider.region'];
+    fieldsToCheck.forEach(field => {
+      if (!_get(this.sharedService, field)) {
+        throw new Error(`Field ${field} must be set in Shared service`);
+      }
+    });
+
+    Object.keys(this.services)
+      .filter(s => s !== this.OFFLINE_SERVICE_NAME && s !== this.SHARED_SERVICE_NAME)
+      .forEach(s => {
+        fieldsToCheck.forEach(field => {
+          if (_get(this.sharedService, field) !== _get(this.services[s], field)) {
+            throw new Error(`Service ${s} must have the same '${field}' value of Shared service`);
+          }
+        });
+      });
+
+    const servicesRoutes = Object.keys(this.services)
+      .filter(s => s !== this.OFFLINE_SERVICE_NAME)
+      .map(s => this.services[s].functions || {})
+      .map(functions => Object.values(functions).map(f => f.events && f.events[0]?.http?.path))
+      .map(routes => [...new Set(routes)])
+      .flat()
+      .filter(r => !!r);
+    if (servicesRoutes.length > new Set(servicesRoutes).size) {
+      throw new Error('Different services cannot have functions with the same path');
+    }
   }
 }
 

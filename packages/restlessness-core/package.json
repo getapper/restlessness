@@ -38,6 +38,7 @@
     "@types/aws-lambda": "8.10.50",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
+    "lodash.get": "4.4.2",
     "lodash.merge": "4.6.2",
     "lodash.unset": "4.5.2",
     "rimraf": "3.0.2"

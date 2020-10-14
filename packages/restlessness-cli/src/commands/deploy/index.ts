@@ -43,6 +43,8 @@ export default async (argv: minimist.ParsedArgs) => {
     deploymentStage = argv.stage;
   }
 
+  JsonServices.servicesHealthCheck();
+
   const outputPath = path.join(PathResolver.getPrjPath, '.serverless-outputs');
   try {
     await fs.rmdir(outputPath, { recursive: true });
