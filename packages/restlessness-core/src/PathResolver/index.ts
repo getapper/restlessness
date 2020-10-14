@@ -81,6 +81,14 @@ export default class PathResolver {
     return path.join(PathResolver.getDistPath, 'endpoints');
   }
 
+  static get getScheduleEventsPath(): string {
+    return path.join(PathResolver.getSrcPath, 'schedules');
+  }
+
+  static get getDistScheduleEventsPath(): string {
+    return path.join(PathResolver.getDistPath, 'schedules');
+  }
+
   static get getModelsPath(): string {
     return path.join(PathResolver.getSrcPath, 'models');
   }

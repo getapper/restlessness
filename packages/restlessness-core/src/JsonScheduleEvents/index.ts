@@ -2,6 +2,9 @@ import JsonConfigFile, { JsonConfigEntry } from '../JsonConfigFile';
 import PathResolver from '../PathResolver';
 import JsonServices from '../JsonServices';
 import Misc from '../Misc';
+import fsSync, { promises as fs } from 'fs';
+import path from 'path';
+import { exporterTemplate, indexTemplate } from './templates';
 
 export interface JsonScheduleEventsEntry extends JsonConfigEntry {
   name: string
@@ -48,8 +51,27 @@ class JsonScheduleEvents extends JsonConfigFile<JsonScheduleEventsEntry> {
     await this.addEntry(entry);
     await this.write();
 
+    // Generate Schedule events folder
+    if (!fsSync.existsSync(PathResolver.getScheduleEventsPath)) {
+      await fs.mkdir(PathResolver.getScheduleEventsPath);
+    }
+
+    //@TODO use 'name' as folder name?
+    const folderPath = path.join(PathResolver.getScheduleEventsPath, entry.name);
+    await fs.mkdir(folderPath);
+    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate());
+
+    await this.generateExporter();
+
     await JsonServices.addScheduleEvent(entry);
     await JsonServices.save();
+  }
+
+  private async generateExporter() {
+    await fs.writeFile(
+      path.join(PathResolver.getSrcPath, 'schedulesExporter.ts'),
+      exporterTemplate(this.entries),
+    );
   }
 }
 
