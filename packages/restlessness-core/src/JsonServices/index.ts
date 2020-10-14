@@ -126,9 +126,13 @@ class JsonServices {
   }
 
   async removeEndpoint(serviceName: string, safeFunctionName: string): Promise<void> {
+    await this.removeFunction(serviceName, safeFunctionName);
+  }
+
+  private async removeFunction(service: string, functionName: string) {
     await this.read();
-    _unset(this.services[serviceName], `functions.${safeFunctionName}`);
-    _unset(this.offlineService, `functions.${safeFunctionName}`);
+    _unset(this.services[service], `functions.${functionName}`);
+    _unset(this.offlineService, `functions.${functionName}`);
     await this.save();
   }
 
@@ -406,6 +410,10 @@ class JsonServices {
       events: [scheduleEvent],
     };
     await this.setFunctionToService(event.serviceName, event.safeFunctionName, functionEndpoint);
+  }
+
+  async removeScheduleEvent(serviceName: string, safeFunctionName: string) {
+    await this.removeFunction(serviceName, safeFunctionName);
   }
 
   servicesHealthCheck() {
