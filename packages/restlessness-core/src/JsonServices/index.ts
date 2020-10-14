@@ -145,7 +145,7 @@ class JsonServices {
   async changeEndpointService(serviceName: string, newServiceName: string, functionName: string) {
     const functionUpdate = {};
     functionUpdate[functionName] = this.services[serviceName].functions[functionName];
-    _merge(this.services[newServiceName].functions, functionUpdate);
+    _merge(this.services[newServiceName], { functions: functionUpdate });
     _unset(this.services[serviceName].functions, functionName);
   }
 
@@ -278,8 +278,8 @@ class JsonServices {
     }
     const functionUpdate = {};
     functionUpdate[functionName] = functionEndpoint;
-    _merge(this.services[serviceName].functions, functionUpdate);
-    _merge(this.offlineService.functions, functionUpdate);
+    _merge(this.services[serviceName], { functions: functionUpdate });
+    _merge(this.offlineService, { functions: functionUpdate });
   }
 
   private async setAuthorizerToFunction(serviceName: string, functionName: string, authorizerId: string) {
