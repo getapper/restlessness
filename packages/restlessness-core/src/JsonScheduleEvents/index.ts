@@ -5,6 +5,8 @@ import Misc from '../Misc';
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
 import { exporterTemplate, indexTemplate } from './templates';
+import { promisify } from 'util';
+import rimraf from 'rimraf';
 
 export interface JsonScheduleEventsEntry extends JsonConfigEntry {
   name: string
@@ -65,6 +67,14 @@ class JsonScheduleEvents extends JsonConfigFile<JsonScheduleEventsEntry> {
 
     await JsonServices.addScheduleEvent(entry);
     await JsonServices.save();
+  }
+
+  async removeEntryById(id: string) {
+    const jsonScheduleEventsEntry: JsonScheduleEventsEntry = await this.getEntryById(id);
+    await super.removeEntryById(id);
+
+    const folderPath = path.join(PathResolver.getScheduleEventsPath, jsonScheduleEventsEntry.name);
+    await promisify(rimraf)(folderPath);
   }
 
   private async generateExporter() {
