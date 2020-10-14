@@ -23,10 +23,15 @@ beforeAll(async (done) => {
 });
 
 describe('JsonServices', () => {
-  test('Add/Remove Endpoint',  async (done) => {
+  test('Default services check', async done => {
     await JsonServices.read();
     expect(JsonServices.offlineService).toBeDefined();
     expect(JsonServices.sharedService).toBeDefined();
+    done();
+  });
+
+  test('Add/Remove Endpoint',  async (done) => {
+    await JsonServices.read();
     await JsonServices.addEndpoint({
       serviceName: JsonServices.OFFLINE_SERVICE_NAME,
       method: HttpMethod.GET,
@@ -55,6 +60,24 @@ describe('JsonServices', () => {
     await JsonServices.save();
     await JsonServices.read();
     expect(JsonServices.services['testService']).toBeFalsy();
+    done();
+  });
+
+  test('Add/Remove Schedule Event', async done => {
+    await JsonServices.read();
+    await JsonServices.addScheduleEvent({
+      id: 'schedule-event-test',
+      name: 'schedule-event-test',
+      safeFunctionName: 'scheduleEventTest',
+      rate: 'rate(1 day)',
+      serviceName: JsonServices.SHARED_SERVICE_NAME,
+    });
+    await JsonServices.save();
+    expect(JsonServices.sharedService.functions['scheduleEventTest']).toBeDefined();
+    await JsonServices.read();
+    await JsonServices.removeScheduleEvent(JsonServices.SHARED_SERVICE_NAME, 'scheduleEventTest');
+    await JsonServices.save();
+    expect(JsonServices.sharedService.functions['scheduleEventTest']).not.toBeDefined();
     done();
   });
 
