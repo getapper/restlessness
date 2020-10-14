@@ -1,6 +1,5 @@
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
-import crypto from 'crypto';
 import PathResolver from '../PathResolver';
 import {
   handlerTemplate,
@@ -18,6 +17,7 @@ import { promisify } from 'util';
 import rimraf from 'rimraf';
 import JsonDaos from '../JsonDaos';
 import { AuthorizerPackage } from '../AuthorizerPackage';
+import Misc from '../Misc';
 
 export enum HttpMethod {
   GET = 'get',
@@ -53,24 +53,7 @@ class JsonEndpoints extends JsonConfigFile<JsonEndpointsEntry> {
 
     await JsonServices.read();
     const fullServiceName = JsonServices.services[serviceName].service;
-
-    /**
-     * The 4 xxxx stand for "dev" or "prod", based on which stage deployment will be selected
-     * We use 4 x for worst case scenario, that is "prod", since we need to check this string length
-     * and to avoid it will reach 64 chars, since AWS complains about that
-     */
-    let safeFunctionName: string = id;
-    const awsLambdaName: string = `${id}LambdaFunction`;
-    if (awsLambdaName.length > 63) {
-      const hash = crypto.createHash('md5').update(id).digest('hex');
-      safeFunctionName = `${id.substring(0, 21)}${hash.substring(0, 3)}${id.substring(id.length - 21)}`;
-    }
-    const awsFunctionName: string = `${fullServiceName}-xxxx-${id}`;
-    if (awsFunctionName.length > 63) {
-      const hash = crypto.createHash('md5').update(id).digest('hex');
-      const chars = Math.floor((64 - `${fullServiceName}-xxxx-`.length - 10) / 2);
-      safeFunctionName = `${id.substring(0, chars)}${hash.substring(0, 3)}${id.substring(id.length - chars)}`;
-    }
+    const safeFunctionName = Misc.createAwsSafeFunctionName(id, fullServiceName);
 
     const jsonEndpointsEntry: JsonEndpointsEntry = {
       id: method + route.functionName,
