@@ -4,7 +4,7 @@ import { promisify } from 'util';
 import { promises as fs } from 'fs';
 import Project from '../Project';
 import JsonServices from '../JsonServices';
-import { HttpMethod } from '../JsonEndpoints';
+import JsonEndpoints, { HttpMethod } from '../JsonEndpoints';
 import JsonAuthorizers, { JsonAuthorizersEntry } from '../JsonAuthorizers';
 import { execSync } from 'child_process';
 
@@ -94,6 +94,42 @@ describe('JsonServices', () => {
     await JsonServices.read();
     expect(JsonServices.services[serviceName]?.functions[authorizer.id]).toBeDefined();
     expect(JsonServices.offlineService?.functions[authorizer.id]).toBeDefined();
+    done();
+  });
+
+  test('Health Check', async done => {
+    const service1 = 'test-health-service-1';
+    const service2 = 'test-health-service-2';
+
+    await JsonServices.read();
+    await JsonServices.addService(service1);
+    await JsonServices.addService(service2);
+    expect(() => JsonServices.servicesHealthCheck()).toThrowError();
+    await JsonServices.setApp('app-test');
+    await JsonServices.setOrganization('org-test');
+    await JsonServices.setRegion('us-east-1');
+    expect(() => JsonServices.servicesHealthCheck()).not.toThrowError();
+    await JsonServices.save();
+
+    await JsonEndpoints.create({
+      routePath: '/api-test-1',
+      method: HttpMethod.GET,
+      serviceName: service1,
+    });
+    await JsonEndpoints.create({
+      routePath: '/api-test-2',
+      method: HttpMethod.GET,
+      serviceName: service2,
+    });
+    expect(() => JsonServices.servicesHealthCheck()).not.toThrowError();
+
+    await JsonEndpoints.create({
+      routePath: '/api-test-1',
+      method: HttpMethod.POST,
+      serviceName: service2,
+    });
+    expect(() => JsonServices.servicesHealthCheck()).toThrowError();
+
     done();
   });
 });
