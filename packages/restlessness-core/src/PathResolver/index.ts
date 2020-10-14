@@ -45,6 +45,10 @@ export default class PathResolver {
     return path.join(PathResolver.getConfigsPath, 'endpoints.json');
   }
 
+  static get getScheduleEventsConfigPath(): string {
+    return path.join(PathResolver.getConfigsPath, 'schedule-events.json');
+  }
+
   static get getDaosConfigPath(): string {
     return path.join(PathResolver.getConfigsPath, 'daos.json');
   }
