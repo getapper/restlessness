@@ -7,16 +7,21 @@ import {
   ISignUpResult,
   CognitoRefreshToken,
 } from 'amazon-cognito-identity-js';
-import AWS, { CognitoIdentityServiceProvider, CognitoIdentityCredentials } from 'aws-sdk';
+import AWS, { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { promisify } from 'util';
 import request from 'request';
 import jwkToPem from 'jwk-to-pem';
-import { AttributeListType, ConfirmationCodeType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import {
+  AttributeListType,
+  ConfirmationCodeType,
+  UsernameType,
+  UserPoolIdType,
+} from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import fetch from 'cross-fetch';
 import jwt from 'jsonwebtoken';
 
 export interface CognitoSignUpResult extends ISignUpResult {};
-export { CognitoUserSession, CognitoUser };
+export { CognitoUserSession, CognitoUser, CognitoIdentityServiceProvider };
 
 export interface AwsJwt {
   header: {
@@ -342,6 +347,13 @@ export class UserPoolManager {
     };
     const adminUpdateUserAttributes = this.cognitoIdentityServiceProvider.adminSetUserPassword(params);
     const result = await adminUpdateUserAttributes.promise();
+  }
+
+  async adminGetUser(username: UsernameType) {
+    return await this.cognitoIdentityServiceProvider.adminGetUser({
+      UserPoolId: this.userPool.getUserPoolId(),
+      Username: username,
+    }).promise();
   }
 }
 
