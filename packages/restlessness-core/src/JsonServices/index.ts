@@ -8,8 +8,9 @@ import _get from 'lodash.get';
 import path from 'path';
 import { generateServiceServerlessJson } from './templates';
 import PackageJson from '../PackageJson';
-import { FunctionEndpoint, JsonServerless } from './interfaces';
+import { FunctionEndpoint, JsonServerless, ScheduleEvent } from './interfaces';
 import Project from '../Project';
+import { JsonScheduleEventsEntry } from '../JsonScheduleEvents';
 export * from './interfaces';
 
 class JsonServices {
@@ -291,23 +292,38 @@ class JsonServices {
     }
 
     if (jsonAuthorizersEntry.shared) {
-      this.services[serviceName].functions[functionName].events[0].http.authorizer = {
-        type: 'CUSTOM',
-        authorizerId: {
-          'Fn::ImportValue': jsonAuthorizersEntry.importKey,
-        },
-      };
+      this.services[serviceName].functions[functionName].events
+        .forEach(event => {
+          if ('http' in event) {
+            event.http.authorizer = {
+              type: 'CUSTOM',
+              authorizerId: {
+                'Fn::ImportValue': jsonAuthorizersEntry.importKey,
+              },
+            };
+          }
+        });
     } else {
       if (!this.services[serviceName].functions[authorizerId]) {
         await this.createAuthorizerFunction(serviceName, authorizerId);
       }
-      this.services[serviceName].functions[functionName].events[0].http.authorizer = authorizerId;
+      this.services[serviceName].functions[functionName].events
+        .forEach(event => {
+          if ('http' in event) {
+            event.http.authorizer = authorizerId;
+          }
+        });
     }
 
     if (!this.offlineService.functions[authorizerId]) {
       await this.createAuthorizerFunction(this.OFFLINE_SERVICE_NAME, authorizerId);
     }
-    this.offlineService.functions[functionName].events[0].http.authorizer = authorizerId;
+    this.offlineService.functions[functionName].events
+      .forEach(event => {
+        if ('http' in event) {
+          event.http.authorizer = authorizerId;
+        }
+      });
   }
 
   async addPlugin(serviceName:string, pluginName: string): Promise<void> {
@@ -370,6 +386,28 @@ class JsonServices {
     });
   }
 
+  async addScheduleEvent(event: JsonScheduleEventsEntry) {
+    const scheduleEvent: ScheduleEvent = {
+      schedule: {
+        name: event.name,
+        description: event.description,
+        enabled: event.enabled,
+        rate: event.rate,
+      },
+    };
+    if (event.input) {
+      scheduleEvent[event.input.type] = event.input.value;
+    }
+    const functionEndpoint: FunctionEndpoint = {
+      handler: null,
+      warmup: {
+        enabled: false,
+      },
+      events: [scheduleEvent],
+    };
+    await this.setFunctionToService(event.serviceName, event.safeFunctionName, functionEndpoint);
+  }
+
   servicesHealthCheck() {
     const fieldsToCheck = ['org', 'app', 'provider.region'];
     fieldsToCheck.forEach(field => {
@@ -391,7 +429,7 @@ class JsonServices {
     const servicesRoutes = Object.keys(this.services)
       .filter(s => s !== this.OFFLINE_SERVICE_NAME)
       .map(s => this.services[s].functions || {})
-      .map(functions => Object.values(functions).map(f => f.events && f.events[0]?.http?.path))
+      .map(functions => Object.values(functions).map(f => f.events?.map(e => 'http' in e && e.http.path)).flat())
       .map(routes => [...new Set(routes)])
       .flat()
       .filter(r => !!r);

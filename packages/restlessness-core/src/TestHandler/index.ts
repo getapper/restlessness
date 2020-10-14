@@ -2,6 +2,7 @@ import path from 'path';
 import {JsonEndpoints, JsonServices, PathResolver, Response} from '../';
 import { APIGatewayEventRequestContextWithAuthorizer, ClientContext, CognitoIdentity } from 'aws-lambda';
 import EnvironmentHandler from '../EnvironmentHandler';
+import { HttpEvent } from '../JsonServices';
 
 interface Event {
   http: {
@@ -76,6 +77,7 @@ export class TestHandler {
     await JsonEndpoints.read();
     const jsonEndpointsEntry = await JsonEndpoints.getEntryById(apiName);
     const endpoint = await JsonServices.getEndpoint(jsonEndpointsEntry.serviceName, apiName);
+    const httpEvent = endpoint.events.filter(e => 'http' in e).pop() as HttpEvent;
 
     let requestContext: APIGatewayEventRequestContextWithAuthorizer<TAuthorizerContext> = null;
     if (authorizer) {
@@ -99,9 +101,9 @@ export class TestHandler {
       body: null,
       headers: null,
       multiValueHeaders: null,
-      httpMethod: endpoint.events[0].http.method,
+      httpMethod: httpEvent.http.method,
       isBase64Encoded: false,
-      path: endpoint.events[0].http.path,
+      path: httpEvent.http.path,
       pathParameters: null,
       queryStringParameters: null,
       multiValueQueryStringParameters: null,
