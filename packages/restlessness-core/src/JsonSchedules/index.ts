@@ -7,6 +7,7 @@ import path from 'path';
 import { exporterTemplate, indexTemplate } from './templates';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
+import JsonDaos from '../JsonDaos';
 
 export interface JsonSchedulesEntry extends JsonConfigEntry {
   name: string
@@ -52,6 +53,16 @@ class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
       id,
       safeFunctionName,
     };
+
+    const { daoIds } = event;
+    if (daoIds?.length) {
+      for (const id of daoIds) {
+        if (!await JsonDaos.getEntryById(id)) {
+          throw new Error(`Dao with id ${id} not found`);
+        }
+      }
+      entry.daoIds = [...daoIds];
+    }
 
     await this.addEntry(entry);
     await this.write();
