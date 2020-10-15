@@ -10,7 +10,7 @@ import { generateServiceServerlessJson } from './templates';
 import PackageJson from '../PackageJson';
 import { FunctionEndpoint, JsonServerless, ScheduleEvent } from './interfaces';
 import Project from '../Project';
-import { JsonScheduleEventsEntry } from '../JsonScheduleEvents';
+import { JsonSchedulesEntry } from '../JsonSchedules';
 export * from './interfaces';
 
 class JsonServices {
@@ -390,7 +390,7 @@ class JsonServices {
     });
   }
 
-  async addScheduleEvent(event: JsonScheduleEventsEntry) {
+  async addScheduleEvent(event: JsonSchedulesEntry) {
     const scheduleEvent: ScheduleEvent = {
       schedule: {
         name: event.name,

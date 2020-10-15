@@ -8,7 +8,7 @@ import { exporterTemplate, indexTemplate } from './templates';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
 
-export interface JsonScheduleEventsEntry extends JsonConfigEntry {
+export interface JsonSchedulesEntry extends JsonConfigEntry {
   name: string
   description?: string
   rate: string
@@ -19,14 +19,15 @@ export interface JsonScheduleEventsEntry extends JsonConfigEntry {
     value: { [key: string]: any }
   }
   safeFunctionName: string
+  daoIds?: string[]
 }
 
-class JsonScheduleEvents extends JsonConfigFile<JsonScheduleEventsEntry> {
+class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
   get jsonPath(): string {
-    return PathResolver.getScheduleEventsConfigPath;
+    return PathResolver.getSchedulesConfigPath;
   }
 
-  async createScheduleEvent(event: {
+  async createSchedule(event: {
     name: string
     description?: string
     rate: string
@@ -35,7 +36,8 @@ class JsonScheduleEvents extends JsonConfigFile<JsonScheduleEventsEntry> {
     input?: {
       type: 'input' | 'inputPath' | 'inputTransformer'
       value: { [key: string]: any }
-    }
+    },
+    daoIds?: string[]
   }) {
     await this.read();
 
@@ -44,22 +46,23 @@ class JsonScheduleEvents extends JsonConfigFile<JsonScheduleEventsEntry> {
     const fullServiceName = JsonServices.services[event.serviceName].service;
     const safeFunctionName = Misc.createAwsSafeFunctionName(id, fullServiceName);
 
-    const entry = {
+    const entry: JsonSchedulesEntry = {
       ...event,
       enabled: event.enabled ?? true,
       id,
       safeFunctionName,
     };
+
     await this.addEntry(entry);
     await this.write();
 
     // Generate Schedule events folder
-    if (!fsSync.existsSync(PathResolver.getScheduleEventsPath)) {
-      await fs.mkdir(PathResolver.getScheduleEventsPath);
+    if (!fsSync.existsSync(PathResolver.getSchedulesPath)) {
+      await fs.mkdir(PathResolver.getSchedulesPath);
     }
 
     //@TODO use 'name' as folder name?
-    const folderPath = path.join(PathResolver.getScheduleEventsPath, entry.name);
+    const folderPath = path.join(PathResolver.getSchedulesPath, entry.name);
     await fs.mkdir(folderPath);
     await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate());
 
@@ -70,10 +73,10 @@ class JsonScheduleEvents extends JsonConfigFile<JsonScheduleEventsEntry> {
   }
 
   async removeEntryById(id: string) {
-    const jsonScheduleEventsEntry: JsonScheduleEventsEntry = await this.getEntryById(id);
+    const jsonScheduleEventsEntry: JsonSchedulesEntry = await this.getEntryById(id);
     await super.removeEntryById(id);
 
-    const folderPath = path.join(PathResolver.getScheduleEventsPath, jsonScheduleEventsEntry.name);
+    const folderPath = path.join(PathResolver.getSchedulesPath, jsonScheduleEventsEntry.name);
     await promisify(rimraf)(folderPath);
   }
 
@@ -85,4 +88,4 @@ class JsonScheduleEvents extends JsonConfigFile<JsonScheduleEventsEntry> {
   }
 }
 
-export default new JsonScheduleEvents();
+export default new JsonSchedules();

@@ -45,8 +45,8 @@ export default class PathResolver {
     return path.join(PathResolver.getConfigsPath, 'endpoints.json');
   }
 
-  static get getScheduleEventsConfigPath(): string {
-    return path.join(PathResolver.getConfigsPath, 'schedule-events.json');
+  static get getSchedulesConfigPath(): string {
+    return path.join(PathResolver.getConfigsPath, 'schedules.json');
   }
 
   static get getDaosConfigPath(): string {
@@ -81,11 +81,11 @@ export default class PathResolver {
     return path.join(PathResolver.getDistPath, 'endpoints');
   }
 
-  static get getScheduleEventsPath(): string {
+  static get getSchedulesPath(): string {
     return path.join(PathResolver.getSrcPath, 'schedules');
   }
 
-  static get getDistScheduleEventsPath(): string {
+  static get getDistSchedulesPath(): string {
     return path.join(PathResolver.getDistPath, 'schedules');
   }
 

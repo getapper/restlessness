@@ -1,7 +1,7 @@
-import { JsonScheduleEventsEntry } from '../';
+import { JsonSchedulesEntry } from '../';
 
 //@TODO use 'name' as folder name?
-export const exporterTemplate = (jsonScheduleEventsEntries: JsonScheduleEventsEntry[]) => `import 'module-alias/register';
+export const exporterTemplate = (jsonScheduleEventsEntries: JsonSchedulesEntry[]) => `import 'module-alias/register';
 ${jsonScheduleEventsEntries.map((jsonScheduleEventsEntry) => `import ${jsonScheduleEventsEntry.safeFunctionName} from 'root/schedules/${jsonScheduleEventsEntry.name}';`).join('\n')}
 
 export {
