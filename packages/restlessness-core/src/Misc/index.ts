@@ -38,7 +38,23 @@ export default class Misc {
     }
   };
   static createAwsSafeFunctionName = (functionId: string, fullServiceName: string) => {
-    const id = functionId; //@TODO check for symbols presence (-./ etc..)
+    if (!/[a-zA-Z]/g.test(functionId)) {
+      throw new Error('Error creating aws safe function name, functionId must contains also alphabetic values');
+    }
+
+    let idWithoutSymbols = functionId.replace(/[^a-zA-Z0-9]/g, '-');
+    const startWithNumberResult = /^([0-9]+-)+/.exec(idWithoutSymbols);
+    if (startWithNumberResult) {
+      const startNumber = startWithNumberResult[0];
+      idWithoutSymbols = idWithoutSymbols.replace(startNumber, '')  + startNumber;
+    }
+    const idElements = idWithoutSymbols.split('-').filter(c => !!c);
+    const idElementsCamelCase = [
+      idElements[0],
+      ...idElements.splice(1).map(Misc.capitalize),
+    ];
+
+    const id = idElementsCamelCase.join('');
     /**
      * The 4 xxxx stand for "dev" or "prod", based on which stage deployment will be selected
      * We use 4 x for worst case scenario, that is "prod", since we need to check this string length
