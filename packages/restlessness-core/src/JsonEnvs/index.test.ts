@@ -1,4 +1,3 @@
-import path from 'path';
 import { promises as fs } from 'fs';
 import JsonEnvs, { JsonEnvsEntry } from '.';
 import PackageJson from '../PackageJson';
@@ -7,11 +6,8 @@ import * as TestUtils from '../TestUtils';
 
 const PROJECT_NAME = 'tmp-json-env';
 
-const projectPath = path.join(process.cwd(), PROJECT_NAME);
-process.env['RLN_PROJECT_PATH'] = projectPath;
-
 beforeAll(async (done) => {
-  await TestUtils.createProject(projectPath);
+  await TestUtils.createProjectInCwd(PROJECT_NAME);
   done();
 });
 
@@ -57,6 +53,6 @@ describe('JsonEnvs model', () => {
 });
 
 afterAll(async (done) => {
-  await TestUtils.deleteProject(projectPath);
+  await TestUtils.deleteProjectFromCwd(PROJECT_NAME);
   done();
 });

@@ -7,11 +7,8 @@ import * as TestUtils from '../TestUtils';
 
 const PROJECT_NAME = 'tmp-json-endpoints';
 
-const projectPath = path.join(process.cwd(), PROJECT_NAME);
-process.env['RLN_PROJECT_PATH'] = projectPath;
-
 beforeAll(async (done) => {
-  await TestUtils.createProject(projectPath);
+  await TestUtils.createProjectInCwd(PROJECT_NAME);
   done();
 });
 
@@ -56,7 +53,7 @@ describe('JsonEndpoints model', () => {
 });
 
 afterAll(async (done) => {
-  await TestUtils.deleteProject(projectPath);
+  await TestUtils.deleteProjectFromCwd(PROJECT_NAME);
   done();
 });
 

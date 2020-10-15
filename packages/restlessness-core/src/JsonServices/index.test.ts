@@ -1,4 +1,3 @@
-import path from 'path';
 import JsonServices from '../JsonServices';
 import JsonEndpoints, { HttpMethod } from '../JsonEndpoints';
 import JsonAuthorizers, { JsonAuthorizersEntry } from '../JsonAuthorizers';
@@ -7,11 +6,8 @@ import * as TestUtils from '../TestUtils';
 
 const PROJECT_NAME = 'tmp-json-services';
 
-const projectPath = path.join(process.cwd(), PROJECT_NAME);
-process.env['RLN_PROJECT_PATH'] = projectPath;
-
 beforeAll(async (done) => {
-  await TestUtils.createProject(projectPath);
+  await TestUtils.createProjectInCwd(PROJECT_NAME);
   done();
 });
 
@@ -151,7 +147,7 @@ describe('JsonServices', () => {
 });
 
 afterAll(async (done) => {
-  await TestUtils.deleteProject(projectPath);
+  await TestUtils.deleteProjectFromCwd(PROJECT_NAME);
   done();
 });
 
@@ -162,7 +158,7 @@ async function createTestAuthorizer() {
     package: 'package-test',
     shared: false,
   };
-  const packagePath = `${projectPath}/node_modules/${authorizer.package}`;
+  const packagePath = `${PROJECT_NAME}/node_modules/${authorizer.package}`;
   execSync(`mkdir -p ${packagePath} && cd ${packagePath} && npm init -y`);
   await JsonAuthorizers.addEntry(authorizer);
   return authorizer;

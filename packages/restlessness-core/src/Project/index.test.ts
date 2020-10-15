@@ -3,7 +3,6 @@ import rimraf from 'rimraf';
 import { promisify } from 'util';
 import { promises as fs } from 'fs';
 import Project from '.';
-import * as TestUtils from '../TestUtils';
 
 const PROJECT_NAME = 'tmp-project';
 

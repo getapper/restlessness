@@ -1,20 +1,11 @@
-import path from 'path';
-import rimraf from 'rimraf';
-import { promisify } from 'util';
-import Project from '../Project';
 import JsonSchedules from './';
 import JsonServices from '../JsonServices';
+import * as TestUtils from '../TestUtils';
 
 const PROJECT_NAME = 'tmp-json-schedule-events';
 
-const projectPath = path.join(process.cwd(), PROJECT_NAME);
-process.env['RLN_PROJECT_PATH'] = projectPath;
-
 beforeAll(async (done) => {
-  await promisify(rimraf)(projectPath);
-  await Project.create(projectPath, {
-    installNodemodules: false,
-  });
+  await TestUtils.createProjectInCwd(PROJECT_NAME);
   done();
 });
 
@@ -38,7 +29,7 @@ describe('JsonSchedules', () => {
 });
 
 afterAll(async (done) => {
-  await promisify(rimraf)(projectPath);
+  await TestUtils.deleteProjectFromCwd(PROJECT_NAME);
   done();
 });
 
