@@ -81,6 +81,8 @@ class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
 
     await JsonServices.addScheduleEvent(entry);
     await JsonServices.save();
+
+    return entry;
   }
 
   async removeEntryById(id: string) {
@@ -89,6 +91,8 @@ class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
 
     const folderPath = path.join(PathResolver.getSchedulesPath, jsonScheduleEventsEntry.name);
     await promisify(rimraf)(folderPath);
+
+    await this.generateExporter();
   }
 
   private async generateExporter() {
