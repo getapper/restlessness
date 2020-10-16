@@ -27,9 +27,9 @@ export const ScheduleHandler = async <T>(
           console.error(`Error when calling beforeLambda hook on dao: ${jsonDaoEntry.name} (${jsonDaoEntry.id})`, e);
         }
       }
-    } else {
-      console.error(`Cannot find Schedule identified by ${scheduleId}`);
     }
+  } else {
+    console.error(`Cannot find Schedule identified by ${scheduleId}`);
   }
 
   return handler(event);
