@@ -22,8 +22,6 @@ export const ScheduleHandler = async <T>(
         const jsonDaoEntry: JsonDaosEntry = await JsonDaos.getEntryById(daoId);
         try {
           const daoPackage: DaoPackage = DaoPackage.load(jsonDaoEntry.package);
-          //@TODO before lambda expect an api-gateway event
-          //@ts-ignore
           await daoPackage.beforeLambda(event, context);
         } catch (e) {
           console.error(`Error when calling beforeLambda hook on dao: ${jsonDaoEntry.name} (${jsonDaoEntry.id})`, e);
