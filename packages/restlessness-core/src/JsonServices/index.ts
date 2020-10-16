@@ -403,7 +403,7 @@ class JsonServices {
       scheduleEvent[event.input.type] = event.input.value;
     }
     const functionEndpoint: FunctionEndpoint = {
-      handler: `dist/schedulesExporter.${event.name}`,
+      handler: `dist/schedulesExporter.${event.safeFunctionName}`,
       warmup: {
         enabled: false,
       },
