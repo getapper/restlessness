@@ -38,9 +38,9 @@ export default async (argv: minimist.ParsedArgs) => {
     servicesToDeploy = [argService];
   }
 
-  let deploymentStage = 'dev';
-  if (argv.stage) {
-    deploymentStage = argv.stage;
+  let deploymentEnv = 'staging';
+  if (argv.env) {
+    deploymentEnv = argv.env;
   }
 
   const outputPath = path.join(PathResolver.getPrjPath, '.serverless-outputs');
@@ -52,7 +52,7 @@ export default async (argv: minimist.ParsedArgs) => {
     const servicePath = path.relative(process.cwd(), path.join(PathResolver.getServicesJsonPath, `${serviceName}.json`));
 
     console.log(chalk.blue('Restlessness:'), 'Removing service', serviceName);
-    const deployArgs = ['--config', servicePath, 'remove', '--stage', deploymentStage, '--verbose'];
+    const deployArgs = ['--config', servicePath, 'remove', '--stage', deploymentEnv, '--verbose'];
     try {
       await spawnAsyncWithInheritStdio('serverless', deployArgs);
     } catch (e) {
