@@ -18,3 +18,5 @@ export { default as EnvironmentHandler } from './EnvironmentHandler';
 export { default as Openapi } from './Openapi';
 export * from './TestHandler';
 export { default as JsonServices } from './JsonServices';
+export { default as JsonSchedules } from './JsonSchedules';
+export * from './ScheduleHandler';

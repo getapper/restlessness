@@ -4,7 +4,7 @@ import JsonServices from '../JsonServices';
 import Misc from '../Misc';
 import fsSync, { promises as fs } from 'fs';
 import path from 'path';
-import { exporterTemplate, indexTemplate } from './templates';
+import { exporterTemplate, handlerTemplate, indexTemplate } from './templates';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
 import JsonDaos from '../JsonDaos';
@@ -72,10 +72,10 @@ class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
       await fs.mkdir(PathResolver.getSchedulesPath);
     }
 
-    //@TODO use 'name' as folder name?
     const folderPath = path.join(PathResolver.getSchedulesPath, entry.name);
     await fs.mkdir(folderPath);
-    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate());
+    await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(entry.id));
+    await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate());
 
     await this.generateExporter();
 
