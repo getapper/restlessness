@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
 import path from 'path';
 import chalk from 'chalk';
-import { JsonServices, PathResolver, EnvFile } from '@restlessness/core';
+import { JsonServices, PathResolver, EnvFile, JsonEnvs } from '@restlessness/core';
 
 function spawnAsyncWithInheritStdio(command: string, args: any[]): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -38,18 +38,26 @@ export default async (argv: minimist.ParsedArgs) => {
     servicesToDeploy = [argService];
   }
 
-  // JsonServices.servicesHealthCheck();
+  JsonServices.servicesHealthCheck();
 
   let deploymentEnv = 'staging';
   if (argv.env) {
     deploymentEnv = argv.env;
   }
 
+  const jsonEnv = await JsonEnvs.getEntryById(deploymentEnv);
+  if (!jsonEnv) {
+    throw `Cannot find Environment ${deploymentEnv}`;
+  }
+  if (!jsonEnv.stage) {
+    throw `Cannot deploy! Environment ${jsonEnv.id} does not have an associated stage`;
+  }
+
   try {
-    const env = new EnvFile(deploymentEnv);
+    const env = new EnvFile(jsonEnv.id);
     await env.generate();
   } catch {
-    throw `Cannot generate .env file for environment ${deploymentEnv}`;
+    throw `Cannot generate .env file for environment ${jsonEnv.id}`;
   }
 
   const outputPath = path.join(PathResolver.getPrjPath, '.serverless-outputs');
@@ -63,11 +71,11 @@ export default async (argv: minimist.ParsedArgs) => {
     const servicePath = path.relative(process.cwd(), path.join(PathResolver.getServicesJsonPath, `${serviceName}.json`));
 
     console.log(chalk.blue('Restlessness:'), 'Packaging service', serviceName);
-    const packageArgs = ['--config', servicePath, 'package', '--package', packagePath, '--stage', deploymentEnv, '--verbose'];
+    const packageArgs = ['--config', servicePath, 'package', '--package', packagePath, '--stage', jsonEnv.stage, '--verbose'];
     await spawnAsyncWithInheritStdio('serverless', packageArgs);
 
     console.log(chalk.blue('Restlessness:'), 'Deploying service', serviceName);
-    const deployArgs = ['--config', servicePath, 'deploy', '--package', packagePath, '--stage', deploymentEnv, '--verbose'];
+    const deployArgs = ['--config', servicePath, 'deploy', '--package', packagePath, '--stage', jsonEnv.stage, '--verbose'];
     await spawnAsyncWithInheritStdio('serverless', deployArgs);
   }
 };
