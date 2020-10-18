@@ -1,5 +1,12 @@
-# restlessness
-A framework to easy **develop, test and deploy serverless RESTFul APIs** on AWS API Gateway + Lambda Functions services through [serverless.com](www.serverless.com) framework
+<h1 align="center">Restlessness</h1>
+
+<p align="center">
+  <img src="restlessness_logo.png" alt="restlessness-logo" width="320px" height="auto"/>
+  <br>
+  <br>
+  <i>A framework to easy <strong>develop, test and deploy serverless RESTFul APIs</strong> on AWS API Gateway + Lambda Functions services through <a href="www.serverless.com" target="_blank">serverless.com</a> framework.</i>
+  <br>
+</p>
 
 ## Why
 
