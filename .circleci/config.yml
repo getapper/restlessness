@@ -135,6 +135,9 @@ jobs:
           working_directory: packages/restlessness-cli/rln-frontend
       - deps_and_publish:
           working_directory: packages/restlessness-cli
+    environment:
+      - NODE_OPTIONS: "--max-old-space-size=1024"
+
 
   rln-core-tests:
     executor: node12
