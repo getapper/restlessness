@@ -13,6 +13,7 @@ The CLI to manage [restlessness](https://github.com/getapper/restlessness) proje
 
 
 ## Usage
+Note that all following commands (except `new`) must be run from the root directory of a restlessness project
 
 ### new
 `restlessness new [project name]`
