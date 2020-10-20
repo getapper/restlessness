@@ -28,11 +28,11 @@ export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
   const jsonEndpointsEntry = await JsonEndpoints.getEntryById(apiName);
   if (jsonEndpointsEntry) {
     if (jsonEndpointsEntry.daoIds?.length) {
-      for (const daoId of jsonEndpointsEntry.daoIds)  {
+      for (const daoId of jsonEndpointsEntry.daoIds) {
         const jsonDaoEntry: JsonDaosEntry = await JsonDaos.getEntryById(daoId);
         try {
           const daoPackage: DaoPackage = DaoPackage.load(jsonDaoEntry.package);
-          await daoPackage.beforeLambda(event, context);
+          await daoPackage.beforeEndpoint(event, context);
         } catch (e) {
           console.error(`Error when calling beforeLambda hook on dao: ${jsonDaoEntry.name} (${jsonDaoEntry.id})`, e);
         }
@@ -49,7 +49,7 @@ export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
       const jsonAuthorizersEntry: JsonAuthorizersEntry = await JsonAuthorizers.getEntryById(jsonEndpointsEntry.authorizerId);
       const authorizerPackage: AuthorizerPackage = AuthorizerPackage.load(jsonAuthorizersEntry.package);
       try {
-        await authorizerPackage.beforeLambda(event, context);
+        await authorizerPackage.beforeEndpoint(event, context);
       } catch (e) {
         console.error(`Error when calling beforeLambda hook on authorizer: ${jsonAuthorizersEntry.name} (${jsonAuthorizersEntry.package})`, e);
       }

@@ -22,7 +22,7 @@ export const ScheduleHandler = async <T>(
         const jsonDaoEntry: JsonDaosEntry = await JsonDaos.getEntryById(daoId);
         try {
           const daoPackage: DaoPackage = DaoPackage.load(jsonDaoEntry.package);
-          await daoPackage.beforeLambda(event, context);
+          await daoPackage.beforeSchedule(event, context);
         } catch (e) {
           console.error(`Error when calling beforeLambda hook on dao: ${jsonDaoEntry.name} (${jsonDaoEntry.id})`, e);
         }

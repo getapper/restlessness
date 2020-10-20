@@ -59,8 +59,10 @@ class JwtAuthorizer extends AuthorizerPackage {
     await JsonServices.save();
   }
 
-  async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
+  async beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
   }
+
+  async beforeSchedule<T>(event: AWSLambda.ScheduledEvent | T, context: AWSLambda.Context): Promise<void> {}
 
   async postEnvCreated(envName: string): Promise<void> {
     const envFile = new EnvFile(envName);
