@@ -88,12 +88,14 @@ class MongoDaoPackage extends DaoPackage {
     }
   }
 
-  async beforeLambda<T>(event?: AWSLambda.APIGatewayProxyEventBase<T>, context?: AWSLambda.Context): Promise<void> {
+  async beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
     const projectYup = require(path.join(PathResolver.getNodeModulesPath, 'yup'));
     if (!projectYup.objectId) {
       projectYup.objectId = () => new ObjectIdSchema();
     }
   }
+
+  async beforeSchedule<T>(event: AWSLambda.ScheduledEvent | T, context: AWSLambda.Context): Promise<void> {}
 
   modelTemplate(modelName: string): string {
     return modelTemplate(modelName);
