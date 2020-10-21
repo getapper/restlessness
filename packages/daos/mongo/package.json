@@ -20,7 +20,7 @@
     "yup": "^0.28.3"
   },
   "dependencies": {
-    "@restlessness/core": "0.5.1",
+    "@restlessness/core": "0.5.6",
     "@types/bson": "4.0.2",
     "@types/mongodb": "3.5.9",
     "aws-sdk": "2.718.0",
