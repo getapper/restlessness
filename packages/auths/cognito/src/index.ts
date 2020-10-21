@@ -52,12 +52,14 @@ class CognitoAuthorizer extends AuthorizerPackage {
     await JsonServices.save();
   }
 
-  async beforeLambda<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
+  async beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
     if (process.env['ENV_NAME'] !== 'test') {
       const appUserPoolsManager: UserPoolsManager = require(path.join(PathResolver.getDistPath, 'models', 'AppUserPoolsManager')).default;
       await appUserPoolsManager.init();
     }
   }
+
+  async beforeSchedule<T>(event: AWSLambda.ScheduledEvent | T, context: AWSLambda.Context) {}
 
   async postEnvCreated(envName: string): Promise<void> {
     const envFile = new EnvFile(envName);

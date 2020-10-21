@@ -116,6 +116,28 @@ const useEndpointCreate = () => {
     [payloadData]
   );
 
+  const onDaoChange = useMemo(
+    () =>
+      daosList?.map((dao) => () =>
+        setPayloadData((currentPayloadData) => {
+          let daoIds: string[] = [...currentPayloadData.daoIds];
+          if (daoIds.find((d) => d === dao.id)) {
+            daoIds.splice(
+              daoIds.findIndex((d) => d === dao.id),
+              1
+            );
+          } else {
+            daoIds.push(dao.id);
+          }
+          return {
+            ...currentPayloadData,
+            daoIds,
+          };
+        })
+      ),
+    [daosList]
+  );
+
   const onSave = useCallback(() => {
     dispatch(postEndpointsApi.request(payloadData));
   }, [dispatch, payloadData]);
@@ -140,6 +162,7 @@ const useEndpointCreate = () => {
     onMethodChange,
     onServiceChange,
     onAuthorizerChange,
+    onDaoChange,
     onSave,
   };
 };

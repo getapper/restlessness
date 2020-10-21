@@ -1,9 +1,5 @@
 import { takeEvery, put } from "redux-saga/effects";
-import {
-  getInfosApi,
-  putEndpointByEndpointIdsApi,
-  putInfosApi,
-} from "redux-store/extra-actions/apis";
+import { getInfosApi, putInfosApi } from "redux-store/extra-actions/apis";
 import { actions } from "../../";
 
 export function* startupSaga() {

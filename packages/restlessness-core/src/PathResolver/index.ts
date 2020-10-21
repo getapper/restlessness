@@ -45,6 +45,10 @@ export default class PathResolver {
     return path.join(PathResolver.getConfigsPath, 'endpoints.json');
   }
 
+  static get getSchedulesConfigPath(): string {
+    return path.join(PathResolver.getConfigsPath, 'schedules.json');
+  }
+
   static get getDaosConfigPath(): string {
     return path.join(PathResolver.getConfigsPath, 'daos.json');
   }
@@ -75,6 +79,14 @@ export default class PathResolver {
 
   static get getDistEndpointsPath(): string {
     return path.join(PathResolver.getDistPath, 'endpoints');
+  }
+
+  static get getSchedulesPath(): string {
+    return path.join(PathResolver.getSrcPath, 'schedules');
+  }
+
+  static get getDistSchedulesPath(): string {
+    return path.join(PathResolver.getDistPath, 'schedules');
   }
 
   static get getModelsPath(): string {

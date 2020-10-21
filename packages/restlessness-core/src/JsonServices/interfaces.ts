@@ -4,7 +4,7 @@ export interface Functions {
   [key: string]: FunctionEndpoint
 }
 
-export interface Event {
+export interface HttpEvent {
   http: {
     path: string,
     method: HttpMethod,
@@ -12,6 +12,20 @@ export interface Event {
     authorizer?: string | { [key: string]: any }
   }
 }
+
+export interface ScheduleEvent {
+  schedule: {
+    name: string,
+    description?: string,
+    rate: string,
+    enabled: boolean,
+    input?: { [key: string]: any}
+    inputPath?: { [key: string]: any}
+    inputTransformer?: { [key: string]: any}
+  }
+}
+
+type Event = HttpEvent | ScheduleEvent;
 
 export interface FunctionEndpoint {
   handler: string,

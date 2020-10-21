@@ -2,11 +2,7 @@ import * as React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useStyles from "./index.styles";
 import {
-  getAuthorizersApi,
   getDaosApi,
-  getModelsApi,
-  getServicesApi,
-  HttpMethod,
   postModelsApi,
   PostModelsApiParams,
 } from "../../redux-store/extra-actions/apis";

@@ -28,6 +28,14 @@ const Dashboard = () => {
         <Button
           color="primary"
           variant="contained"
+          href="#/schedules"
+          style={{ marginLeft: "1rem" }}
+        >
+          Schedules
+        </Button>
+        <Button
+          color="primary"
+          variant="contained"
           href="#/infos"
           style={{ marginLeft: "1rem" }}
         >

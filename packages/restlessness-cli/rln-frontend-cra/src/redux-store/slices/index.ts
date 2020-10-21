@@ -8,6 +8,7 @@ import * as authorizer from "./authorizer";
 import * as service from "./service";
 import * as info from "./info";
 import * as model from "./model";
+import * as schedule from "./schedule";
 
 export const reducers = {
   ajax: ajax.ajaxStore.reducer,
@@ -19,6 +20,7 @@ export const reducers = {
   service: service.serviceStore.reducer,
   info: info.infoStore.reducer,
   model: model.modelStore.reducer,
+  schedule: schedule.scheduleStore.reducer,
 };
 
 export const actions = {
@@ -32,6 +34,7 @@ export const actions = {
   ...service.serviceStore.actions,
   ...info.infoStore.actions,
   ...model.modelStore.actions,
+  ...schedule.scheduleStore.actions,
 };
 
 export const selectors = {
@@ -44,6 +47,7 @@ export const selectors = {
   ...service.selectors,
   ...info.selectors,
   ...model.selectors,
+  ...schedule.selectors,
 };
 
 export const sagas = {
@@ -53,4 +57,5 @@ export const sagas = {
   ...info.sagas,
   ...endpoint.sagas,
   ...model.sagas,
+  ...schedule.sagas,
 };

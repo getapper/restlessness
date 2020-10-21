@@ -1,32 +1,27 @@
-import path from 'path';
-import rimraf from 'rimraf';
-import { promisify } from 'util';
-import { promises as fs } from 'fs';
-import Project from '../Project';
 import JsonServices from '../JsonServices';
 import JsonEndpoints, { HttpMethod } from '../JsonEndpoints';
 import JsonAuthorizers, { JsonAuthorizersEntry } from '../JsonAuthorizers';
 import { execSync } from 'child_process';
+import * as TestUtils from '../TestUtils';
+import { RateUnit } from '../JsonSchedules';
 
 const PROJECT_NAME = 'tmp-json-services';
 
-const projectPath = path.join(process.cwd(), PROJECT_NAME);
-process.env['RLN_PROJECT_PATH'] = projectPath;
-
 beforeAll(async (done) => {
-  await promisify(rimraf)(projectPath);
-  await Project.create(projectPath, {
-    installNodemodules: false,
-  });
-  expect((await fs.lstat(projectPath)).isDirectory()).toBe(true);
+  await TestUtils.createProjectInCwd(PROJECT_NAME);
   done();
 });
 
 describe('JsonServices', () => {
-  test('Add/Remove Endpoint',  async (done) => {
+  test('Default services check', async done => {
     await JsonServices.read();
     expect(JsonServices.offlineService).toBeDefined();
     expect(JsonServices.sharedService).toBeDefined();
+    done();
+  });
+
+  test('Add/Remove Endpoint',  async (done) => {
+    await JsonServices.read();
     await JsonServices.addEndpoint({
       serviceName: JsonServices.OFFLINE_SERVICE_NAME,
       method: HttpMethod.GET,
@@ -55,6 +50,24 @@ describe('JsonServices', () => {
     await JsonServices.save();
     await JsonServices.read();
     expect(JsonServices.services['testService']).toBeFalsy();
+    done();
+  });
+
+  test('Add/Remove Schedule Event', async done => {
+    await JsonServices.read();
+    await JsonServices.addScheduleEvent({
+      id: 'schedule-event-test',
+      safeFunctionName: 'scheduleEventTest',
+      rateNumber: 1,
+      rateUnit: RateUnit.DAYS,
+      serviceName: JsonServices.SHARED_SERVICE_NAME,
+    });
+    await JsonServices.save();
+    expect(JsonServices.sharedService.functions['scheduleEventTest']).toBeDefined();
+    await JsonServices.read();
+    await JsonServices.removeScheduleEvent(JsonServices.SHARED_SERVICE_NAME, 'scheduleEventTest');
+    await JsonServices.save();
+    expect(JsonServices.sharedService.functions['scheduleEventTest']).not.toBeDefined();
     done();
   });
 
@@ -135,7 +148,7 @@ describe('JsonServices', () => {
 });
 
 afterAll(async (done) => {
-  await promisify(rimraf)(projectPath);
+  await TestUtils.deleteProjectFromCwd(PROJECT_NAME);
   done();
 });
 
@@ -146,7 +159,7 @@ async function createTestAuthorizer() {
     package: 'package-test',
     shared: false,
   };
-  const packagePath = `${projectPath}/node_modules/${authorizer.package}`;
+  const packagePath = `${PROJECT_NAME}/node_modules/${authorizer.package}`;
   execSync(`mkdir -p ${packagePath} && cd ${packagePath} && npm init -y`);
   await JsonAuthorizers.addEntry(authorizer);
   return authorizer;

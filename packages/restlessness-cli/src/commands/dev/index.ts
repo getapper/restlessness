@@ -42,7 +42,7 @@ The ChildProcess object is returned through a promise, with some callbacks alrea
 
 function spawnBackend(): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
-    const proc = spawn('serverless', ['offline', '--config', 'serverless-services/offline.json', '--port', '4123'], {
+    const proc = spawn('serverless', ['offline', '--config', 'serverless-services/offline.json', '--httpPort', '4123', '--lambdaPort', '3003'], {
       cwd: path.join(__dirname, '..', '..', '..', 'lib', 'assets', 'backend'),
       env: {
         ...process.env,
@@ -64,12 +64,13 @@ function spawnBackend(): Promise<ChildProcess> {
     });
     proc.stdout.on('data', d => {
       const data = d.toString();
-      if (data.indexOf('Serverless: Offline [HTTP] listening on') !== -1) {
+      if (data.indexOf('[HTTP] server ready:') !== -1) {
         resolve(proc);
       }
 
       const trimmed = data.trim();
-      if (trimmed && !trimmed.startsWith('Serverless:')) {
+      const isShowingTable = trimmed.startsWith('┌─') && trimmed.endsWith('─┘');
+      if (trimmed && !trimmed.startsWith('offline:') && !isShowingTable) {
         printRestlessnessData(data);
       }
     });
@@ -103,7 +104,7 @@ function spawnFrontend(): Promise<ChildProcess> {
 function spawnProject(name: string, env: ENV): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
     // @TODO: 'serverless-services/offline.json' should be changed with `${PathResolver.getOfflineServerlessJsonPath}.json`
-    const proc = spawn('serverless', ['--config', 'serverless-services/offline.json', 'offline', '--port', '4000'], {
+    const proc = spawn('serverless', ['--config', 'serverless-services/offline.json', 'offline', '--httpPort', '4000', '--lambdaPort', '3002'], {
       env: {
         ...process.env,
         ...env,
@@ -112,7 +113,7 @@ function spawnProject(name: string, env: ENV): Promise<ChildProcess> {
       shell: true,
     });
     proc.stdout.on('data', d => {
-      if (d.toString().indexOf('Serverless: Offline [HTTP] listening on') !== -1) {
+      if (d.toString().indexOf('[HTTP] server ready:') !== -1) {
         resolve(proc);
       }
       process.stdout.write(`${chalk.green(name)}: ${d.toString()}`);

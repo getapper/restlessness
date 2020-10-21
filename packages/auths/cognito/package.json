@@ -5,7 +5,7 @@
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
-    "@restlessness/core": "0.4.8",
+    "@restlessness/core": "0.5.6",
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "^2.1.0",
     "aws-sdk": "2.709.0",

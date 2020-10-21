@@ -1,6 +1,7 @@
 node_modules
 .serverless
 /dummy-prj
+.env.development
 
 # IntelliJ
 .idea

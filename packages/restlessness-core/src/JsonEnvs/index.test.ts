@@ -1,28 +1,18 @@
-import path from 'path';
-import rimraf from 'rimraf';
-import { promisify } from 'util';
 import { promises as fs } from 'fs';
-import Project from '../Project';
 import JsonEnvs, { JsonEnvsEntry } from '.';
 import PackageJson from '../PackageJson';
 import PathResolver from '../PathResolver';
+import * as TestUtils from '../TestUtils';
 
 const PROJECT_NAME = 'tmp-json-env';
 
-const projectPath = path.join(process.cwd(), PROJECT_NAME);
-process.env['RLN_PROJECT_PATH'] = projectPath;
-
 beforeAll(async (done) => {
-  await promisify(rimraf)(projectPath);
+  await TestUtils.createProjectInCwd(PROJECT_NAME);
   done();
 });
 
 describe('JsonEnvs model', () => {
   test('it should create default envs',  async (done) => {
-    await Project.create(projectPath, {
-      installNodemodules: false,
-    });
-    expect((await fs.lstat(projectPath)).isDirectory()).toBe(true);
     await JsonEnvs.read();
     const envs: JsonEnvsEntry[] = JsonEnvs.entries;
     expect(envs?.length).toBe(4);
@@ -63,6 +53,6 @@ describe('JsonEnvs model', () => {
 });
 
 afterAll(async (done) => {
-  await promisify(rimraf)(projectPath);
+  await TestUtils.deleteProjectFromCwd(PROJECT_NAME);
   done();
 });

@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
 import path from 'path';
 import chalk from 'chalk';
-import { JsonServices, PathResolver } from '@restlessness/core';
+import { JsonServices, PathResolver, JsonEnvs } from '@restlessness/core';
 
 function spawnAsyncWithInheritStdio(command: string, args: any[]): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -38,9 +38,17 @@ export default async (argv: minimist.ParsedArgs) => {
     servicesToDeploy = [argService];
   }
 
-  let deploymentStage = 'dev';
-  if (argv.stage) {
-    deploymentStage = argv.stage;
+  let deploymentEnv = 'staging';
+  if (argv.env) {
+    deploymentEnv = argv.env;
+  }
+
+  const jsonEnv = await JsonEnvs.getEntryById(deploymentEnv);
+  if (!jsonEnv) {
+    throw `Cannot find Environment ${deploymentEnv}`;
+  }
+  if (!jsonEnv.stage) {
+    throw `Cannot deploy! Environment ${jsonEnv.id} does not have an associated stage`;
   }
 
   const outputPath = path.join(PathResolver.getPrjPath, '.serverless-outputs');
@@ -52,7 +60,7 @@ export default async (argv: minimist.ParsedArgs) => {
     const servicePath = path.relative(process.cwd(), path.join(PathResolver.getServicesJsonPath, `${serviceName}.json`));
 
     console.log(chalk.blue('Restlessness:'), 'Removing service', serviceName);
-    const deployArgs = ['--config', servicePath, 'remove', '--stage', deploymentStage, '--verbose'];
+    const deployArgs = ['--config', servicePath, 'remove', '--stage', jsonEnv.stage, '--verbose'];
     try {
       await spawnAsyncWithInheritStdio('serverless', deployArgs);
     } catch (e) {

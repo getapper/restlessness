@@ -20,6 +20,30 @@
         }
       ]
     },
+    "postSchedules": {
+      "handler": "dist/exporter.postSchedules",
+      "events": [
+        {
+          "http": {
+            "path": "schedules",
+            "method": "post",
+            "cors": true
+          }
+        }
+      ]
+    },
+    "getSchedules": {
+      "handler": "dist/exporter.getSchedules",
+      "events": [
+        {
+          "http": {
+            "path": "schedules",
+            "method": "get",
+            "cors": true
+          }
+        }
+      ]
+    },
     "getInfos": {
       "handler": "dist/exporter.getInfos",
       "events": [
