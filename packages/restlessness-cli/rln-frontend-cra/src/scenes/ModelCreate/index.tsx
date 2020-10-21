@@ -33,7 +33,7 @@ const ModelCreate = () => {
           Name
         </Typography>
         <TextField
-          label="Route"
+          label="Name"
           fullWidth
           value={payloadData.name}
           onChange={onNameChange}

@@ -6,6 +6,7 @@ import {
   IndexOptions,
   UpdateOneOptions,
   MongoCountPreferences,
+  UpdateManyOptions,
 } from 'mongodb';
 import Bson from 'bson';
 import { Lambda } from 'aws-sdk';
@@ -113,6 +114,10 @@ class MongoDao {
 
   async updateOne(collectionName: string, filter, object, options?: UpdateOneOptions): Promise<UpdateWriteOpResult> {
     return this.invokeProxy({ collectionName, operation: 'updateOne', args: [filter, object, options] });
+  }
+
+  async updateMany(collectionName: string, filter, object, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
+    return this.invokeProxy({ collectionName, operation: 'updateMany', args: [filter, object, options] });
   }
 
   async deleteOne(collectionName: string, filter): Promise<DeleteWriteOpResultObject> {

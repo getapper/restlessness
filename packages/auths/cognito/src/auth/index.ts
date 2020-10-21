@@ -336,7 +336,6 @@ export class UserPoolManager {
 
   async adminChangeUserPassword (
     email: string,
-    oldPassword: string,
     newPassword: string,
   ): Promise<void> {
     const params = {
@@ -346,7 +345,7 @@ export class UserPoolManager {
       Permanent: true,
     };
     const adminUpdateUserAttributes = this.cognitoIdentityServiceProvider.adminSetUserPassword(params);
-    const result = await adminUpdateUserAttributes.promise();
+    await adminUpdateUserAttributes.promise();
   }
 
   async adminGetUser(username: UsernameType) {

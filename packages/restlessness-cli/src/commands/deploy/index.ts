@@ -26,8 +26,7 @@ export default async (argv: minimist.ParsedArgs) => {
 
   await JsonServices.read();
   let servicesToDeploy = Object.keys(JsonServices.services)
-    .filter(s => s !== JsonServices.OFFLINE_SERVICE_NAME)
-    .filter(s => s !== JsonServices.SHARED_SERVICE_NAME);
+    .filter(s => s !== JsonServices.OFFLINE_SERVICE_NAME && s !== JsonServices.SHARED_SERVICE_NAME);
   servicesToDeploy = [JsonServices.SHARED_SERVICE_NAME, ...servicesToDeploy];
 
   if (argv._.length === 2) {
