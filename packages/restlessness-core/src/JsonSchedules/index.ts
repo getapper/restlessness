@@ -9,10 +9,16 @@ import { promisify } from 'util';
 import rimraf from 'rimraf';
 import JsonDaos from '../JsonDaos';
 
+export enum RateUnit {
+  MINUTES = 'minute',
+  HOURS = 'hour',
+  DAYS = 'day',
+}
+
 export interface JsonSchedulesEntry extends JsonConfigEntry {
-  name: string
   description?: string
-  rate: string
+  rateNumber: number
+  rateUnit: RateUnit
   enabled?: boolean
   serviceName: string
   input?: {
@@ -31,7 +37,8 @@ class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
   async createSchedule(event: {
     name: string
     description?: string
-    rate: string
+    rateNumber: number
+    rateUnit: RateUnit
     enabled?: boolean
     serviceName: string
     input?: {
@@ -43,12 +50,13 @@ class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
     await this.read();
 
     await JsonServices.read();
-    const id = event.name;
+    const { name, ...eventOthers } = event;
+    const id = name;
     const fullServiceName = JsonServices.services[event.serviceName].service;
     const safeFunctionName = Misc.createAwsSafeFunctionName(id, fullServiceName);
 
     const entry: JsonSchedulesEntry = {
-      ...event,
+      ...eventOthers,
       enabled: event.enabled ?? true,
       id,
       safeFunctionName,
@@ -72,7 +80,7 @@ class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
       await fs.mkdir(PathResolver.getSchedulesPath);
     }
 
-    const folderPath = path.join(PathResolver.getSchedulesPath, entry.name);
+    const folderPath = path.join(PathResolver.getSchedulesPath, entry.id);
     await fs.mkdir(folderPath);
     await fs.writeFile(path.join(folderPath, 'index.ts'), indexTemplate(entry.id));
     await fs.writeFile(path.join(folderPath, 'handler.ts'), handlerTemplate());
@@ -89,7 +97,7 @@ class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
     const jsonScheduleEventsEntry: JsonSchedulesEntry = await this.getEntryById(id);
     await super.removeEntryById(id);
 
-    const folderPath = path.join(PathResolver.getSchedulesPath, jsonScheduleEventsEntry.name);
+    const folderPath = path.join(PathResolver.getSchedulesPath, jsonScheduleEventsEntry.id);
     await promisify(rimraf)(folderPath);
 
     await this.generateExporter();

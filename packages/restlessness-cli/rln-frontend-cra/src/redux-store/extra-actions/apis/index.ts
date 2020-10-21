@@ -9,6 +9,7 @@ import { Dao } from "../../slices/dao/interfaces";
 import { Authorizer } from "../../slices/authorizer/interfaces";
 import { Service } from "../../slices/service/interfaces";
 import { Model } from "../../slices/model/interfaces";
+import { RateUnit, Schedule } from "redux-store/slices/schedule/interfaces";
 
 export enum HttpMethod {
   GET = "get",
@@ -90,29 +91,6 @@ const apiActionBuilder = <ApiRequestParams, ApiResponseData>(
   cancel: createAction(`${api}/cancel`),
 });
 
-export interface GetEndpointsApiParams {}
-export interface GetEndpointsResponseData {
-  endpoints: Endpoint[];
-}
-export const getEndpointsApi = apiActionBuilder<
-  GetEndpointsApiParams,
-  GetEndpointsResponseData
->(
-  "apis/endpoints/get",
-  (
-    params: GetEndpointsApiParams,
-    options?: ApiRequestPayloadBuilderOptions
-  ) => ({
-    payload: apiRequestPayloadBuilder(
-      {
-        path: "/endpoints",
-        method: HttpMethod.GET,
-      },
-      options
-    ),
-  })
-);
-
 export interface GetDaosApiParams {}
 export interface GetDaosResponseData {
   daos: Dao[];
@@ -156,6 +134,29 @@ export const getAuthorizersApi = apiActionBuilder<
   })
 );
 
+export interface GetEndpointsApiParams {}
+export interface GetEndpointsResponseData {
+  endpoints: Endpoint[];
+}
+export const getEndpointsApi = apiActionBuilder<
+  GetEndpointsApiParams,
+  GetEndpointsResponseData
+>(
+  "apis/endpoints/get",
+  (
+    params: GetEndpointsApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: "/endpoints",
+        method: HttpMethod.GET,
+      },
+      options
+    ),
+  })
+);
+
 export interface PutEndpointsByEndpointIdApiPayload {
   authorizerId: string | null;
   daoIds: string[];
@@ -183,6 +184,29 @@ export const putEndpointByEndpointIdsApi = apiActionBuilder<
         path: `/endpoints/${params.endpointId}`,
         method: HttpMethod.PUT,
         body: params.endpointData,
+      },
+      options
+    ),
+  })
+);
+
+export interface DeleteEndpointsByEndpointIdApiParams {
+  endpointId: string;
+}
+export interface DeleteEndpointsByEndpointIdResponseData {}
+export const deleteEndpointByEndpointIdsApi = apiActionBuilder<
+  DeleteEndpointsByEndpointIdApiParams,
+  DeleteEndpointsByEndpointIdResponseData
+>(
+  "apis/endpoints/{endpointId}/delete",
+  (
+    params: DeleteEndpointsByEndpointIdApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: `/endpoints/${params.endpointId}`,
+        method: HttpMethod.DELETE,
       },
       options
     ),
@@ -356,6 +380,116 @@ export const putInfosApi = apiActionBuilder<
       {
         path: "/infos",
         method: HttpMethod.PUT,
+        body: params,
+      },
+      options
+    ),
+  })
+);
+
+export interface GetSchedulesApiParams {}
+export interface GetSchedulesResponseData {
+  schedules: Schedule[];
+}
+export const getSchedulesApi = apiActionBuilder<
+  GetSchedulesApiParams,
+  GetSchedulesResponseData
+>(
+  "apis/schedules/get",
+  (
+    params: GetSchedulesApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: "/schedules",
+        method: HttpMethod.GET,
+      },
+      options
+    ),
+  })
+);
+
+export interface PutSchedulesByScheduleIdApiPayload {
+  authorizerId: string | null;
+  daoIds: string[];
+  warmupEnabled: boolean;
+  serviceName: string | null;
+}
+export interface PutSchedulesByScheduleIdApiParams {
+  scheduleId: string;
+  scheduleData: PutSchedulesByScheduleIdApiPayload;
+}
+export interface PutSchedulesByScheduleIdResponseData {
+  schedule: Schedule[];
+}
+export const putScheduleByScheduleIdsApi = apiActionBuilder<
+  PutSchedulesByScheduleIdApiParams,
+  PutSchedulesByScheduleIdResponseData
+>(
+  "apis/schedules/{scheduleId}/put",
+  (
+    params: PutSchedulesByScheduleIdApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: `/schedules/${params.scheduleId}`,
+        method: HttpMethod.PUT,
+        body: params.scheduleData,
+      },
+      options
+    ),
+  })
+);
+
+export interface DeleteSchedulesByScheduleIdApiParams {
+  scheduleId: string;
+}
+export interface DeleteSchedulesByScheduleIdResponseData {}
+export const deleteScheduleByScheduleIdsApi = apiActionBuilder<
+  DeleteSchedulesByScheduleIdApiParams,
+  DeleteSchedulesByScheduleIdResponseData
+>(
+  "apis/schedules/{scheduleId}/delete",
+  (
+    params: DeleteSchedulesByScheduleIdApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: `/schedules/${params.scheduleId}`,
+        method: HttpMethod.DELETE,
+      },
+      options
+    ),
+  })
+);
+
+export interface PostSchedulesApiParams {
+  name: string;
+  description: string | null;
+  rateNumber: number;
+  rateUnit: RateUnit;
+  daoIds: string[];
+  serviceName: string | null;
+}
+export interface PostSchedulesResponseData {
+  schedule: Schedule;
+}
+export const postSchedulesApi = apiActionBuilder<
+  PostSchedulesApiParams,
+  PostSchedulesResponseData
+>(
+  "apis/schedules/post",
+  (
+    params: PostSchedulesApiParams,
+    options?: ApiRequestPayloadBuilderOptions
+  ) => ({
+    payload: apiRequestPayloadBuilder(
+      {
+        path: "/schedules",
+        method: HttpMethod.POST,
         body: params,
       },
       options

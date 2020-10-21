@@ -2,11 +2,11 @@ import * as React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useStyles from "./index.styles";
 import {
+  deleteEndpointByEndpointIdsApi,
   getAuthorizersApi,
   getDaosApi,
   getEndpointsApi,
   getServicesApi,
-  HttpMethod,
   putEndpointByEndpointIdsApi,
   PutEndpointsByEndpointIdApiPayload,
 } from "../../redux-store/extra-actions/apis";
@@ -59,6 +59,9 @@ const useEndpointDetails = () => {
   const isSaving = useSelector(
     getAjaxIsLoadingByApi(putEndpointByEndpointIdsApi.api)
   );
+  const isDeleting = useSelector(
+    getAjaxIsLoadingByApi(deleteEndpointByEndpointIdsApi.api)
+  );
 
   const endpointData = useMemo(
     () => endpointsList?.find((endpoint) => endpoint.id === params.endpointId),
@@ -71,13 +74,15 @@ const useEndpointDetails = () => {
       isLoadingEndpoints ||
       isLoadingDaos ||
       isLoadingServices ||
-      isSaving,
+      isSaving ||
+      isDeleting,
     [
       isLoadingAuthorizers,
       isLoadingDaos,
       isLoadingEndpoints,
       isLoadingServices,
       isSaving,
+      isDeleting,
     ]
   );
 
@@ -117,6 +122,28 @@ const useEndpointDetails = () => {
     [payloadData]
   );
 
+  const onDaoChange = useMemo(
+    () =>
+      daosList?.map((dao) => () =>
+        setPayloadData((currentPayloadData) => {
+          let daoIds: string[] = [...currentPayloadData.daoIds];
+          if (daoIds.find((d) => d === dao.id)) {
+            daoIds.splice(
+              daoIds.findIndex((d) => d === dao.id),
+              1
+            );
+          } else {
+            daoIds.push(dao.id);
+          }
+          return {
+            ...currentPayloadData,
+            daoIds,
+          };
+        })
+      ),
+    [daosList]
+  );
+
   const onSave = useCallback(() => {
     if (endpointData?.id) {
       dispatch(
@@ -127,6 +154,16 @@ const useEndpointDetails = () => {
       );
     }
   }, [dispatch, endpointData, payloadData]);
+
+  const onDelete = useCallback(() => {
+    if (endpointData?.id) {
+      dispatch(
+        deleteEndpointByEndpointIdsApi.request({
+          endpointId: endpointData.id,
+        })
+      );
+    }
+  }, [dispatch, endpointData]);
 
   useEffect(() => {
     dispatch(getEndpointsApi.request({}));
@@ -159,7 +196,9 @@ const useEndpointDetails = () => {
     onWarmUpChange,
     onServiceChange,
     onAuthorizerChange,
+    onDaoChange,
     onSave,
+    onDelete,
   };
 };
 

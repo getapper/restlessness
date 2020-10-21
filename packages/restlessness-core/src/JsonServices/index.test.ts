@@ -3,6 +3,7 @@ import JsonEndpoints, { HttpMethod } from '../JsonEndpoints';
 import JsonAuthorizers, { JsonAuthorizersEntry } from '../JsonAuthorizers';
 import { execSync } from 'child_process';
 import * as TestUtils from '../TestUtils';
+import { RateUnit } from '../JsonSchedules';
 
 const PROJECT_NAME = 'tmp-json-services';
 
@@ -56,9 +57,9 @@ describe('JsonServices', () => {
     await JsonServices.read();
     await JsonServices.addScheduleEvent({
       id: 'schedule-event-test',
-      name: 'schedule-event-test',
       safeFunctionName: 'scheduleEventTest',
-      rate: 'rate(1 day)',
+      rateNumber: 1,
+      rateUnit: RateUnit.DAYS,
       serviceName: JsonServices.SHARED_SERVICE_NAME,
     });
     await JsonServices.save();

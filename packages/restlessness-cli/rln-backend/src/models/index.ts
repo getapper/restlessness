@@ -6,6 +6,7 @@ import Plugin from '../models/Plugin';
 import Model from '../models/Model';
 import Env from '../models/Env';
 import Authorizer from '../models/Authorizer';
+import Schedule from '../models/Schedule';
 
 export {
   BaseModel,
@@ -16,4 +17,5 @@ export {
   Plugin,
   Model,
   Env,
+  Schedule,
 };

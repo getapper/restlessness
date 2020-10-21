@@ -1,4 +1,4 @@
-import JsonSchedules from './';
+import JsonSchedules, {RateUnit} from './';
 import JsonServices from '../JsonServices';
 import * as TestUtils from '../TestUtils';
 import fsSync from 'fs';
@@ -21,14 +21,15 @@ describe('JsonSchedules', () => {
     const schedulesEntry = await JsonSchedules.createSchedule({
       serviceName: 'service-test-1',
       name: 'cron-function-test',
-      rate: 'rate(2 hours)',
+      rateNumber: 2,
+      rateUnit: RateUnit.HOURS,
     });
     expect(JsonSchedules.entries.length).toBe(1);
     expect(
-      fsSync.existsSync(path.join(PathResolver.getSchedulesPath, schedulesEntry.name, 'index.ts')),
+      fsSync.existsSync(path.join(PathResolver.getSchedulesPath, schedulesEntry.id, 'index.ts')),
     ).toBe(true);
     expect(
-      fsSync.existsSync(path.join(PathResolver.getSchedulesPath, schedulesEntry.name, 'handler.ts')),
+      fsSync.existsSync(path.join(PathResolver.getSchedulesPath, schedulesEntry.id, 'handler.ts')),
     ).toBe(true);
 
     await JsonSchedules.removeEntryById(schedulesEntry.id);

@@ -5,7 +5,6 @@ import {
   putInfosApi,
   getInfosApi,
   PutInfosApiParams,
-  PutInfosApiResponseData,
 } from "../../redux-store/extra-actions/apis";
 import { useDispatch, useSelector } from "react-redux";
 import { getAjaxIsLoadingByApi } from "../../redux-store/slices/ajax/selectors";

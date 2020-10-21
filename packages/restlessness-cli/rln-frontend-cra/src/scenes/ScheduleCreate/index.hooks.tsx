@@ -2,89 +2,88 @@ import * as React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useStyles from "./index.styles";
 import {
-  getAuthorizersApi,
   getDaosApi,
-  getEndpointsApi,
+  getSchedulesApi,
   getServicesApi,
-  HttpMethod,
-  postEndpointsApi,
-  PostEndpointsApiParams,
+  postSchedulesApi,
+  PostSchedulesApiParams,
 } from "../../redux-store/extra-actions/apis";
 import { useDispatch, useSelector } from "react-redux";
 import { getDaosList } from "../../redux-store/slices/dao/selectors";
-import { getAuthorizersList } from "../../redux-store/slices/authorizer/selectors";
 import { getAjaxIsLoadingByApi } from "../../redux-store/slices/ajax/selectors";
 import { getServicesList } from "../../redux-store/slices/service/selectors";
+import { RateUnit } from "redux-store/slices/schedule/interfaces";
 
-interface RouteParams {
-  endpointId: string;
-}
-
-const useEndpointCreate = () => {
+const useScheduleCreate = () => {
   const classes = useStyles();
   const derivedClasses = useMemo(
     () => ({
-      endpointEdit: {
-        root: classes.endpointEdit,
+      scheduleEdit: {
+        root: classes.scheduleEdit,
       },
     }),
     [classes]
   );
   const dispatch = useDispatch();
   const daosList = useSelector(getDaosList);
-  const authorizersList = useSelector(getAuthorizersList);
   const servicesList = useSelector(getServicesList);
-  const [payloadData, setPayloadData] = useState<PostEndpointsApiParams>({
-    warmupEnabled: false,
-    authorizerId: null,
+  const [payloadData, setPayloadData] = useState<PostSchedulesApiParams>({
+    name: "",
+    description: null,
+    rateNumber: 5,
+    rateUnit: RateUnit.MINUTES,
     daoIds: [],
-    route: "",
-    method: HttpMethod.PUT,
     serviceName: null,
   });
   const isLoadingDaos = useSelector(getAjaxIsLoadingByApi(getDaosApi.api));
-  const isLoadingAuthorizers = useSelector(
-    getAjaxIsLoadingByApi(getAuthorizersApi.api)
-  );
   const isLoadingServices = useSelector(
     getAjaxIsLoadingByApi(getServicesApi.api)
   );
-  const isSaving = useSelector(getAjaxIsLoadingByApi(postEndpointsApi.api));
+  const isSaving = useSelector(getAjaxIsLoadingByApi(postSchedulesApi.api));
 
   const isLoading = useMemo(
-    () =>
-      isLoadingAuthorizers || isLoadingDaos || isLoadingServices || isSaving,
-    [isLoadingAuthorizers, isLoadingDaos, isLoadingServices, isSaving]
+    () => isLoadingDaos || isLoadingServices || isSaving,
+    [isLoadingDaos, isLoadingServices, isSaving]
   );
 
-  const onWarmUpChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-      setPayloadData({
-        ...payloadData,
-        warmupEnabled: checked,
-      });
-    },
-    [payloadData]
-  );
-
-  const onRouteChange = useCallback(
+  const onNameChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setPayloadData({
         ...payloadData,
-        route: event.target.value,
+        name: event.target.value,
       });
     },
     [payloadData]
   );
 
-  const onMethodChange = useCallback(
+  const onDescriptionChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setPayloadData({
+        ...payloadData,
+        description: event.target.value,
+      });
+    },
+    [payloadData]
+  );
+
+  const onRateNumberChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setPayloadData({
+        ...payloadData,
+        rateNumber: parseInt(event.target.value, 10),
+      });
+    },
+    [payloadData]
+  );
+
+  const onRateUnitChange = useCallback(
     (
       event: React.ChangeEvent<{ name?: string; value: unknown }>,
       child: React.ReactNode
     ) => {
       setPayloadData({
         ...payloadData,
-        method: event.target.value as HttpMethod,
+        rateUnit: event.target.value as RateUnit,
       });
     },
     [payloadData]
@@ -98,19 +97,6 @@ const useEndpointCreate = () => {
       setPayloadData({
         ...payloadData,
         serviceName: event.target.value as string,
-      });
-    },
-    [payloadData]
-  );
-
-  const onAuthorizerChange = useCallback(
-    (
-      event: React.ChangeEvent<{ name?: string; value: unknown }>,
-      child: React.ReactNode
-    ) => {
-      setPayloadData({
-        ...payloadData,
-        authorizerId: event.target.value as string,
       });
     },
     [payloadData]
@@ -139,12 +125,11 @@ const useEndpointCreate = () => {
   );
 
   const onSave = useCallback(() => {
-    dispatch(postEndpointsApi.request(payloadData));
+    dispatch(postSchedulesApi.request(payloadData));
   }, [dispatch, payloadData]);
 
   useEffect(() => {
-    dispatch(getEndpointsApi.request({}));
-    dispatch(getAuthorizersApi.request({}));
+    dispatch(getSchedulesApi.request({}));
     dispatch(getDaosApi.request({}));
     dispatch(getServicesApi.request({}));
   }, [dispatch]);
@@ -153,18 +138,17 @@ const useEndpointCreate = () => {
     classes,
     derivedClasses,
     daosList,
-    authorizersList,
     servicesList,
     payloadData,
     isLoading,
-    onWarmUpChange,
-    onRouteChange,
-    onMethodChange,
+    onNameChange,
     onServiceChange,
-    onAuthorizerChange,
+    onRateNumberChange,
+    onRateUnitChange,
+    onDescriptionChange,
     onDaoChange,
     onSave,
   };
 };
 
-export default useEndpointCreate;
+export default useScheduleCreate;

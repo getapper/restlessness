@@ -16,6 +16,8 @@ import getInfos from './endpoints/get-infos';
 import getServicesByName from './endpoints/get-services-by-name';
 import deleteServicesByName from './endpoints/delete-services-by-name';
 import postServices from './endpoints/post-services';
+import postSchedules from './endpoints/post-schedules';
+import getSchedules from './endpoints/get-schedules';
 import putServicesByName from './endpoints/put-services-by-name';
 import putInfos from './endpoints/put-infos';
 
@@ -40,5 +42,7 @@ export {
   postServices,
   putServicesByName,
   putInfos,
+  postSchedules,
+  getSchedules,
 };
 

@@ -3,15 +3,12 @@ import useModelCreate from "./index.hooks";
 import {
   Button,
   Typography,
-  Switch,
-  FormControlLabel,
   Paper,
   FormControl,
   Select,
   MenuItem,
   TextField,
 } from "@material-ui/core";
-import { HttpMethod } from "../../redux-store/extra-actions/apis";
 
 const ModelCreate = () => {
   const {

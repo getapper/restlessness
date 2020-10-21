@@ -3,8 +3,6 @@ import useInfosDetails from "./index.hooks";
 import {
   Button,
   Typography,
-  Switch,
-  FormControlLabel,
   Paper,
   FormControl,
   Select,

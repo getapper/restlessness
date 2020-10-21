@@ -1,7 +1,6 @@
 import React, { memo } from "react";
 import useServiceCreate from "./index.hooks";
 import { Button, Typography, Paper, TextField } from "@material-ui/core";
-import { HttpMethod } from "../../redux-store/extra-actions/apis";
 
 const ServiceCreate = () => {
   const {

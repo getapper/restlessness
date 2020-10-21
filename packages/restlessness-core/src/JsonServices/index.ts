@@ -393,10 +393,10 @@ class JsonServices {
   async addScheduleEvent(event: JsonSchedulesEntry) {
     const scheduleEvent: ScheduleEvent = {
       schedule: {
-        name: event.name,
+        name: event.id,
         description: event.description,
         enabled: event.enabled,
-        rate: event.rate,
+        rate: `rate(${event.rateNumber} ${event.rateUnit}${event.rateNumber > 1 ? 's' : ''})`,
       },
     };
     if (event.input) {

@@ -19,7 +19,7 @@ export default async (req: Request) => {
     const endpoint: Endpoint = await Endpoint.getById(id);
     await endpoint.remove();
 
-    return ResponseHandler.json(endpoint);
+    return ResponseHandler.json({});
   } catch (e) {
     console.error(e);
     return ResponseHandler.json({}, StatusCodes.InternalServerError);

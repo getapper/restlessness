@@ -50,6 +50,7 @@ const EndpointCreate = () => {
     onMethodChange,
     onServiceChange,
     onAuthorizerChange,
+    onDaoChange,
     onSave,
   } = useEndpointCreate();
 
@@ -110,15 +111,14 @@ const EndpointCreate = () => {
         <Typography variant="h4" style={{ marginTop: "1rem" }}>
           DAOs
         </Typography>
-        {daosList?.map((dao) => (
+        {daosList?.map((dao, index) => (
           <FormControlLabel
             key={dao.id}
             control={
               <Switch
                 disabled={isLoading}
-                checked={
-                  payloadData?.daoIds?.includes(dao.id) !== null ?? false
-                }
+                checked={payloadData?.daoIds?.includes(dao.id) ?? false}
+                onChange={onDaoChange[index]}
               />
             }
             label={dao.name}

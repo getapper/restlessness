@@ -22,6 +22,11 @@ const useHeader = () => {
                 href: "#/endpoints",
                 page: "Endpoints",
               };
+            case "schedules":
+              return {
+                href: "#/schedules",
+                page: "Schedules",
+              };
             case "services":
               return {
                 href: "#/services",
