@@ -52,7 +52,7 @@ commands:
     steps:
       - run:
           name: Install env-cmd globally
-          command: npm i env-cmd -g
+          command: sudo npm i env-cmd -g
       - run:
           name: Set package.json version from git tag
           command: |
