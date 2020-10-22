@@ -295,6 +295,35 @@
       "warmup": {
         "enabled": false
       }
+    },
+    "putSchedulesById": {
+      "handler": "dist/exporter.putSchedulesById",
+      "events": [
+        {
+          "http": {
+            "path": "schedules/{id}",
+            "method": "put",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ],
+      "warmup": {
+        "enabled": false
+      }
+    },
+    "deleteSchedulesById": {
+      "handler": "dist/exporter.deleteSchedulesById",
+      "events": [
+        {
+          "http": {
+            "path": "schedules/{id}",
+            "method": "delete",
+            "cors": true,
+            "authorizer": null
+          }
+        }
+      ]
     }
   }
 }

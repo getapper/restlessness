@@ -8,10 +8,12 @@ export enum RateUnit {
 
 export interface Schedule {
   id: string;
+  description: string;
   safeFunctionName: string;
-  rate: string;
+  rateNumber: number;
+  rateUnit: RateUnit;
   daos: Dao[];
-  warmupEnabled: boolean;
+  enabled: boolean;
   serviceName: string;
 }
 

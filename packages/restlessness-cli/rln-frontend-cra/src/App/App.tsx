@@ -15,6 +15,7 @@ import Swagger from "../scenes/Swagger";
 import InfosDetails from "../scenes/InfosDetails";
 import SchedulesList from "scenes/SchedulesList";
 import ScheduleCreate from "scenes/ScheduleCreate";
+import ScheduleDetails from "scenes/ScheduleDetails";
 
 const App: React.FC = () => {
   const { classes, theme } = useAppHooks();
@@ -54,6 +55,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/schedules/create">
               <ScheduleCreate />
+            </Route>
+            <Route path="/schedules/:scheduleId">
+              <ScheduleDetails />
             </Route>
             <Route path="/schedules">
               <SchedulesList />

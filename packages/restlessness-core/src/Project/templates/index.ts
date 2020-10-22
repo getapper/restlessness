@@ -69,10 +69,10 @@ const generatePackageJson = (name: string) => `{
   "version": "0.0.0",
   "scripts": {
     "DEV:locale": "restlessness dev locale",
-    "DEPLOY:staging": "restlessness create-env staging && restlessness deploy --stage dev",
-    "REMOVE:staging": "restlessness remove --stage dev",
-    "DEPLOY:production": "restlessness create-env production && restlessness deploy --stage prod",
-    "REMOVE:production": "restlessness remove --stage prod",
+    "DEPLOY:staging": "restlessness create-env staging && restlessness deploy --env staging",
+    "REMOVE:staging": "restlessness remove --env staging",
+    "DEPLOY:production": "restlessness create-env production && restlessness deploy --env production",
+    "REMOVE:production": "restlessness remove --env production",
     "test": "restlessness create-env test && jest --runInBand",
     "tsc": "rimraf dist && tsc -p tsconfig.json"
   },

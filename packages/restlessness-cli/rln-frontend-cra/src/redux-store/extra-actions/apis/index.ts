@@ -411,9 +411,11 @@ export const getSchedulesApi = apiActionBuilder<
 );
 
 export interface PutSchedulesByScheduleIdApiPayload {
-  authorizerId: string | null;
+  description: string | null;
+  rateNumber: number;
+  rateUnit: RateUnit;
+  enabled: boolean;
   daoIds: string[];
-  warmupEnabled: boolean;
   serviceName: string | null;
 }
 export interface PutSchedulesByScheduleIdApiParams {

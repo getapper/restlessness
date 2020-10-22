@@ -1,17 +1,8 @@
 import path from 'path';
-import {JsonEndpoints, JsonServices, PathResolver, Response} from '../';
+import { JsonEndpoints, JsonServices, PathResolver, Response } from '../';
 import { APIGatewayEventRequestContextWithAuthorizer, ClientContext, CognitoIdentity } from 'aws-lambda';
 import EnvironmentHandler from '../EnvironmentHandler';
-import { HttpEvent } from '../JsonServices';
-
-interface Event {
-  http: {
-    path: string,
-    method: string,
-    cors?: boolean,
-    authorizer?: string
-  }
-}
+import { Event } from '../JsonServices';
 
 interface EndPoint {
   handler: string,
@@ -77,7 +68,7 @@ export class TestHandler {
     await JsonEndpoints.read();
     const jsonEndpointsEntry = await JsonEndpoints.getEntryById(apiName);
     const endpoint = await JsonServices.getEndpoint(jsonEndpointsEntry.serviceName, apiName);
-    const httpEvent = endpoint.events.filter(e => 'http' in e).pop() as HttpEvent;
+    const httpEvent = endpoint.events.filter(e => 'http' in e).pop() as Event;
 
     let requestContext: APIGatewayEventRequestContextWithAuthorizer<TAuthorizerContext> = null;
     if (authorizer) {

@@ -1,6 +1,7 @@
 import { existsSync, promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { RateUnit } from '../JsonSchedules';
 
 export default class Misc {
   static capitalize = (s: string): string => `${s[0].toUpperCase()}${s.slice(1)}`;
@@ -73,5 +74,8 @@ export default class Misc {
       safeFunctionName = `${id.substring(0, chars)}${hash.substring(0, 3)}${id.substring(id.length - chars)}`;
     }
     return safeFunctionName;
+  };
+  static generateRateFromNumberAndUnit(rateNumber: number, rateUnit: RateUnit): string {
+    return `rate(${rateNumber} ${rateUnit}${rateNumber > 1 ? 's' : ''})`;
   };
 }

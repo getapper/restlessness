@@ -4,17 +4,14 @@ export interface Functions {
   [key: string]: FunctionEndpoint
 }
 
-export interface HttpEvent {
-  http: {
+export interface Event {
+  http?: {
     path: string,
     method: HttpMethod,
     cors: boolean,
     authorizer?: string | { [key: string]: any }
   }
-}
-
-export interface ScheduleEvent {
-  schedule: {
+  schedule?: {
     name: string,
     description?: string,
     rate: string,
@@ -24,8 +21,6 @@ export interface ScheduleEvent {
     inputTransformer?: { [key: string]: any}
   }
 }
-
-type Event = HttpEvent | ScheduleEvent;
 
 export interface FunctionEndpoint {
   handler: string,

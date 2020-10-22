@@ -10,6 +10,7 @@ import getPlugins from './endpoints/get-plugins';
 import getAuthorizers from './endpoints/get-authorizers';
 import getEndpointsById from './endpoints/get-endpoints-by-id';
 import deleteEndpointsById from './endpoints/delete-endpoints-by-id';
+import deleteSchedulesById from './endpoints/delete-schedules-by-id';
 import putEndpointsById from './endpoints/put-endpoints-by-id';
 import getServices from './endpoints/get-services';
 import getInfos from './endpoints/get-infos';
@@ -19,6 +20,7 @@ import postServices from './endpoints/post-services';
 import postSchedules from './endpoints/post-schedules';
 import getSchedules from './endpoints/get-schedules';
 import putServicesByName from './endpoints/put-services-by-name';
+import putSchedulesById from './endpoints/put-schedules-by-id';
 import putInfos from './endpoints/put-infos';
 
 export {
@@ -44,5 +46,7 @@ export {
   putInfos,
   postSchedules,
   getSchedules,
+  putSchedulesById,
+  deleteSchedulesById,
 };
 

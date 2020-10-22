@@ -8,6 +8,9 @@ import { exporterTemplate, handlerTemplate, indexTemplate } from './templates';
 import { promisify } from 'util';
 import rimraf from 'rimraf';
 import JsonDaos from '../JsonDaos';
+import JsonAuthorizers from '../JsonAuthorizers';
+import { JsonEndpointsEntry } from '../JsonEndpoints';
+import Route from '../Route';
 
 export enum RateUnit {
   MINUTES = 'minute',
@@ -97,16 +100,60 @@ class JsonSchedules extends JsonConfigFile<JsonSchedulesEntry> {
     const jsonScheduleEventsEntry: JsonSchedulesEntry = await this.getEntryById(id);
     await super.removeEntryById(id);
 
+    /**
+     * SIDE EFFECTS
+     */
+
+    // Delete schedule folder
     const folderPath = path.join(PathResolver.getSchedulesPath, jsonScheduleEventsEntry.id);
     await promisify(rimraf)(folderPath);
 
+    // Re-generate exporter file after removing the schedule
     await this.generateExporter();
+
+    // Remove function handler in service json
+    await JsonServices.removeScheduleEvent(jsonScheduleEventsEntry.serviceName, jsonScheduleEventsEntry.safeFunctionName);
   }
 
   private async generateExporter() {
     await fs.writeFile(
       path.join(PathResolver.getSrcPath, 'schedulesExporter.ts'),
       exporterTemplate(this.entries),
+    );
+  }
+
+  async updateEntry(entry: JsonSchedulesEntry) {
+    const jsonSchedulesEntry = await this.getEntryById(entry.id);
+    jsonSchedulesEntry.description = entry.description;
+    jsonSchedulesEntry.rateNumber = entry.rateNumber;
+    jsonSchedulesEntry.rateUnit = entry.rateUnit;
+    const currentServiceName = jsonSchedulesEntry.serviceName;
+    jsonSchedulesEntry.serviceName = entry.serviceName;
+    if (entry.daoIds?.length) {
+      for (const id of entry.daoIds) {
+        if (!await JsonDaos.getEntryById(id)) {
+          throw new Error(`Dao with id ${id} not found`);
+        }
+      }
+      jsonSchedulesEntry.daoIds = [...entry.daoIds];
+    } else {
+      jsonSchedulesEntry.daoIds = [];
+    }
+    jsonSchedulesEntry.enabled = entry.enabled;
+
+    await super.updateEntry(jsonSchedulesEntry);
+
+    // side effects
+    await JsonServices.read();
+    if (currentServiceName !== jsonSchedulesEntry.serviceName) {
+      await JsonServices.changeScheduleService(currentServiceName, jsonSchedulesEntry.serviceName, jsonSchedulesEntry.safeFunctionName);
+    }
+    await JsonServices.updateSchedule(
+      jsonSchedulesEntry.serviceName,
+      jsonSchedulesEntry.safeFunctionName,
+      jsonSchedulesEntry.description,
+      Misc.generateRateFromNumberAndUnit(jsonSchedulesEntry.rateNumber, jsonSchedulesEntry.rateUnit),
+      jsonSchedulesEntry.enabled,
     );
   }
 }

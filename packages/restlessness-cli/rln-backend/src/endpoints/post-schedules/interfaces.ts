@@ -1,4 +1,4 @@
-import { RateUnit } from '@restlessness/core/dist';
+import { RateUnit } from '@restlessness/core';
 
 export interface Payload {
   name: string,

@@ -8,9 +8,10 @@ import _get from 'lodash.get';
 import path from 'path';
 import { generateServiceServerlessJson } from './templates';
 import PackageJson from '../PackageJson';
-import { FunctionEndpoint, JsonServerless, ScheduleEvent } from './interfaces';
+import { Event, FunctionEndpoint, JsonServerless } from './interfaces';
 import Project from '../Project';
 import { JsonSchedulesEntry } from '../JsonSchedules';
+import Misc from '../Misc';
 export * from './interfaces';
 
 class JsonServices {
@@ -391,12 +392,12 @@ class JsonServices {
   }
 
   async addScheduleEvent(event: JsonSchedulesEntry) {
-    const scheduleEvent: ScheduleEvent = {
+    const scheduleEvent: Event = {
       schedule: {
         name: event.id,
         description: event.description,
         enabled: event.enabled,
-        rate: `rate(${event.rateNumber} ${event.rateUnit}${event.rateNumber > 1 ? 's' : ''})`,
+        rate: Misc.generateRateFromNumberAndUnit(event.rateNumber, event.rateUnit),
       },
     };
     if (event.input) {
@@ -412,8 +413,31 @@ class JsonServices {
     await this.setFunctionToService(event.serviceName, event.safeFunctionName, functionEndpoint);
   }
 
+  async changeScheduleService(serviceName: string, newServiceName: string, functionName: string) {
+    const functionUpdate = {};
+    functionUpdate[functionName] = this.services[serviceName].functions[functionName];
+    _merge(this.services[newServiceName], { functions: functionUpdate });
+    _unset(this.services[serviceName].functions, functionName);
+  }
+
   async removeScheduleEvent(serviceName: string, safeFunctionName: string) {
     await this.removeFunction(serviceName, safeFunctionName);
+  }
+
+  async updateSchedule(serviceName: string, functionName: string, description: string, rate: string, enabled: boolean) {
+    if (!this.services[serviceName]?.functions[functionName]) {
+      throw Error(`${functionName} does not exists in service '${serviceName}'`);
+    }
+    this.services[serviceName].functions[functionName].events[0].schedule.description = description;
+    this.services[serviceName].functions[functionName].events[0].schedule.rate = rate;
+    this.services[serviceName].functions[functionName].events[0].schedule.enabled = enabled;
+    if (!this.offlineService?.functions[functionName]) {
+      throw Error(`${functionName} does not exists in service '${serviceName}'`);
+    }
+    this.offlineService.functions[functionName].events[0].schedule.description = description;
+    this.offlineService.functions[functionName].events[0].schedule.rate = rate;
+    this.offlineService.functions[functionName].events[0].schedule.enabled = enabled;
+    await this.save();
   }
 
   servicesHealthCheck() {
