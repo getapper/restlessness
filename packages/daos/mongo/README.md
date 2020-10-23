@@ -6,7 +6,7 @@ to create a database proxy.
 
 ## Installation
 From you restlessness project root run:
-Take me to [pookie](#pookie)
+
 ```shell script
 $ # Install node package
 $ npm i @restlessness/dao-mongo
