@@ -1,34 +1,46 @@
 {
+  "env": {
+    "es2021": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "airbnb-base"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 9,
+    "ecmaVersion": 12,
+    "project": "./tsconfig.json",
     "sourceType": "module"
   },
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "rules": {
-    "semi": [
+    "no-unused-vars": "off",
+    "no-underscore-dangle": "off",
+    "import/extensions": [
       "error",
-      "always"
-    ],
-    "comma-dangle": ["error", "always-multiline"],
-    "eqeqeq": "error",
-    "quotes": [
-      "error",
-      "single"
-    ],
-    "curly": "error",
-    "no-multiple-empty-lines": [
-      "error",
+      "ignorePackages",
       {
-        "max": 1
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
       }
     ],
-    "rest-spread-spacing": [
-      "error",
-      "never"
-    ],
-    "object-curly-spacing": [
-      "error",
-      "always"
-    ]
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
+    "dot-notation": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      },
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }

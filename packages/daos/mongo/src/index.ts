@@ -81,11 +81,6 @@ class MongoDaoPackage extends DaoPackage {
     const envFile = new EnvFile(jsonEnvsEntry.id);
     await envFile.setParametricValue('MONGO_URI');
     await envFile.setParametricValue('MONGO_DB_NAME');
-    const stageName = jsonEnvsEntry.type === 'deploy' ? jsonEnvsEntry.stage : jsonEnvsEntry.type;
-    await envFile.setValue('STAGE_NAME', stageName);
-    if (jsonEnvsEntry.type === 'test') {
-      await envFile.setValue('IS_OFFLINE', 'true');
-    }
   }
 
   async beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {

@@ -51,16 +51,9 @@ const generateOfflineServerlessJson = (projectName: string) => `{
     "runtime": "nodejs12.x"
   },
   "plugins": [
-    "serverless-offline",
-    "serverless-plugin-warmup"
+    "serverless-offline"
   ],
-  "functions": {},
-  "custom": {
-    "warmup": {
-      "prewarm": true,
-      "enabled": true
-    }
-  }
+  "functions": {}
 }
 `;
 
@@ -83,8 +76,12 @@ const generatePackageJson = (name: string) => `{
     "@types/aws-lambda": "8.10.50",
     "@types/jest": "25.2.3",
     "@types/node": "12.7.2",
-    "@typescript-eslint/parser": "2.1.0",
-    "eslint": "6.8.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
+    "eslint": "^7.9.0",
+    "eslint-config-airbnb-base": "14.2.0",
+    "eslint-import-resolver-typescript": "2.3.0",
+    "eslint-plugin-import": "2.22.0",
     "jest": "26.0.1",
     "serverless-offline": "6.8.0",
     "serverless-plugin-warmup": "4.9.0",
