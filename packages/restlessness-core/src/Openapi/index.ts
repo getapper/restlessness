@@ -4,6 +4,14 @@ import PathResolver from '../PathResolver';
 import JsonEndpoints from '../JsonEndpoints';
 import Route from '../Route';
 
+export enum OpenapiTypes {
+  array = 'array',
+  boolean = 'boolean',
+  integer = 'integer',
+  number = 'number',
+  string = 'string',
+}
+
 export default class Openapi {
   id: number
 
@@ -14,17 +22,18 @@ export default class Openapi {
   static getParameters (fields, allKeys, inValue) {
     const fieldsKeys = Object.keys(fields);
     for (let fieldKey of fieldsKeys) {
-      if (fields[fieldKey]._type === 'object'){
-        allKeys[fieldKey] = {
-          type: 'object',
-          properties: {},
-        };
-        Openapi.getParameters(fields[fieldKey].fields, allKeys[fieldKey].properties, inValue);
-      } else if (fields[fieldKey]._type === 'array') {
-        allKeys[fieldKey] = {
-          type: 'array',
-        };
-        Openapi.getParameters({ items: fields[fieldKey].innerType }, allKeys[fieldKey], inValue);
+      if (fields[fieldKey]._type === 'array') {
+        allKeys.push({
+          name: fieldKey,
+          required: inValue === 'path' ? true : undefined,
+          in: inValue,
+          schema: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+        });
       } else {
         let type = fields[fieldKey]._type;
         if (fields[fieldKey]._type === 'number') {
@@ -33,12 +42,25 @@ export default class Openapi {
           } else {
             type = 'number';
           }
+        } else if (Object.values(OpenapiTypes).includes(type)) {
+          allKeys.push({
+            name: fieldKey,
+            required: inValue === 'path' ? true : undefined,
+            in: inValue,
+            schema: {
+              type: type,
+            },
+          });
+        } else {
+          allKeys.push({
+            name: fieldKey,
+            required: inValue === 'path' ? true : undefined,
+            in: inValue,
+            schema: {
+              type: 'string',
+            },
+          });
         }
-        allKeys.push({
-          name: fieldKey,
-          type: type,
-          in: inValue,
-        });
       }
     }
   }
@@ -66,9 +88,16 @@ export default class Openapi {
             type = 'number';
           }
         }
-        allKeys[fieldKey] = {
-          type: type,
-        };
+
+        if (Object.values(OpenapiTypes).includes(type)) {
+          allKeys[fieldKey] = {
+            type: type,
+          };
+        } else {
+          allKeys[fieldKey] = {
+            type: 'string',
+          };
+        }
       }
     }
   }
