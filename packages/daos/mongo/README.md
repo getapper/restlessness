@@ -86,7 +86,7 @@ const result = await mongoDao.insertOne('my-collection', user);
 
 ## Hooks
 The package uses the `beforeEndpoint`
-[hook](https://www.github.com/getapper/restlessness/packages/restlessness-core) to extend the
+[hook](https://www.github.com/getapper/restlessness/packages/restlessness-core/README.md#AddOnPackage) to extend the
 [yup](https://github.com/jquense/yup#mixed) validation by defining the `yup.objectId` validation object.
 
 ## Documentation
