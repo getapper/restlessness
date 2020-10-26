@@ -38,7 +38,8 @@ For each endpoint created, Restlessness creates furthermore:
 
 ## How
 
-Restlessness is a multi-package framework. The main one is the CLI package.
+Restlessness is a multi-package framework. The main one is the
+[CLI](https://github.com/getapper/restlessness/tree/master/packages/restlessness-cli) package.
 
 To install the CLI run:
 
