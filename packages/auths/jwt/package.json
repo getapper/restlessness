@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/auth-jwt",
-  "version": "0.0.3",
+  "version": "0.0.0",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -12,11 +12,15 @@
     "cross-env": "7.0.2",
     "eslint": "6.8.0",
     "rimraf": "3.0.2",
-    "typescript": "3.8.3"
+    "typescript": "3.8.3",
+    "yup": "0.29.3"
   },
   "dependencies": {
-    "@restlessness/utilities": "0.0.8",
+    "@restlessness/core": "0.5.10",
     "jsonwebtoken": "8.5.1"
+  },
+  "peerDependencies": {
+    "yup": "^0.28.3"
   },
   "repository": {
     "url": "https://github.com/getapper/restlessness/tree/master/packages/auths/jwt"
