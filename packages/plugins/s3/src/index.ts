@@ -1,5 +1,6 @@
 import { PluginPackage, EnvFile } from '@restlessness/core';
 import useS3 from './aws-s3';
+import AWSLambda from 'aws-lambda';
 
 class S3Package extends PluginPackage {
   async postInstall(): Promise<void> {
@@ -12,7 +13,8 @@ class S3Package extends PluginPackage {
     await envFile.setParametricValue('RLN_S3_AWS_REGION');
   }
 
-  async beforeLambda<T>(event?: AWSLambda.APIGatewayProxyEventBase<T>, context?: AWSLambda.Context): Promise<void> {}
+  async beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {}
+  async beforeSchedule<T>(event: AWSLambda.ScheduledEvent | T, context: AWSLambda.Context) {}
 }
 
 export { useS3 };
