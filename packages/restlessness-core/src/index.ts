@@ -9,6 +9,7 @@ export { default as JsonEnvs, JsonEnvsEntry, EnvStage, EnvType } from './JsonEnv
 export { default as EnvFile, ENV } from './EnvFile';
 export { default as JsonModels, JsonModelsEntry } from './JsonModels';
 export { default as JsonDaos, JsonDaosEntry } from './JsonDaos';
+export { default as JsonPlugins, JsonPluginsEntry } from './JsonPlugins';
 export { default as Project } from './Project';
 export { default as Misc } from './Misc';
 export { default as PathResolver } from './PathResolver';

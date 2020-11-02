@@ -1,13 +1,13 @@
-import { PluginPackage, EnvFile, JsonPlugins, JsonEnvs, JsonEnvsEntry } from '@restlessness/core';
-import useS3 from './aws-s3';
+import { PluginPackage, EnvFile, JsonEnvsEntry, JsonEnvs, JsonPlugins } from '@restlessness/core';
+import useSes from './aws-ses';
 import AWSLambda from 'aws-lambda';
 
-class S3Package extends PluginPackage {
+class SesPackage extends PluginPackage {
   async postInstall(): Promise<void> {
     await JsonPlugins.addEntry({
-      id: 'plugin-s3',
-      name: 'AWS S3',
-      package: '@restlessness/plugin-s3',
+      id: 'plugin-ses',
+      name: 'AWS SES',
+      package: '@restlessness/plugin-ses',
     });
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(this.addEnv));
@@ -25,12 +25,12 @@ class S3Package extends PluginPackage {
 
   private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {
     const envFile = new EnvFile(jsonEnvsEntry.id);
-    await envFile.setParametricValue('RLN_S3_AWS_ACCESS_KEY_ID');
-    await envFile.setParametricValue('RLN_S3_AWS_SECRET_ACCESS_KEY');
-    await envFile.setParametricValue('RLN_S3_AWS_REGION');
+    await envFile.setParametricValue('RLN_SES_AWS_ACCESS_KEY_ID');
+    await envFile.setParametricValue('RLN_SES_AWS_SECRET_ACCESS_KEY');
+    await envFile.setParametricValue('RLN_SES_AWS_REGION');
   }
 }
 
-export default new S3Package();
+export default new SesPackage();
 
-export { useS3 };
+export { useSes };

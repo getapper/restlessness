@@ -53,6 +53,10 @@ export default class PathResolver {
     return path.join(PathResolver.getConfigsPath, 'daos.json');
   }
 
+  static get getPluginsConfigPath(): string {
+    return path.join(PathResolver.getConfigsPath, 'plugins.json');
+  }
+
   static get getDefaultHeadersConfigPath(): string {
     return path.join(PathResolver.getConfigsPath, 'default-headers.json');
   }

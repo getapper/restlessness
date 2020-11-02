@@ -1,5 +1,5 @@
 {
-  "name": "@restlessness/plugin-s3",
+  "name": "@restlessness/plugin-ses",
   "version": "0.0.0",
   "main": "dist/index.js",
   "author": "Getapper",
@@ -23,6 +23,6 @@
     "prepublishOnly": "npm run tsc",
     "npm:tag": "node ../../scripts/git-packages-tagger.js",
     "tsc": "rimraf dist && tsc -p tsconfig.json",
-    "update-deps": "npm i @restlessness/core@latest -S -E"
+    "update-deps": "npm i @restlessness/core@0.5.18 -S -E"
   }
 }

@@ -112,6 +112,20 @@ jobs:
       - deps_and_publish:
           working_directory: packages/plugins/s3
 
+  rln-plugin-ses-tests:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_tests:
+          working_directory: packages/plugins/ses
+
+  rln-plugin-ses-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/plugins/ses
+
   rln-cli-tests:
     executor: node12
     steps:
@@ -136,7 +150,6 @@ jobs:
           working_directory: packages/restlessness-cli
     environment:
       - NODE_OPTIONS: "--max-old-space-size=1024"
-
 
   rln-core-tests:
     executor: node12
@@ -181,6 +194,15 @@ workflows:
           filters:
             tags:
               only: /^@restlessness/plugin-s3/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-plugin-ses:
+    jobs:
+      - rln-plugin-ses-publish:
+          filters:
+            tags:
+              only: /^@restlessness/plugin-ses/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
 

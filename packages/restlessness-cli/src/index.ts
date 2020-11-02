@@ -6,6 +6,7 @@ import newProject from './commands/new-project';
 import dev from './commands/dev';
 import createEnv from './commands/create-env';
 import addDao from './commands/add-dao';
+import addPlugin from './commands/add-plugin';
 import addAuth from './commands/add-auth';
 import deploy from './commands/deploy';
 import remove from './commands/remove';
@@ -31,6 +32,9 @@ const cli = async () => {
       break;
     case 'add-dao':
       await addDao(argv);
+      break;
+    case 'add-plugin':
+      await addPlugin(argv);
       break;
     case 'add-auth':
       await addAuth(argv);
