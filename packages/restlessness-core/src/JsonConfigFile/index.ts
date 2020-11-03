@@ -26,6 +26,14 @@ export default abstract class JsonConfigFile<T extends JsonConfigEntry> {
     return this.entries.find(entry => entry['id'] === id);
   }
 
+  async getEntryBySafeFunctionName(safeFunctionName: string): Promise<T> {
+    if (!safeFunctionName) {
+      return null;
+    }
+    await this.read();
+    return this.entries.find(entry => entry['safeFunctionName'] === safeFunctionName);
+  }
+
   /**
    * Add a new entry and save the Json file
    * @param entry

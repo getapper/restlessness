@@ -53,21 +53,21 @@ export class TestHandler {
   static async afterAll() {}
 
   static async invokeLambda<TAuthorizerContext>(
-    apiName: string,
+    safeFunctionName: string,
     data?: RequestData,
     authorizer?: TAuthorizerContext,
     event?: TestAPIGatewayProxyEventBase<TAuthorizerContext>,
     context?: TestContext,
   ): Promise<Response> {
     const exporter = require(path.join(PathResolver.getDistPath, 'exporter.js'));
-    const lambda: Lambda<TAuthorizerContext> = exporter[apiName];
+    const lambda: Lambda<TAuthorizerContext> = exporter[safeFunctionName];
     if (typeof lambda !== 'function') {
-      throw new Error(`Wrong api name: ${apiName}. Supported api names: ${Object.keys(exporter)}`);
+      throw new Error(`Wrong api name: ${safeFunctionName}. Supported api names: ${Object.keys(exporter)}`);
     }
 
     await JsonEndpoints.read();
-    const jsonEndpointsEntry = await JsonEndpoints.getEntryById(apiName);
-    const endpoint = await JsonServices.getEndpoint(jsonEndpointsEntry.serviceName, apiName);
+    const jsonEndpointsEntry = await JsonEndpoints.getEntryBySafeFunctionName(safeFunctionName);
+    const endpoint = await JsonServices.getEndpoint(jsonEndpointsEntry.serviceName, safeFunctionName);
     const httpEvent = endpoint.events.filter(e => 'http' in e).pop() as Event;
 
     let requestContext: APIGatewayEventRequestContextWithAuthorizer<TAuthorizerContext> = null;
