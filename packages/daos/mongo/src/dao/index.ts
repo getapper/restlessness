@@ -22,6 +22,8 @@ interface ProxyRequest {
 interface ProxyResponse {
   responseBufferValues?: number[]
   error?: string
+  errorType?: string
+  errorMessage?: string
 }
 
 class MongoDao {
@@ -91,6 +93,10 @@ class MongoDao {
 
     if (response.error) {
       throw new Error(response.error);
+    }
+
+    if (response.errorMessage) {
+      throw new Error(`${response.errorType}: ${response.errorMessage}`);
     }
 
     try {
