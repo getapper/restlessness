@@ -96,7 +96,7 @@ class MongoDao {
     try {
       return Bson.deserialize(Buffer.from(response.responseBufferValues)).result;
     } catch (e) {
-      throw new Error(`Error on bson deserialize, ${e}`);
+      throw new Error(`Error on bson deserialize, ${e}, Request: ${JSON.stringify(request)}, Response: ${JSON.stringify(response)}`);
     }
   }
 
