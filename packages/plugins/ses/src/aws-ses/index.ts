@@ -47,5 +47,5 @@ const awsSES = new AwsSES();
 
 export default () => {
   awsSES.init();
-  return SES;
+  return awsSES;
 };
