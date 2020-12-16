@@ -172,6 +172,13 @@ jobs:
       - deps_and_publish:
           working_directory: packages/auths/cognito
 
+  rln-auth-jwt-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/auths/jwt
+
 workflows:
   rln-dao-mongo:
     jobs:
@@ -242,5 +249,14 @@ workflows:
           filters:
             tags:
               only: /^@restlessness/auth-cognito/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-auth-jwt:
+    jobs:
+      - rln-auth-jwt-publish:
+          filters:
+            tags:
+              only: /^@restlessness/auth-jwt/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
