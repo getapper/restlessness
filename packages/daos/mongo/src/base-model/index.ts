@@ -4,8 +4,8 @@ import {
   InsertOneWriteOpResult,
   UpdateWriteOpResult,
   FindOneOptions,
-  QuerySelector,
   DeleteWriteOpResultObject,
+  FilterQuery,
 } from 'mongodb';
 
 export default class MongoBase {
@@ -32,7 +32,7 @@ export default class MongoBase {
     return result !== null;
   }
 
-  static async getList<T>(query: QuerySelector<T> = {}, limit: number = 10, skip: number = 0, sortBy: string = null, asc: boolean = true): Promise<T[]> {
+  static async getList<T>(query: FilterQuery<T> = {}, limit: number = 10, skip: number = 0, sortBy: string = null, asc: boolean = true): Promise<T[]> {
     const options: FindOneOptions = {};
     options.limit = limit;
     if (sortBy) {
@@ -51,7 +51,7 @@ export default class MongoBase {
     });
   }
 
-  static async getCounter<T>(query: QuerySelector<T> = {}): Promise<number> {
+  static async getCounter<T>(query: FilterQuery<T> = {}): Promise<number> {
     return MongoBase.dao.count(this.collectionName, query, {});
   }
 
