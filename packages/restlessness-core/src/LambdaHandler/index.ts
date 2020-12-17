@@ -120,5 +120,6 @@ export const LambdaHandler = async <T  extends AuthorizerContext, Q, P, PP>(
     payload,
     pathParameters,
     session: parsedSession,
+    headers: event.headers,
   });
 };

@@ -24,4 +24,5 @@ export interface RequestI<Q, P, PP> {
   payload: P,
   pathParameters: PP,
   session?: any
+  headers?: { [name: string]: string }
 }
