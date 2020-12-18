@@ -16,6 +16,9 @@ export const generateServiceServerlessJson = (projectName: string, serviceName: 
   "package": {
     "exclude": [
       ".serverless-outputs/**"
+    ],
+    "include": [
+      ".env"
     ]
   },
   "plugins": [

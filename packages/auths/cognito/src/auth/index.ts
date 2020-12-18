@@ -385,18 +385,33 @@ export abstract class UserPoolsManager {
   abstract get poolInfos(): PoolInfo[];
 
   async init() {
-    this.pools = this.poolInfos.map(poolInfo => new UserPoolManager(
-      poolInfo.id,
-      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_POOL_ID`],
-      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_CLIENT_ID`],
-      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_AUTH_DOMAIN`],
-      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REDIRECT_URI`],
-      process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REGION`],
-      poolInfo.attributes,
-      process.env['RLN_COGNITO_AUTH_ACCESS_KEY_ID'],
-      process.env['RLN_COGNITO_AUTH_SECRET_ACCESS_KEY'],
-    ));
-    return Promise.all(this.pools.map(async pool => await pool.init()));
+    try {
+      this.pools = this.poolInfos.map(poolInfo => new UserPoolManager(
+        poolInfo.id,
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_POOL_ID`],
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_CLIENT_ID`],
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_AUTH_DOMAIN`],
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REDIRECT_URI`],
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REGION`],
+        poolInfo.attributes,
+        process.env['RLN_COGNITO_AUTH_ACCESS_KEY_ID'],
+        process.env['RLN_COGNITO_AUTH_SECRET_ACCESS_KEY'],
+      ));
+      return Promise.all(this.pools.map(async pool => await pool.init()));
+    } catch (e) {
+      console.info(this.poolInfos.map(poolInfo => ([
+        poolInfo.id,
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_POOL_ID`],
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_CLIENT_ID`],
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_AUTH_DOMAIN`],
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REDIRECT_URI`],
+        process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_REGION`],
+        poolInfo.attributes,
+        process.env['RLN_COGNITO_AUTH_ACCESS_KEY_ID'],
+        process.env['RLN_COGNITO_AUTH_SECRET_ACCESS_KEY'],
+      ])));
+      throw e;
+    }
   }
 
   getUserPoolById(id: string) {

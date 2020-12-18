@@ -8,6 +8,9 @@ const generateSharedResourcesServerlessJson = (projectName: string) => `{
   "package": {
     "exclude": [
       ".serverless-outputs/**"
+    ],
+    "include": [
+      ".env"
     ]
   },
   "resources": {
@@ -106,7 +109,9 @@ const generatePackageJson = (name: string) => `{
 
 const generateGitIgnore = (): string => `node_modules
 .serverless
+.serverless-outputs
 !.env.test
+/.env
 
 # IntelliJ
 .idea
