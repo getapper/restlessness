@@ -17,6 +17,9 @@ class ObjectIdSchema extends yup.mixed {
     // @ts-ignore
     this.withMutation(schema => {
       schema.transform(function(value) {
+        if (value === null) {
+          return null;
+        }
         return new ObjectId(value);
       });
     });
