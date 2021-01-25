@@ -65,9 +65,9 @@ export default async (argv: minimist.ParsedArgs) => {
   } catch (ex) {}
 
   for (let serviceName of servicesToDeploy) {
-    const packagePath = path.join(outputPath, serviceName);
+    const packagePath = path.relative(process.cwd(), path.join(outputPath, serviceName));
     await fs.mkdir(packagePath, { recursive: true });
-    const servicePath = path.join(PathResolver.getServicesJsonPath, `${serviceName}.json`);
+    const servicePath = path.relative(process.cwd(), path.join(PathResolver.getServicesJsonPath, `${serviceName}.json`));
 
     console.log(chalk.blue('Restlessness:'), 'Packaging service', serviceName, servicePath, packagePath);
     const packageArgs = ['--config', servicePath, 'package', '--package', packagePath, '--stage', jsonEnv.stage, '--verbose'];
