@@ -36,13 +36,7 @@ export default class Openapi {
         });
       } else {
         let type = fields[fieldKey]._type;
-        if (fields[fieldKey]._type === 'number') {
-          if (fields[fieldKey]?._exclusive?.integer !== 'undefined') {
-            type = 'integer';
-          } else {
-            type = 'number';
-          }
-        } else if (Object.values(OpenapiTypes).includes(type)) {
+        if (Object.values(OpenapiTypes).includes(type)) {
           allKeys.push({
             name: fieldKey,
             required: inValue === 'path' ? true : undefined,
