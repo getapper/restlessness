@@ -46,7 +46,7 @@ class JsonServices {
 
     const { name: projectName } = await PackageJson.read();
     const services: JsonServerless[] = await fs.readdir(this.jsonPath)
-      .then(serviceFiles => serviceFiles.map(file => fs.readFile(path.join(this.jsonPath, file))))
+      .then(serviceFiles => serviceFiles.filter(file => file.indexOf('.json') !== -1).map(file => fs.readFile(path.join(this.jsonPath, file))))
       .then(files => Promise.all(files))
       .then(files => files.map(f => JSON.parse(f.toString())));
 

@@ -37,7 +37,7 @@ export default class Openapi {
       } else {
         let type = fields[fieldKey]._type;
         if (fields[fieldKey]._type === 'number') {
-          if (fields[fieldKey]._exclusive.integer !== 'undefined') {
+          if (fields[fieldKey]?._exclusive?.integer !== 'undefined') {
             type = 'integer';
           } else {
             type = 'number';
