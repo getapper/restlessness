@@ -5,6 +5,8 @@ import chalk from 'chalk';
 import { which } from 'shelljs';
 import { EnvFile, ENV } from '@restlessness/core';
 
+const isWin = process.platform === 'win32';
+
 const printRestlessnessData = (d, newlineAtStart = false) => {
   const data = d.toString();
   const nl = data.endsWith('\n') ? '' : '\n';
@@ -59,7 +61,7 @@ function spawnBackend(): Promise<ChildProcess> {
       for the parent) as well as the 'message' event.
       see https://nodejs.org/api/child_process.html#child_process_options_stdio for a detailed description.
       */
-      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+      stdio: isWin ? undefined : ['pipe', 'pipe', 'pipe', 'ipc'],
       shell: true,
     });
     proc.stdout.on('data', d => {
