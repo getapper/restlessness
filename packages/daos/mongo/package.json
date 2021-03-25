@@ -36,7 +36,7 @@
     "npm:tag": "node ../../../scripts/git-packages-tagger.js",
     "clean": "rimraf dist",
     "tsc": "npm run clean && tsc -p tsconfig.json",
-    "test": "npm run tsc && jest",
+    "test": "jest",
     "update-deps": "npm i @restlessness/core@latest -S -E"
   },
   "jest": {

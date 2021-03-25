@@ -91,7 +91,7 @@ export default class MongoBase {
     return false;
   }
 
-  async remove<T>(): Promise<boolean> {
+  async remove(): Promise<boolean> {
     if (this._id) {
       const response: DeleteWriteOpResultObject = await MongoBase.dao.deleteOne(this.constructor.collectionName, {
         _id: this._id,

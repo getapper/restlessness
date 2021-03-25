@@ -10,6 +10,34 @@ import AWSLambda from 'aws-lambda';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
+const yupObjectId = () => yup
+  .mixed()
+  .transform((value, originalValue) => {
+    if (value === null) {
+      return null;
+    }
+    if (!ObjectId.isValid(value)) {
+      return null;
+    }
+    return new ObjectId(value);
+  })
+  .test(
+    'isValidObjectId',
+    'Argument passed in must be a single String of 12 bytes or a string of 24 hex characters',
+    function (value) {
+      const { path, createError } = this;
+
+      if (value === null) {
+        return createError({ path });
+      }
+
+      return true;
+    },
+  );
+
+/**
+ * @deprecated
+ */
 class ObjectIdSchema extends yup.mixed {
   constructor() {
     super({ type: 'objectId' });
@@ -87,6 +115,9 @@ class MongoDaoPackage extends DaoPackage {
   }
 
   async beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
+    /**
+     * @deprecated
+     */
     const projectYup = require(path.join(PathResolver.getNodeModulesPath, 'yup'));
     if (!projectYup.objectId) {
       projectYup.objectId = () => new ObjectIdSchema();
@@ -106,4 +137,5 @@ export {
   MongoBase,
   mongoDao,
   ObjectId,
+  yupObjectId,
 };

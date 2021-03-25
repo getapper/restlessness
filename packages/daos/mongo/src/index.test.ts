@@ -3,7 +3,8 @@ import rimraf from 'rimraf';
 import { promisify } from 'util';
 import { promises as fs } from 'fs';
 import { Project, JsonDaos } from '@restlessness/core';
-import MongoDaoPackage from '.';
+import MongoDaoPackage, { ObjectId, yupObjectId } from '.';
+import * as yup from 'yup';
 
 const PROJECT_NAME = 'tmp-mongo-dao';
 
@@ -26,6 +27,24 @@ describe('Mongo Dao Package hooks', () => {
     const jsonDaosEntry = await JsonDaos.getEntryById('dao-mongo');
     expect(jsonDaosEntry.package).toBe('@restlessness/dao-mongo');
     await expect(MongoDaoPackage.postInstall()).rejects.toEqual(new Error('Entry with id dao-mongo already exists'));
+    done();
+  });
+
+  test('Yup object id validator',  async (done) => {
+    const schema = yup.object().shape({
+      _id: yupObjectId().required(),
+    });
+
+    await expect(schema.validate({ _id: 'jimmy' }))
+      .rejects
+      .toThrow();
+    await expect(schema.validate({}))
+      .rejects
+      .toThrow();
+    await schema.validate({ _id: new ObjectId() });
+    const objId = new ObjectId();
+    const result = await schema.validate({ _id: objId.toHexString() });
+    expect(objId.equals(result._id)).toBe(true);
     done();
   });
 });
