@@ -74,15 +74,7 @@ export default class Openapi {
         };
         Openapi.getPropertiesRequestBody({ items: fields[fieldKey].innerType }, allKeys[fieldKey]);
       } else {
-        let type = fields[fieldKey]._type;
-        if (fields[fieldKey]._type === 'number') {
-          if (fields[fieldKey]._exclusive.integer !== 'undefined') {
-            type = 'integer'; 
-          } else {
-            type = 'number';
-          }
-        }
-
+        let type = fields[fieldKey]?._type;
         if (Object.values(OpenapiTypes).includes(type)) {
           allKeys[fieldKey] = {
             type: type,
