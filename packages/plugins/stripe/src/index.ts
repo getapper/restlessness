@@ -1,12 +1,18 @@
-import { PluginPackage, EnvFile, JsonPlugins, JsonEnvs, JsonEnvsEntry } from '@restlessness/core';
-import AWSLambda from 'aws-lambda';
+import {
+  PluginPackage,
+  EnvFile,
+  JsonPlugins,
+  JsonEnvs,
+  JsonEnvsEntry,
+} from "@restlessness/core";
+import AWSLambda from "aws-lambda";
 
 class StripePackage extends PluginPackage {
   async postInstall(): Promise<void> {
     await JsonPlugins.addEntry({
-      id: 'plugin-stripe',
-      name: 'Stripe Payment Gateway',
-      package: '@restlessness/plugin-stripe',
+      id: "plugin-stripe",
+      name: "Stripe Payment Gateway",
+      package: "@restlessness/plugin-stripe",
     });
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(this.addEnv));
@@ -18,13 +24,19 @@ class StripePackage extends PluginPackage {
     await this.addEnv(jsonEnvsEntry);
   }
 
-  async beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {}
+  async beforeEndpoint<T>(
+    event: AWSLambda.APIGatewayProxyEventBase<T>,
+    context: AWSLambda.Context,
+  ): Promise<void> {}
 
-  async beforeSchedule<T>(event: AWSLambda.ScheduledEvent | T, context: AWSLambda.Context) {}
+  async beforeSchedule<T>(
+    event: AWSLambda.ScheduledEvent | T,
+    context: AWSLambda.Context,
+  ) {}
 
   private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {
     const envFile = new EnvFile(jsonEnvsEntry.id);
-    await envFile.setParametricValue('STRIPE_KEY');
+    await envFile.setParametricValue("STRIPE_SECRET_KEY");
   }
 }
 
