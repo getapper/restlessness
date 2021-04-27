@@ -88,6 +88,7 @@ const generatePackageJson = (name: string) => `{
     "jest": "26.0.1",
     "serverless-offline": "6.8.0",
     "serverless-plugin-warmup": "4.9.0",
+    "serverless-prune-plugin": "1.4.3",
     "typescript": "3.8.3"
   },
   "peerDependencies": {

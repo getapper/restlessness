@@ -22,6 +22,7 @@ export const generateServiceServerlessJson = (projectName: string, serviceName: 
     ]
   },
   "plugins": [
+    "serverless-prune-plugin",
     "serverless-plugin-warmup"
   ],
   "functions": {},
@@ -29,6 +30,10 @@ export const generateServiceServerlessJson = (projectName: string, serviceName: 
     "warmup": {
       "prewarm": true,
       "enabled": true
+    },
+    "prune": {
+      "automatic": true,
+      "number": 3
     }
   }
 }
