@@ -1,14 +1,14 @@
-import { SES, Credentials } from 'aws-sdk';
+import { SNS, Credentials } from 'aws-sdk';
 
-class AwsSES {
-  awsSES: SES
+class AwsSNS {
+  awsSNS: SNS
 
   init() {
-    const SESConfigOptions:SES.ClientConfiguration = {
+    const SNSConfigOptions:SNS.ClientConfiguration = {
       credentials: new Credentials(process.env['RLN_SES_AWS_ACCESS_KEY_ID'], process.env['RLN_SES_AWS_SECRET_ACCESS_KEY']),
       region: process.env['RLN_SES_AWS_REGION'],
     };
-    this.awsSES = new SES(SESConfigOptions);
+    this.awsSNS = new SNS(SNSConfigOptions);
   }
 
   /*
@@ -42,14 +42,33 @@ class AwsSES {
   }
    */
 
-  async createTopic() {
-
+  async createTopic(topicName: string, displayName: string = topicName) {
+    const params: SNS.Types.CreateTopicInput = {
+      Name: topicName,
+      Attributes:{
+        DisplayName: displayName,
+      },
+    };
+    return await this.awsSNS.createTopic(params).promise();
   }
+
+  async publish(message: string, ARN: string, messageTitle: string){
+    const params: SNS.Types.PublishInput = {
+      MessageStructure: 'JSON',
+      Message: JSON.stringify({
+        default: message,
+        title: messageTitle,
+      }),
+      TopicArn: ARN,
+    };
+    return await this.awsSNS.publish(params).promise();
+  }
+
 }
 
-const awsSES = new AwsSES();
+const awsSNS = new AwsSNS();
 
 export default () => {
-  awsSES.init();
-  return awsSES;
+  awsSNS.init();
+  return awsSNS;
 };
