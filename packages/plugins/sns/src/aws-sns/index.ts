@@ -5,8 +5,8 @@ class AwsSNS {
 
   init() {
     const SNSConfigOptions:SNS.ClientConfiguration = {
-      credentials: new Credentials(process.env['RLN_SES_AWS_ACCESS_KEY_ID'], process.env['RLN_SES_AWS_SECRET_ACCESS_KEY']),
-      region: process.env['RLN_SES_AWS_REGION'],
+      credentials: new Credentials(process.env['RLN_SNS_AWS_ACCESS_KEY_ID'], process.env['RLN_SNS_AWS_SECRET_ACCESS_KEY']),
+      region: process.env['RLN_SNS_AWS_REGION'],
     };
     this.awsSNS = new SNS(SNSConfigOptions);
   }
@@ -52,12 +52,29 @@ class AwsSNS {
     return await this.awsSNS.createTopic(params).promise();
   }
 
-  async publish(message: string, ARN: string, messageTitle: string){
+  async publish(title: string, ARN: string, message: string, eventId: string){
     const params: SNS.Types.PublishInput = {
-      MessageStructure: 'JSON',
+      MessageStructure: 'json',
       Message: JSON.stringify({
-        default: message,
-        title: messageTitle,
+        default: 'Nuova Notifica',
+        APNS:{
+          aps: {
+            alert:{
+              title: title,
+              body: message,
+            },
+            sound: 'bingbong.aiff',
+          },
+          eventId: eventId,
+        },
+        GCM:{
+          data: {
+            title: title,
+            body: message,
+            vibrate: true,
+            eventId: eventId,
+          },
+        },
       }),
       TopicArn: ARN,
     };
