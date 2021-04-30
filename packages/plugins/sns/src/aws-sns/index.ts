@@ -52,31 +52,19 @@ class AwsSNS {
     return await this.awsSNS.createTopic(params).promise();
   }
 
-  async publish(title: string, ARN: string, message: string, eventId: string){
+  async publish(
+      ARN: string,
+      message: string,
+      subject?: string,
+      groupId?: string,
+      attributes?: SNS.MessageAttributeMap,
+  ){
     const params: SNS.Types.PublishInput = {
-      MessageStructure: 'json',
-      Message: JSON.stringify({
-        default: 'Nuova Notifica',
-        APNS:{
-          aps: {
-            alert:{
-              title: title,
-              body: message,
-            },
-            sound: 'bingbong.aiff',
-          },
-          eventId: eventId,
-        },
-        GCM:{
-          data: {
-            title: title,
-            body: message,
-            vibrate: true,
-            eventId: eventId,
-          },
-        },
-      }),
+      Subject: subject,
+      Message: message,
       TopicArn: ARN,
+      MessageGroupId: groupId,
+      MessageAttributes: attributes,
     };
     return await this.awsSNS.publish(params).promise();
   }
