@@ -25,7 +25,7 @@ class S3Package extends PluginPackage {
 
   private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {
     const envFile = new EnvFile(jsonEnvsEntry.id);
-    // await envFile.setParametricValue('RLN_BRAINTREE_TOKEN');
+    await envFile.setParametricValue('RLN_BRAINTREE_TOKEN');
   }
 }
 
