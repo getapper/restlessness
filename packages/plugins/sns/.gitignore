@@ -1,0 +1,11 @@
+node_modules
+.serverless
+
+# IntelliJ
+.idea
+
+# OSX
+.DS_Store
+
+#TSC
+/dist
