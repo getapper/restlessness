@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/plugin-sns",
-  "version": "0.0.0",
+  "version": "0.5.0",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -23,6 +23,6 @@
     "prepublishOnly": "npm run tsc",
     "npm:tag": "node ../../scripts/git-packages-tagger.js",
     "tsc": "rimraf dist && tsc -p tsconfig.json",
-    "update-deps": "npm i @restlessness/core@0.5.18 -S -E"
+    "update-deps": "npm i @restlessness/core@latest -S -E"
   }
 }
