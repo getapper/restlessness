@@ -1,5 +1,4 @@
 import { SNS, Credentials } from 'aws-sdk';
-const config = require('../../../env.json');
 
 enum PlatformType {
   iOS = 'ios',
@@ -16,13 +15,9 @@ class AwsSNS {
       credentials: new Credentials(process.env['RLN_SNS_AWS_ACCESS_KEY_ID'], process.env['RLN_SNS_AWS_SECRET_ACCESS_KEY']),
       region: process.env['RLN_SNS_AWS_REGION'],
     };
-    const {
-      androidPlatformApplicationArn,
-      iosPlatformApplicationArn,
-    }= config.sns;
     this.awsSNS = new SNS(SNSConfigOptions);
-    this.androidPlatformApplicationArn = androidPlatformApplicationArn;
-    this.iosPlatformApplicationArn = iosPlatformApplicationArn;
+    this.androidPlatformApplicationArn = process.env['RLN_SNS_ANDROID_PLATFORM_ARN'];
+    this.iosPlatformApplicationArn = process.env['RLN_SNS_IOS_PLATFORM_ARN'];
   }
 
   async createDeviceEndpoint(platform: PlatformType, token: string, deviceARN: string): Promise<string> {
