@@ -2,7 +2,7 @@ import { PluginPackage, EnvFile, JsonPlugins, JsonEnvs, JsonEnvsEntry } from '@r
 import useBraintree from './braintree';
 import AWSLambda from 'aws-lambda';
 
-class S3Package extends PluginPackage {
+class BraintreePackage extends PluginPackage {
   async postInstall(): Promise<void> {
     await JsonPlugins.addEntry({
       id: 'plugin-braintree',
@@ -25,10 +25,13 @@ class S3Package extends PluginPackage {
 
   private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {
     const envFile = new EnvFile(jsonEnvsEntry.id);
-    await envFile.setParametricValue('RLN_BRAINTREE_TOKEN');
+    await envFile.setParametricValue('RLN_IS_BRAINTREE_SANDBOX');
+    await envFile.setParametricValue('RLN_BRAINTREE_MERCHANT_ID');
+    await envFile.setParametricValue('RLN_BRAINTREE_PUBLIC_KEY');
+    await envFile.setParametricValue('RLN_BRAINTREE_PRIVATE_KEY');
   }
 }
 
-export default new S3Package();
+export default new BraintreePackage();
 
 export { useBraintree };

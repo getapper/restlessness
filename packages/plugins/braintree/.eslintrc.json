@@ -15,7 +15,7 @@
       "error",
       "single"
     ],
-    "curly": "error",
+    "curly": "off",
     "no-multiple-empty-lines": [
       "error",
       {
