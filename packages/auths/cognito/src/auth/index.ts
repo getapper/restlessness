@@ -399,7 +399,7 @@ export abstract class UserPoolsManager {
       ));
       return Promise.all(this.pools.map(async pool => await pool.init()));
     } catch (e) {
-      console.info(this.poolInfos.map(poolInfo => ([
+      console.error('MISSING COGNITO ENV OR INFOS!', this.poolInfos.map(poolInfo => ([
         poolInfo.id,
         process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_POOL_ID`],
         process.env[`RLN_COGNITO_AUTH_${poolInfo.id.toUpperCase()}_CLIENT_ID`],
