@@ -25,7 +25,7 @@ class BraintreePackage extends PluginPackage {
 
   private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {
     const envFile = new EnvFile(jsonEnvsEntry.id);
-    await envFile.setParametricValue('RLN_IS_BRAINTREE_SANDBOX');
+    await envFile.setParametricValue('RLN_BRAINTREE_IS_SANDBOX');
     await envFile.setParametricValue('RLN_BRAINTREE_MERCHANT_ID');
     await envFile.setParametricValue('RLN_BRAINTREE_PUBLIC_KEY');
     await envFile.setParametricValue('RLN_BRAINTREE_PRIVATE_KEY');
