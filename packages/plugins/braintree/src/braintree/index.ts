@@ -9,7 +9,6 @@ import {
     ValidatedResponse,
 } from 'braintree';
 
-require('dotenv').config();
 
 export interface AddPaymentToCustomerData {
     customerId: string,
