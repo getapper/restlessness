@@ -219,7 +219,7 @@ class JsonServices {
     const authResource = {
       'Type': 'AWS::ApiGateway::Authorizer',
       'Properties': {
-        'Name': slsName,
+        'Name': jsonAuthorizersEntry.importKey,
         'AuthorizerUri': {
           'Fn::Join': [
             '',
