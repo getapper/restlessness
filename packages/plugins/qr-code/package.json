@@ -1,0 +1,29 @@
+{
+  "name": "@restlessness/plugin-s3",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "author": "Getapper",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-sdk": "2.7.0",
+    "@types/node": "13.7.1",
+    "@typescript-eslint/parser": "2.25.0",
+    "eslint": "6.8.0",
+    "rimraf": "3.0.2",
+    "typescript": "3.8.3",
+    "yup": "0.29.1"
+  },
+  "peerDependencies": {
+    "aws-sdk": "^2.664.0"
+  },
+  "dependencies": {
+    "@restlessness/core": "0.5.18",
+    "easyqrcodejs-nodejs": "4.2.7"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run tsc",
+    "npm:tag": "node ../../scripts/git-packages-tagger.js",
+    "tsc": "rimraf dist && tsc -p tsconfig.json",
+    "update-deps": "npm i @restlessness/core@latest -S -E"
+  }
+}
