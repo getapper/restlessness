@@ -1,11 +1,10 @@
 {
-  "name": "@restlessness/plugin-s3",
+  "name": "@restlessness/plugin-qr-code",
   "version": "0.0.0",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
-    "@types/aws-sdk": "2.7.0",
     "@types/node": "13.7.1",
     "@typescript-eslint/parser": "2.25.0",
     "eslint": "6.8.0",
