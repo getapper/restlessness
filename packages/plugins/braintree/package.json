@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@restlessness/core": "0.5.26",
-    "@types/braintree": "^2.22.12",
-    "braintree": "^3.3.0"
+    "@types/braintree": "2.22.12",
+    "braintree": "3.3.0"
   },
   "scripts": {
     "prepublishOnly": "npm run tsc",
