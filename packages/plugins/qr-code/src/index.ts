@@ -13,19 +13,13 @@ class QRCodePackage extends PluginPackage {
     await Misc.copyFolderRecursive('../assets/lib',PathResolver.getPrjPath, true);
   }
 
-  async postEnvCreated(envName: string): Promise<void> {
-    await JsonEnvs.read();
-    const jsonEnvsEntry = await JsonEnvs.getEntryById(envName);
-    await this.addEnv(jsonEnvsEntry);
-  }
+  async postEnvCreated(envName: string): Promise<void> {}
 
   async beforeEndpoint<T>(): Promise<void> {}
 
   async beforeSchedule<T>() {}
 
-  private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {
-    const envFile = new EnvFile(jsonEnvsEntry.id);
-  }
+  private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {}
 }
 
 export default new QRCodePackage();
