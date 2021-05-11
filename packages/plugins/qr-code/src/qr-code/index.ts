@@ -1,6 +1,6 @@
 import QRCode from 'easyqrcodejs-nodejs';
 
-enum QrCorrectLevels{
+export enum QrCorrectLevels{
     H= QRCode.CorrectLevel.H,
     Q= QRCode.CorrectLevel.Q,
     L= QRCode.CorrectLevel.L,
