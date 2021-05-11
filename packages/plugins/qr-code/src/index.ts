@@ -1,5 +1,5 @@
 import { PluginPackage, EnvFile, JsonPlugins, JsonEnvs, JsonEnvsEntry, Misc, PathResolver } from '@restlessness/core';
-import { useQrCode } from "./qr-code";
+import { useQrCode, QrCodeOptions, QrCorrectLevels } from "./qr-code";
 import path from 'path';
 
 class QRCodePackage extends PluginPackage {
@@ -31,4 +31,4 @@ class QRCodePackage extends PluginPackage {
 
 export default new QRCodePackage();
 
-export { useQrCode };
+export { useQrCode, QrCodeOptions, QrCorrectLevels };
