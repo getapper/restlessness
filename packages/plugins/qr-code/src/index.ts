@@ -11,7 +11,7 @@ class QRCodePackage extends PluginPackage {
     });
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(this.addEnv));
-    await Misc.copyFolderRecursive(path.join(__dirname,'..','assets','lib'),PathResolver.getPrjPath, true);
+    await Misc.copyFolderRecursive(path.join(__dirname,'..','assets','lib'),path.join(PathResolver.getPrjPath,'lib'), true);
   }
 
   async postEnvCreated(envName: string): Promise<void> {
