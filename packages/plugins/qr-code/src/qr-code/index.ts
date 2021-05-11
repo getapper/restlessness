@@ -7,7 +7,7 @@ enum QrCorrectLevels{
     M= QRCode.CorrectLevel.M,
 }
 
-interface QrCodeOptions {
+export interface QrCodeOptions {
     /** BASIC OPTIONS
      * @text text to encode in QR format
      * @width width of the QR Code in px
