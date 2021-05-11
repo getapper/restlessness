@@ -1,5 +1,5 @@
 import { PluginPackage, EnvFile, JsonPlugins, JsonEnvs, JsonEnvsEntry, Misc, PathResolver } from '@restlessness/core';
-import { useQrCode } from "./qr-code";
+import { useQrCode, QrCodeOptions, QrCorrectLevels } from "./qr-code";
 import path from 'path';
 
 class QRCodePackage extends PluginPackage {
@@ -11,7 +11,7 @@ class QRCodePackage extends PluginPackage {
     });
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(this.addEnv));
-    await Misc.copyFolderRecursive(path.join(__dirname,'..','assets','lib'),PathResolver.getPrjPath, true);
+    await Misc.copyFolderRecursive(path.join(__dirname,'..','assets','lib'),path.join(PathResolver.getPrjPath,'lib'), true);
   }
 
   async postEnvCreated(envName: string): Promise<void> {}
@@ -25,4 +25,4 @@ class QRCodePackage extends PluginPackage {
 
 export default new QRCodePackage();
 
-export { useQrCode };
+export { useQrCode, QrCodeOptions, QrCorrectLevels };
