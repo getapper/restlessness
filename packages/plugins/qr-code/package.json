@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/plugin-qr-code",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -13,8 +13,10 @@
     "yup": "0.29.1"
   },
   "dependencies": {
-    "@restlessness/core": "0.5.18",
-    "easyqrcodejs-nodejs": "4.2.7"
+    "@restlessness/core": "0.5.18"
+  },
+  "peerDependencies": {
+    "easyqrcodejs-nodejs": "3.6.0"
   },
   "scripts": {
     "prepublishOnly": "npm run tsc",
