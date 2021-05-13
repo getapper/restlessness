@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@restlessness/core": "0.5.18",
-    "easyqrcodejs-nodejs": "4.2.7"
+    "@types/qrcode": "^1.4.0",
+    "easyqrcodejs-nodejs": "4.2.7",
+    "qrcode": "1.4.4"
   },
   "scripts": {
     "prepublishOnly": "npm run tsc",
