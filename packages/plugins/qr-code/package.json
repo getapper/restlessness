@@ -1,11 +1,12 @@
 {
   "name": "@restlessness/plugin-qr-code",
-  "version": "0.0.0",
+  "version": "0.5.3",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "13.7.1",
+    "@types/qrcode": "^1.4.0",
     "@typescript-eslint/parser": "2.25.0",
     "eslint": "6.8.0",
     "rimraf": "3.0.2",
@@ -14,8 +15,6 @@
   },
   "dependencies": {
     "@restlessness/core": "0.5.18",
-    "@types/qrcode": "^1.4.0",
-    "easyqrcodejs-nodejs": "4.2.7",
     "qrcode": "1.4.4"
   },
   "scripts": {

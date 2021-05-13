@@ -1,6 +1,6 @@
 {
   "name": "@restlessness/plugin-braintree",
-  "version": "0.0.0",
+  "version": "0.5.0",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@restlessness/core": "0.5.26",
-    "@types/braintree": "^2.22.12",
-    "braintree": "^3.3.0"
+    "@types/braintree": "2.22.12",
+    "braintree": "3.3.0"
   },
   "scripts": {
     "prepublishOnly": "npm run tsc",

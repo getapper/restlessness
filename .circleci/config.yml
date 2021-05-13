@@ -98,26 +98,12 @@ jobs:
       - deps_and_publish:
           working_directory: packages/daos/mongo
 
-  rln-plugin-s3-tests:
-    executor: node12
-    steps:
-      - checkout
-      - deps_and_tests:
-          working_directory: packages/plugins/s3
-
   rln-plugin-s3-publish:
     executor: node12
     steps:
       - checkout
       - deps_and_publish:
           working_directory: packages/plugins/s3
-
-  rln-plugin-ses-tests:
-    executor: node12
-    steps:
-      - checkout
-      - deps_and_tests:
-          working_directory: packages/plugins/ses
 
   rln-plugin-ses-publish:
     executor: node12
@@ -126,19 +112,19 @@ jobs:
       - deps_and_publish:
           working_directory: packages/plugins/ses
 
-  rln-plugin-sns-tests:
-    executor: node12
-    steps:
-      - checkout
-      - deps_and_tests:
-          working_directory: packages/plugins/sns
-
   rln-plugin-sns-publish:
     executor: node12
     steps:
       - checkout
       - deps_and_publish:
           working_directory: packages/plugins/sns
+
+  rln-plugin-qr-code-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/plugins/qr-code
 
   rln-cli-tests:
     executor: node12
@@ -233,6 +219,15 @@ workflows:
           filters:
             tags:
               only: /^@restlessness/plugin-sns/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-plugin-qr-code:
+    jobs:
+      - rln-plugin-qr-code-publish:
+          filters:
+            tags:
+              only: /^@restlessness/plugin-qr-code/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
 
