@@ -1,6 +1,6 @@
 import * as braintreeSdk from 'braintree';
 import {
-    BraintreeGateway,
+    BraintreeGateway, ClientTokenRequest,
     Customer,
     CustomerCreateRequest, Discount,
     GatewayConfig,
@@ -45,7 +45,16 @@ class Braintree {
       return await customerGateway.create(customerInfo);
     }
 
-    async getCustomerById(customerId: string) {
+    async generateClientToken(customerId: string): Promise<string> {
+        const options:ClientTokenRequest = {
+            customerId,
+        };
+
+        const tokenResponse = await this.gateway.clientToken.generate(options);
+        return tokenResponse.success ? tokenResponse.clientToken : null;
+    }
+
+    async getCustomerById(customerId: string): Promise<braintreeSdk.Customer> {
         const customerGateway = this.gateway.customer;
 
         try {
@@ -97,30 +106,23 @@ class Braintree {
         return (await this.gateway.plan.all()).plans;
     };
 
-    async createSubscription(planId: string, customerId: string, paymentToken: string, discounts: Discount[]): Promise<ValidatedResponse<Subscription> | {success: boolean, message: string}> {
+    async createSubscription(planId: string, customerId: string, paymentNonce: string): Promise<ValidatedResponse<Subscription> | {success: boolean, message: string}> {
         if (await this.isAlreadySubscribed(planId, customerId)) {
             return {
                 success: false,
-                message: 'User is already subscribed',
+                message: 'Risulti già iscritto a questo piano',
             };
         }
 
         return await this.gateway.subscription.create({
             planId: planId,
-            paymentMethodToken: paymentToken,
-            discounts: {
-                add: discounts.map(d => ({
-                    inheritedFromId: d.id,
-                    amount: d.amount,
-                })),
-            },
+            paymentMethodNonce: paymentNonce,
         });
     }
 
     async isAlreadySubscribed(planId: string, customerId: string): Promise<boolean> {
         const customer = await this.getCustomerById(customerId);
-        return customer.creditCards.some(cc => cc.subscriptions.some(sub => sub.planId === planId),
-        );
+        return customer.creditCards.some(cc => cc.subscriptions.some(sub => sub.planId === planId));
     }
 
     async _getDiscounts(): Promise<Discount[]> {
