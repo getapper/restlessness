@@ -15,6 +15,7 @@
     "yup": "0.29.1"
   },
   "dependencies": {
+    "easyqrcodejs-nodejs": "4.2.7",
     "qrcode": "1.4.4"
   },
   "peerDependencies": {

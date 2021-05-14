@@ -147,9 +147,9 @@ export interface QrCodeOptions {
     binary?: boolean;
 }
 
-export const useQrCode = async (url: string) => {
+export const useQrCode = async (url: string): Promise<string> => {
     return qrcode.toDataURL(url);
-}
+};
 
 export const useEnhancedQrCode = async (options: QrCodeOptions) => {
     return new QRCode(options);
