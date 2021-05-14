@@ -1,10 +1,11 @@
 {
   "name": "@restlessness/plugin-qr-code",
-  "version": "0.5.3",
+  "version": "0.0.0",
   "main": "dist/index.js",
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
+    "@restlessness/core": "0.5.26",
     "@types/node": "13.7.1",
     "@types/qrcode": "^1.4.0",
     "@typescript-eslint/parser": "2.25.0",
@@ -14,8 +15,10 @@
     "yup": "0.29.1"
   },
   "dependencies": {
-    "@restlessness/core": "0.5.18",
     "qrcode": "1.4.4"
+  },
+  "peerDependencies": {
+    "@restlessness/core": "^0.5.26"
   },
   "scripts": {
     "prepublishOnly": "npm run tsc",
