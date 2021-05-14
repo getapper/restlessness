@@ -5,7 +5,9 @@
   "author": "Getapper",
   "license": "MIT",
   "devDependencies": {
+    "@restlessness/core": "0.5.26",
     "@types/node": "13.7.1",
+    "@types/qrcode": "^1.4.0",
     "@typescript-eslint/parser": "2.25.0",
     "eslint": "6.8.0",
     "rimraf": "3.0.2",
@@ -13,9 +15,11 @@
     "yup": "0.29.1"
   },
   "dependencies": {
-    "@restlessness/core": "0.5.18",
-    "@types/qrcode": "^1.4.0",
+    "easyqrcodejs-nodejs": "4.2.7",
     "qrcode": "1.4.4"
+  },
+  "peerDependencies": {
+    "@restlessness/core": "^0.5.26"
   },
   "scripts": {
     "prepublishOnly": "npm run tsc",

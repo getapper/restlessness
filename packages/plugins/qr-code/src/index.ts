@@ -8,15 +8,9 @@ class QRCodePackage extends PluginPackage {
       name: 'QRCode',
       package: '@restlessness/plugin-qr-code',
     });
-    await JsonEnvs.read();
-    await Promise.all(JsonEnvs.entries.map(this.addEnv));
   }
 
-  async postEnvCreated(envName: string): Promise<void> {
-    await JsonEnvs.read();
-    const jsonEnvsEntry = await JsonEnvs.getEntryById(envName);
-    await this.addEnv(jsonEnvsEntry);
-  }
+  async postEnvCreated(envName: string): Promise<void> {}
 
   async beforeEndpoint<T>(): Promise<void> {}
 
