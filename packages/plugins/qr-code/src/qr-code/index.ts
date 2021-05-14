@@ -1,4 +1,5 @@
 import QRCode from 'easyqrcodejs-nodejs';
+import qrcode from 'qrcode';
 
 export enum QrCorrectLevels{
     H= QRCode.CorrectLevel.H,
@@ -146,6 +147,10 @@ export interface QrCodeOptions {
     binary?: boolean;
 }
 
-export const useQrCode = async (options: QrCodeOptions) => {
+export const useQrCode = async (url: string) => {
+    return qrcode.toDataURL(url);
+}
+
+export const useEnhancedQrCode = async (options: QrCodeOptions) => {
     return new QRCode(options);
 };

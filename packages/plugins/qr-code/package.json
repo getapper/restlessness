@@ -6,6 +6,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "13.7.1",
+    "@types/qrcode": "^1.4.0",
     "@typescript-eslint/parser": "2.25.0",
     "eslint": "6.8.0",
     "rimraf": "3.0.2",
@@ -13,10 +14,8 @@
     "yup": "0.29.1"
   },
   "dependencies": {
-    "@restlessness/core": "0.5.18"
-  },
-  "peerDependencies": {
-    "easyqrcodejs-nodejs": "3.6.0"
+    "@restlessness/core": "0.5.18",
+    "qrcode": "1.4.4"
   },
   "scripts": {
     "prepublishOnly": "npm run tsc",
