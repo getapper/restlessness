@@ -12,7 +12,7 @@ import {
 require('dotenv').config();
 
 export enum BraintreeError {
-    USER_ALREADY_SUBSCRIBED,
+    USER_ALREADY_SUBSCRIBED_TO_PLAN,
     USER_NOT_FOUND,
 }
 
@@ -115,7 +115,7 @@ class Braintree {
         if (await this.isAlreadySubscribed(planId, customerId)) {
             return {
                 success: false,
-                error: BraintreeError.USER_ALREADY_SUBSCRIBED,
+                error: BraintreeError.USER_ALREADY_SUBSCRIBED_TO_PLAN,
             };
         }
 
