@@ -11,6 +11,11 @@ import {
 
 require('dotenv').config();
 
+export enum BraintreeError {
+    USER_ALREADY_SUBSCRIBED,
+    USER_NOT_FOUND,
+}
+
 export interface AddPaymentToCustomerData {
     customerId: string,
     nonce: string,
@@ -106,11 +111,11 @@ class Braintree {
         return (await this.gateway.plan.all()).plans;
     };
 
-    async createSubscription(planId: string, customerId: string, paymentNonce: string): Promise<ValidatedResponse<Subscription> | {success: boolean, message: string}> {
+    async createSubscription(planId: string, customerId: string, paymentNonce: string): Promise<ValidatedResponse<Subscription> | {success: boolean, error: BraintreeError}> {
         if (await this.isAlreadySubscribed(planId, customerId)) {
             return {
                 success: false,
-                message: 'Risulti già iscritto a questo piano',
+                error: BraintreeError.USER_ALREADY_SUBSCRIBED,
             };
         }
 
