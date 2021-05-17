@@ -126,6 +126,13 @@ jobs:
       - deps_and_publish:
           working_directory: packages/plugins/qr-code
 
+  rln-plugin-braintree-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/plugins/braintree
+
   rln-cli-tests:
     executor: node12
     steps:
@@ -228,6 +235,15 @@ workflows:
           filters:
             tags:
               only: /^@restlessness/plugin-qr-code/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-plugin-braintree:
+    jobs:
+      - rln-plugin-braintree-publish:
+          filters:
+            tags:
+              only: /^@restlessness/plugin-braintree/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
 
