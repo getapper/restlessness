@@ -9,7 +9,6 @@ import {
     ValidatedResponse,
 } from 'braintree';
 
-
 export enum BraintreeError {
     USER_ALREADY_SUBSCRIBED_TO_PLAN,
     USER_NOT_FOUND,

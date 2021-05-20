@@ -1,6 +1,7 @@
 import { PluginPackage, EnvFile, JsonPlugins, JsonEnvs, JsonEnvsEntry } from '@restlessness/core';
-import useBraintree from './braintree';
+import useBraintree, { BraintreeError } from './braintree';
 import AWSLambda from 'aws-lambda';
+import type * as BraintreeTypes from 'braintree';
 
 class BraintreePackage extends PluginPackage {
   async postInstall(): Promise<void> {
@@ -34,4 +35,4 @@ class BraintreePackage extends PluginPackage {
 
 export default new BraintreePackage();
 
-export { useBraintree };
+export { useBraintree, BraintreeTypes, BraintreeError };
