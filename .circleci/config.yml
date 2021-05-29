@@ -98,13 +98,6 @@ jobs:
       - deps_and_publish:
           working_directory: packages/daos/mongo
 
-  rln-plugin-s3-tests:
-    executor: node12
-    steps:
-      - checkout
-      - deps_and_tests:
-          working_directory: packages/plugins/s3
-
   rln-plugin-s3-publish:
     executor: node12
     steps:
@@ -112,19 +105,33 @@ jobs:
       - deps_and_publish:
           working_directory: packages/plugins/s3
 
-  rln-plugin-ses-tests:
-    executor: node12
-    steps:
-      - checkout
-      - deps_and_tests:
-          working_directory: packages/plugins/ses
-
   rln-plugin-ses-publish:
     executor: node12
     steps:
       - checkout
       - deps_and_publish:
           working_directory: packages/plugins/ses
+
+  rln-plugin-sns-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/plugins/sns
+
+  rln-plugin-qr-code-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/plugins/qr-code
+
+  rln-plugin-braintree-publish:
+    executor: node12
+    steps:
+      - checkout
+      - deps_and_publish:
+          working_directory: packages/plugins/braintree
 
   rln-cli-tests:
     executor: node12
@@ -210,6 +217,33 @@ workflows:
           filters:
             tags:
               only: /^@restlessness/plugin-ses/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-plugin-sns:
+    jobs:
+      - rln-plugin-sns-publish:
+          filters:
+            tags:
+              only: /^@restlessness/plugin-sns/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-plugin-qr-code:
+    jobs:
+      - rln-plugin-qr-code-publish:
+          filters:
+            tags:
+              only: /^@restlessness/plugin-qr-code/v(\d+)\.(\d+)\.(\d+)$/
+            branches:
+              ignore: /.*/
+
+  rln-plugin-braintree:
+    jobs:
+      - rln-plugin-braintree-publish:
+          filters:
+            tags:
+              only: /^@restlessness/plugin-braintree/v(\d+)\.(\d+)\.(\d+)$/
             branches:
               ignore: /.*/
 

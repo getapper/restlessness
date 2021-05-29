@@ -64,9 +64,11 @@ export abstract class AuthorizerPackage extends AddOnPackage {
 
         return authResponse;
       } else {
+        console.error('Generating Policy Auth Result:', authResult);
         throw new Error(AuthorizerPackage.Unauthorized);
       }
-    } catch {
+    } catch (e) {
+      console.error('Generating Policy error:', e);
       throw new Error(AuthorizerPackage.Unauthorized);
     }
   }

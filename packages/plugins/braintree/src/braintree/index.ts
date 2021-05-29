@@ -12,8 +12,6 @@ import {
     ValidatedResponse,
 } from 'braintree';
 
-require('dotenv').config();
-
 export enum BraintreeError {
     USER_ALREADY_SUBSCRIBED_TO_PLAN,
     USER_NOT_FOUND,

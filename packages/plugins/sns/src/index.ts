@@ -1,14 +1,13 @@
-import { PluginPackage, EnvFile, JsonPlugins, JsonEnvs, JsonEnvsEntry } from '@restlessness/core';
-import useBraintree, { BraintreeError } from './braintree';
+import { PluginPackage, EnvFile, JsonEnvsEntry, JsonEnvs, JsonPlugins } from '@restlessness/core';
+import useSns from './aws-sns';
 import AWSLambda from 'aws-lambda';
-import type * as BraintreeTypes from 'braintree';
 
-class BraintreePackage extends PluginPackage {
+class SnsPackage extends PluginPackage {
   async postInstall(): Promise<void> {
     await JsonPlugins.addEntry({
-      id: 'plugin-braintree',
-      name: 'Braintree',
-      package: '@restlessness/plugin-braintree',
+      id: 'plugin-sns',
+      name: 'AWS SNS',
+      package: '@restlessness/plugin-sns',
     });
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(this.addEnv));
@@ -26,13 +25,12 @@ class BraintreePackage extends PluginPackage {
 
   private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {
     const envFile = new EnvFile(jsonEnvsEntry.id);
-    await envFile.setParametricValue('RLN_BRAINTREE_IS_SANDBOX');
-    await envFile.setParametricValue('RLN_BRAINTREE_MERCHANT_ID');
-    await envFile.setParametricValue('RLN_BRAINTREE_PUBLIC_KEY');
-    await envFile.setParametricValue('RLN_BRAINTREE_PRIVATE_KEY');
+    await envFile.setParametricValue('RLN_SNS_AWS_ACCESS_KEY_ID');
+    await envFile.setParametricValue('RLN_SNS_AWS_SECRET_ACCESS_KEY');
+    await envFile.setParametricValue('RLN_SNS_AWS_REGION');
   }
 }
 
-export default new BraintreePackage();
+export default new SnsPackage();
 
-export { useBraintree, BraintreeTypes, BraintreeError };
+export { useSns };
