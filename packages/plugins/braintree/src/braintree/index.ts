@@ -120,8 +120,8 @@ class Braintree {
 
     async getUserSubscriptions(customerId: string): Promise<Subscription[]> {
         const customer = await this.gateway.customer.find(customerId);
-        return customer.paymentMethods.reduce((accumulator:Subscription[], cc) => {
-            const currentSubs = cc.subscriptions ?? [];
+        return customer.paymentMethods.reduce((accumulator:Subscription[], pm) => {
+            const currentSubs = pm.subscriptions ?? [];
             return [...accumulator, ...currentSubs];
         }, []);
     }
