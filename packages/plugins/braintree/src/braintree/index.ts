@@ -103,18 +103,19 @@ class Braintree {
         return (await this.gateway.plan.all()).plans;
     };
 
-    async createSubscription(planId: string, customerId: string, paymentNonce: string): Promise<ValidatedResponse<Subscription> | {success: boolean, error: BraintreeError}> {
-        if (await this.isAlreadySubscribed(planId, customerId)) {
-            return {
-                success: false,
-                error: BraintreeError.USER_ALREADY_SUBSCRIBED_TO_PLAN,
-            };
-        }
+    async getPlanById(planId: string): Promise<Plan> {
+        const plans = await this.getAllSubscriptionPlans();
+        return plans.find(plan => plan.id === planId);
+    }
 
-        return await this.gateway.subscription.create({
+    async createSubscription(planId: string, customerId: string, paymentNonce: string): Promise<Subscription> {
+        const outcome = await this.gateway.subscription.create({
             planId: planId,
             paymentMethodNonce: paymentNonce,
         });
+
+        if(outcome.success) return outcome.subscription;
+        return null;
     }
 
     async getUserSubscriptions(customerId: string): Promise<Subscription[]> {
@@ -130,7 +131,7 @@ class Braintree {
         return customer.paymentMethods.some(cc => cc.subscriptions.some(sub => sub.planId === planId));
     }
 
-    async removeUserSubscription(customerId: string, subscriptionId: string): Promise<boolean> {
+    async cancelUserSubscription(customerId: string, subscriptionId: string): Promise<boolean> {
         // Check if the user has that specific subscription to avoid deleting someone else's subscription
         const doesSubscriptionExist = (await this.gateway.customer.find(customerId))
             .paymentMethods.some(
@@ -143,8 +144,9 @@ class Braintree {
 
             if(isSubscriptionActive) {
                 await this.gateway.subscription.cancel(subscriptionId);
-                return true;
             }
+
+            return true;
         }
 
         return false;
