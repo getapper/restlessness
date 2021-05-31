@@ -1,10 +1,13 @@
 import * as braintreeSdk from 'braintree';
 import {
-    BraintreeGateway, ClientTokenRequest,
+    BraintreeGateway,
+    ClientTokenRequest,
     Customer,
-    CustomerCreateRequest, Discount,
+    CustomerCreateRequest,
+    Discount,
     GatewayConfig,
-    PaymentMethod, Plan,
+    PaymentMethod,
+    Plan,
     Subscription,
     ValidatedResponse,
 } from 'braintree';
@@ -96,37 +99,58 @@ class Braintree {
         }
     }
 
-    async getUserDefaultPaymentToken(customerId: string) {
-        const customer = await this.getCustomerById(customerId);
-
-        if (!customer) return null;
-
-        const defaultPaymentMethod = customer.paymentMethods[0] ?? null;
-        return defaultPaymentMethod?.token ?? null;
-    }
-
     async getAllSubscriptionPlans(): Promise<Plan[]> {
         return (await this.gateway.plan.all()).plans;
     };
 
-    async createSubscription(planId: string, customerId: string, paymentNonce: string): Promise<ValidatedResponse<Subscription> | {success: boolean, error: BraintreeError}> {
-        if (await this.isAlreadySubscribed(planId, customerId)) {
-            return {
-                success: false,
-                error: BraintreeError.USER_ALREADY_SUBSCRIBED_TO_PLAN,
-            };
-        }
+    async getPlanById(planId: string): Promise<Plan> {
+        const plans = await this.getAllSubscriptionPlans();
+        return plans.find(plan => plan.id === planId);
+    }
 
-        return await this.gateway.subscription.create({
+    async createSubscription(planId: string, customerId: string, paymentNonce: string): Promise<Subscription> {
+        const outcome = await this.gateway.subscription.create({
             planId: planId,
             paymentMethodNonce: paymentNonce,
         });
+
+        if(outcome.success) return outcome.subscription;
+        return null;
+    }
+
+    async getUserSubscriptions(customerId: string): Promise<Subscription[]> {
+        const customer = await this.gateway.customer.find(customerId);
+        return customer.paymentMethods.reduce((accumulator:Subscription[], pm) => {
+            const currentSubs = pm.subscriptions ?? [];
+            return [...accumulator, ...currentSubs];
+        }, []);
     }
 
     async isAlreadySubscribed(planId: string, customerId: string): Promise<boolean> {
         const customer = await this.getCustomerById(customerId);
-        return customer.creditCards.some(cc => cc.subscriptions.some(sub => sub.planId === planId));
+        return customer.paymentMethods.some(cc => cc.subscriptions.some(sub => sub.planId === planId));
     }
+
+    async cancelUserSubscription(customerId: string, subscriptionId: string): Promise<boolean> {
+        // Check if the user has that specific subscription to avoid deleting someone else's subscription
+        const doesSubscriptionExist = (await this.gateway.customer.find(customerId))
+            .paymentMethods.some(
+                (payMethod) => payMethod.subscriptions.some(sub => (sub.id === subscriptionId)),
+            );
+
+        if(doesSubscriptionExist) {
+            // Check if that subscription is currently active
+            const isSubscriptionActive = (await this.gateway.subscription.find(subscriptionId)).status === 'Active';
+
+            if(isSubscriptionActive) {
+                await this.gateway.subscription.cancel(subscriptionId);
+            }
+
+            return true;
+        }
+
+        return false;
+    };
 
     async _getDiscounts(): Promise<Discount[]> {
         const discountsGateway = braintree.gateway.discount;
