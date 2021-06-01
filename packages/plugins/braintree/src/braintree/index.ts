@@ -128,7 +128,7 @@ class Braintree {
 
     async isAlreadySubscribed(planId: string, customerId: string): Promise<boolean> {
         const customer = await this.getCustomerById(customerId);
-        return customer.paymentMethods.some(cc => cc.subscriptions.some(sub => sub.planId === planId));
+        return customer.paymentMethods.some(cc => cc.subscriptions.some(sub => (sub.planId === planId && sub.status === 'Active')));
     }
 
     async cancelUserSubscription(customerId: string, subscriptionId: string): Promise<boolean> {
