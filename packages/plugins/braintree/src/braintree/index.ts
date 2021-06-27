@@ -8,7 +8,7 @@ import {
     GatewayConfig,
     PaymentMethod,
     Plan,
-    Subscription,
+    Subscription, SubscriptionStatus, Transaction,
     ValidatedResponse,
 } from 'braintree';
 
@@ -126,6 +126,32 @@ class Braintree {
         }, []);
     }
 
+    async getUserTransactions(customerId: string): Promise<Transaction[]> {
+        const subscriptions = await this.getUserSubscriptions(customerId);
+
+        return subscriptions.reduce(
+            (accumulator: Transaction[], current) => [
+                ...accumulator,
+                ...current.transactions,
+            ],
+            [],
+        );
+    }
+
+    isSubStatusFinal(status: SubscriptionStatus): boolean {
+        return status === 'Canceled' || status === 'Expired';
+    }
+
+    async getUserSubscriptionById(customerId: string, subscriptionId: string): Promise<Subscription> {
+        const customerSubs = await this.getUserSubscriptions(customerId);
+
+        if(customerSubs.some(subscription => subscription.id === subscriptionId)) {
+            return await this.gateway.subscription.find(subscriptionId);
+        }
+
+        return null;
+    }
+
     async getUserActiveSubscriptions(customerId: string) {
         const subscriptions = await this.getUserSubscriptions(customerId);
         return subscriptions.filter(sub => sub.status === 'Active');
@@ -144,8 +170,9 @@ class Braintree {
             );
 
         if(doesSubscriptionExist) {
-            // Check if that subscription is currently active
-            const isSubscriptionActive = (await this.gateway.subscription.find(subscriptionId)).status === 'Active';
+            // Check if that subscription is in a non-final state
+            const subscriptionStatus = (await this.gateway.subscription.find(subscriptionId)).status;
+            const isSubscriptionActive = !this.isSubStatusFinal(subscriptionStatus);
 
             if(isSubscriptionActive) {
                 await this.gateway.subscription.cancel(subscriptionId);
