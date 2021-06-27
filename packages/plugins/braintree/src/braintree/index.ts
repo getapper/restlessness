@@ -154,7 +154,7 @@ class Braintree {
 
     async getUserActiveSubscriptions(customerId: string) {
         const subscriptions = await this.getUserSubscriptions(customerId);
-        return subscriptions.filter(sub => sub.status === 'Active');
+        return subscriptions.filter(sub => !this.isSubStatusFinal(sub.status));
     }
 
     async isAlreadySubscribed(planId: string, customerId: string): Promise<boolean> {
