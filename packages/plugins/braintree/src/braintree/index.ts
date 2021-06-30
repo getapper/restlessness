@@ -9,7 +9,9 @@ import {
     PaymentMethod,
     Plan,
     Subscription,
-    ValidatedResponse,
+    SubscriptionStatus,
+    Transaction,
+    ValidatedResponse
 } from 'braintree';
 
 export enum BraintreeError {
@@ -47,12 +49,12 @@ class Braintree {
     }
 
     async createCustomer(customerInfo: CustomerCreateRequest): Promise<ValidatedResponse<Customer>> {
-      const customerGateway = this.gateway.customer;
-      return await customerGateway.create(customerInfo);
+        const customerGateway = this.gateway.customer;
+        return await customerGateway.create(customerInfo);
     }
 
     async generateClientToken(customerId: string): Promise<string> {
-        const options:ClientTokenRequest = {
+        const options: ClientTokenRequest = {
             customerId,
         };
 
@@ -114,26 +116,57 @@ class Braintree {
             paymentMethodNonce: paymentNonce,
         });
 
-        if(outcome.success) return outcome.subscription;
+        if (outcome.success) return outcome.subscription;
         return null;
     }
 
     async getUserSubscriptions(customerId: string): Promise<Subscription[]> {
         const customer = await this.gateway.customer.find(customerId);
-        return customer.paymentMethods.reduce((accumulator:Subscription[], pm) => {
+        return customer.paymentMethods.reduce((accumulator: Subscription[], pm) => {
             const currentSubs = pm.subscriptions ?? [];
             return [...accumulator, ...currentSubs];
         }, []);
     }
 
+    async getUserTransactions(customerId: string): Promise<Transaction[]> {
+        const subscriptions = await this.getUserSubscriptions(customerId);
+
+        return subscriptions.reduce(
+            (accumulator: Transaction[], current) => [
+                ...accumulator,
+                ...current.transactions,
+            ],
+            [],
+        );
+    }
+
+    isSubStatusFinal(status: SubscriptionStatus): boolean {
+        return status === 'Canceled' || status === 'Expired';
+    }
+
+    async getUserSubscriptionById(customerId: string, subscriptionId: string): Promise<Subscription> {
+        const customerSubs = await this.getUserSubscriptions(customerId);
+
+        if (customerSubs.some(subscription => subscription.id === subscriptionId)) {
+            return await this.gateway.subscription.find(subscriptionId);
+        }
+
+        return null;
+    }
+
     async getUserActiveSubscriptions(customerId: string) {
         const subscriptions = await this.getUserSubscriptions(customerId);
-        return subscriptions.filter(sub => sub.status === 'Active');
+        return subscriptions.filter(sub => !this.isSubStatusFinal(sub.status));
     }
 
     async isAlreadySubscribed(planId: string, customerId: string): Promise<boolean> {
         const customer = await this.getCustomerById(customerId);
-        return customer.paymentMethods.some(cc => cc.subscriptions.some(sub => (sub.planId === planId && sub.status === 'Active')));
+
+        return customer.paymentMethods.some(
+            cc => cc.subscriptions.some(
+                sub => (sub.planId === planId && !this.isSubStatusFinal(sub.status))
+            )
+        );
     }
 
     async cancelUserSubscription(customerId: string, subscriptionId: string): Promise<boolean> {
@@ -143,11 +176,12 @@ class Braintree {
                 (payMethod) => payMethod.subscriptions.some(sub => (sub.id === subscriptionId)),
             );
 
-        if(doesSubscriptionExist) {
-            // Check if that subscription is currently active
-            const isSubscriptionActive = (await this.gateway.subscription.find(subscriptionId)).status === 'Active';
+        if (doesSubscriptionExist) {
+            // Check if that subscription is in a non-final state
+            const subscriptionStatus = (await this.gateway.subscription.find(subscriptionId)).status;
+            const isSubscriptionActive = !this.isSubStatusFinal(subscriptionStatus);
 
-            if(isSubscriptionActive) {
+            if (isSubscriptionActive) {
                 await this.gateway.subscription.cancel(subscriptionId);
             }
 
@@ -169,7 +203,8 @@ class Braintree {
         return discounts.find((d) => d.name.toLowerCase() === discountName.toLowerCase());
     }
 
-    async test() {}
+    async test() {
+    }
 }
 
 const braintree = new Braintree();
