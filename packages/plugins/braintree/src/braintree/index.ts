@@ -8,7 +8,7 @@ import {
     GatewayConfig,
     PaymentMethod,
     Plan,
-    Subscription,
+    Subscription, SubscriptionRequest,
     SubscriptionStatus,
     Transaction,
     ValidatedResponse
@@ -110,10 +110,10 @@ class Braintree {
         return plans.find(plan => plan.id === planId);
     }
 
-    async createSubscription(planId: string, customerId: string, paymentNonce: string): Promise<Subscription> {
+    async createSubscription(createSubProps: SubscriptionRequest, paymentMethodNonce: string): Promise<Subscription> {
         const outcome = await this.gateway.subscription.create({
-            planId: planId,
-            paymentMethodNonce: paymentNonce,
+            ...createSubProps,
+            paymentMethodNonce,
         });
 
         if (outcome.success) return outcome.subscription;
