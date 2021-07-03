@@ -110,6 +110,7 @@ class Braintree {
         return plans.find(plan => plan.id === planId);
     }
 
+    // Now this method accepts every param that Braintree endpoint can accept
     async createSubscription(createSubProps: SubscriptionRequest, paymentMethodNonce: string): Promise<Subscription> {
         const outcome = await this.gateway.subscription.create({
             ...createSubProps,
