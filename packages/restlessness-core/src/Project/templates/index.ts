@@ -101,8 +101,9 @@ const generatePackageJson = (name: string) => `{
     "testTimeout": 10000,
     "rootDir": "dist",
     "moduleNameMapper": {
-      "root/models/(.*)": "<rootDir>/models/$1",
-      "root/endpoints/(.*)": "<rootDir>/endpoints/$1"
+      "root/(.*)": "<rootDir>/$1",
+      "root/(.*)/(.*)": "<rootDir>/$1/$2",
+      "root/(.*)/(.*)/(.*)": "<rootDir>/$1/$2/$3"
     }
   }
 }
