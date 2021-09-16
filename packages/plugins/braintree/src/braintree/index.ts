@@ -33,7 +33,7 @@ class Braintree {
     gateway: BraintreeGateway;
 
     init() {
-        const environment = process.env.RLN_BRAINTREE_IS_SANDBOX ? braintreeSdk.Environment.Sandbox : braintreeSdk.Environment.Production;
+        const environment = process.env.RLN_BRAINTREE_IS_SANDBOX === 'true' ? braintreeSdk.Environment.Sandbox : braintreeSdk.Environment.Production;
         const merchantId = process.env.RLN_BRAINTREE_MERCHANT_ID;
         const publicKey = process.env.RLN_BRAINTREE_PUBLIC_KEY;
         const privateKey = process.env.RLN_BRAINTREE_PRIVATE_KEY;
