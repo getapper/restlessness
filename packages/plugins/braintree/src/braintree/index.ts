@@ -121,6 +121,17 @@ class Braintree {
         return null;
     }
 
+    async updateSubscriptionPrice(subscriptionId: string, customerId: string, newPrice: string): Promise<Subscription> {
+        const subscription = await this.getUserSubscriptionById(customerId, subscriptionId);
+
+        const result = await this.gateway.subscription.update(subscriptionId, {
+            planId: subscription.planId,
+            price: newPrice,
+        });
+
+        return result.success ? result.subscription : null;
+    }
+
     async getUserSubscriptions(customerId: string): Promise<Subscription[]> {
         const customer = await this.gateway.customer.find(customerId);
         return customer.paymentMethods.reduce((accumulator: Subscription[], pm) => {
