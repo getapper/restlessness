@@ -117,8 +117,6 @@ class Braintree {
             paymentMethodNonce,
         });
 
-        console.log(outcome.errors);
-
         if (outcome.success) return outcome.subscription;
         return null;
     }
