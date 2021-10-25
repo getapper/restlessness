@@ -117,8 +117,21 @@ class Braintree {
             paymentMethodNonce,
         });
 
+        console.log(outcome.errors);
+
         if (outcome.success) return outcome.subscription;
         return null;
+    }
+
+    async updateSubscriptionPrice(subscriptionId: string, customerId: string, newPrice: string): Promise<Subscription> {
+        const subscription = await this.getUserSubscriptionById(customerId, subscriptionId);
+
+        const result = await this.gateway.subscription.update(subscriptionId, {
+            planId: subscription.planId,
+            price: newPrice,
+        });
+
+        return result.success ? result.subscription : null;
     }
 
     async getUserSubscriptions(customerId: string): Promise<Subscription[]> {
