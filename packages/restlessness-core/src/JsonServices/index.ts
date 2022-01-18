@@ -394,7 +394,7 @@ class JsonServices {
   async addScheduleEvent(event: JsonSchedulesEntry) {
     const scheduleEvent: Event = {
       schedule: {
-        name: event.id,
+        name: `${event.id}-\${self:provider.stage}`,
         description: event.description,
         enabled: event.enabled,
         rate: Misc.generateRateFromNumberAndUnit(event.rateNumber, event.rateUnit),

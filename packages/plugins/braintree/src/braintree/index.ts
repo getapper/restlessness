@@ -1,12 +1,17 @@
 import * as braintreeSdk from 'braintree';
 import {
-    BraintreeGateway, ClientTokenRequest,
+    BraintreeGateway,
+    ClientTokenRequest,
     Customer,
-    CustomerCreateRequest, Discount,
+    CustomerCreateRequest,
+    Discount,
     GatewayConfig,
-    PaymentMethod, Plan,
-    Subscription,
-    ValidatedResponse,
+    PaymentMethod,
+    Plan,
+    Subscription, SubscriptionRequest,
+    SubscriptionStatus,
+    Transaction,
+    ValidatedResponse
 } from 'braintree';
 
 export enum BraintreeError {
@@ -28,7 +33,7 @@ class Braintree {
     gateway: BraintreeGateway;
 
     init() {
-        const environment = process.env.RLN_BRAINTREE_IS_SANDBOX ? braintreeSdk.Environment.Sandbox : braintreeSdk.Environment.Production;
+        const environment = process.env.RLN_BRAINTREE_IS_SANDBOX === 'true' ? braintreeSdk.Environment.Sandbox : braintreeSdk.Environment.Production;
         const merchantId = process.env.RLN_BRAINTREE_MERCHANT_ID;
         const publicKey = process.env.RLN_BRAINTREE_PUBLIC_KEY;
         const privateKey = process.env.RLN_BRAINTREE_PRIVATE_KEY;
@@ -44,12 +49,12 @@ class Braintree {
     }
 
     async createCustomer(customerInfo: CustomerCreateRequest): Promise<ValidatedResponse<Customer>> {
-      const customerGateway = this.gateway.customer;
-      return await customerGateway.create(customerInfo);
+        const customerGateway = this.gateway.customer;
+        return await customerGateway.create(customerInfo);
     }
 
     async generateClientToken(customerId: string): Promise<string> {
-        const options:ClientTokenRequest = {
+        const options: ClientTokenRequest = {
             customerId,
         };
 
@@ -96,37 +101,107 @@ class Braintree {
         }
     }
 
-    async getUserDefaultPaymentToken(customerId: string) {
-        const customer = await this.getCustomerById(customerId);
-
-        if (!customer) return null;
-
-        const defaultPaymentMethod = customer.paymentMethods[0] ?? null;
-        return defaultPaymentMethod?.token ?? null;
-    }
-
     async getAllSubscriptionPlans(): Promise<Plan[]> {
         return (await this.gateway.plan.all()).plans;
     };
 
-    async createSubscription(planId: string, customerId: string, paymentNonce: string): Promise<ValidatedResponse<Subscription> | {success: boolean, error: BraintreeError}> {
-        if (await this.isAlreadySubscribed(planId, customerId)) {
-            return {
-                success: false,
-                error: BraintreeError.USER_ALREADY_SUBSCRIBED_TO_PLAN,
-            };
+    async getPlanById(planId: string): Promise<Plan> {
+        const plans = await this.getAllSubscriptionPlans();
+        return plans.find(plan => plan.id === planId);
+    }
+
+    // Now this method accepts every param that Braintree endpoint can accept
+    async createSubscription(createSubProps: SubscriptionRequest, paymentMethodNonce: string): Promise<Subscription> {
+        const outcome = await this.gateway.subscription.create({
+            ...createSubProps,
+            paymentMethodNonce,
+        });
+
+        if (outcome.success) return outcome.subscription;
+        return null;
+    }
+
+    async updateSubscriptionPrice(subscriptionId: string, customerId: string, newPrice: string): Promise<Subscription> {
+        const subscription = await this.getUserSubscriptionById(customerId, subscriptionId);
+
+        const result = await this.gateway.subscription.update(subscriptionId, {
+            planId: subscription.planId,
+            price: newPrice,
+        });
+
+        return result.success ? result.subscription : null;
+    }
+
+    async getUserSubscriptions(customerId: string): Promise<Subscription[]> {
+        const customer = await this.gateway.customer.find(customerId);
+        return customer.paymentMethods.reduce((accumulator: Subscription[], pm) => {
+            const currentSubs = pm.subscriptions ?? [];
+            return [...accumulator, ...currentSubs];
+        }, []);
+    }
+
+    async getUserTransactions(customerId: string): Promise<Transaction[]> {
+        const subscriptions = await this.getUserSubscriptions(customerId);
+
+        return subscriptions.reduce(
+            (accumulator: Transaction[], current) => [
+                ...accumulator,
+                ...current.transactions,
+            ],
+            [],
+        );
+    }
+
+    isSubStatusFinal(status: SubscriptionStatus): boolean {
+        return status === 'Canceled' || status === 'Expired';
+    }
+
+    async getUserSubscriptionById(customerId: string, subscriptionId: string): Promise<Subscription> {
+        const customerSubs = await this.getUserSubscriptions(customerId);
+
+        if (customerSubs.some(subscription => subscription.id === subscriptionId)) {
+            return await this.gateway.subscription.find(subscriptionId);
         }
 
-        return await this.gateway.subscription.create({
-            planId: planId,
-            paymentMethodNonce: paymentNonce,
-        });
+        return null;
+    }
+
+    async getUserActiveSubscriptions(customerId: string) {
+        const subscriptions = await this.getUserSubscriptions(customerId);
+        return subscriptions.filter(sub => !this.isSubStatusFinal(sub.status));
     }
 
     async isAlreadySubscribed(planId: string, customerId: string): Promise<boolean> {
         const customer = await this.getCustomerById(customerId);
-        return customer.creditCards.some(cc => cc.subscriptions.some(sub => sub.planId === planId));
+
+        return customer.paymentMethods.some(
+            cc => cc.subscriptions.some(
+                sub => (sub.planId === planId && !this.isSubStatusFinal(sub.status))
+            )
+        );
     }
+
+    async cancelUserSubscription(customerId: string, subscriptionId: string): Promise<boolean> {
+        // Check if the user has that specific subscription to avoid deleting someone else's subscription
+        const doesSubscriptionExist = (await this.gateway.customer.find(customerId))
+            .paymentMethods.some(
+                (payMethod) => payMethod.subscriptions.some(sub => (sub.id === subscriptionId)),
+            );
+
+        if (doesSubscriptionExist) {
+            // Check if that subscription is in a non-final state
+            const subscriptionStatus = (await this.gateway.subscription.find(subscriptionId)).status;
+            const isSubscriptionActive = !this.isSubStatusFinal(subscriptionStatus);
+
+            if (isSubscriptionActive) {
+                await this.gateway.subscription.cancel(subscriptionId);
+            }
+
+            return true;
+        }
+
+        return false;
+    };
 
     async _getDiscounts(): Promise<Discount[]> {
         const discountsGateway = braintree.gateway.discount;
@@ -140,7 +215,8 @@ class Braintree {
         return discounts.find((d) => d.name.toLowerCase() === discountName.toLowerCase());
     }
 
-    async test() {}
+    async test() {
+    }
 }
 
 const braintree = new Braintree();

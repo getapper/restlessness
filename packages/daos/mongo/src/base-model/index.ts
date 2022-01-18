@@ -8,28 +8,43 @@ import {
   FilterQuery,
 } from 'mongodb';
 
-export default class MongoBase {
+export interface MongoBaseInterface {
+  _id: ObjectId,
+}
+
+export default class MongoBase<TInterface extends MongoBaseInterface> {
   ['constructor']: typeof MongoBase
   _id: ObjectId
   created: Date
   lastEdit: Date
 
-  static get collectionName() {
-    return '';
-  }
-
   static get dao(): MongoDao {
     return mongoDao;
   }
 
-  async getById(_id: ObjectId): Promise<boolean> {
+  static get collectionName() {
+    return '';
+  }
+
+  async fromInterfaceToModel(mongoI: TInterface) {
+    Object.assign(this, mongoI);
+  }
+
+  async refresh(): Promise<boolean> {
     const result = await MongoBase.dao.findOne(this.constructor.collectionName, {
-      _id,
+      _id: this._id,
     });
     if (result) {
-      Object.assign(this, result);
+      await this.fromInterfaceToModel(result);
     }
-    return result !== null;
+    return Boolean(result);
+  }
+
+  static async getById<TInterface extends MongoBaseInterface>(_id: ObjectId): Promise<TInterface | null> {
+    const result = await MongoBase.dao.findOne(this.collectionName, {
+      _id,
+    });
+    return result ?? null;
   }
 
   static async getList<T>(query: FilterQuery<T> = {}, limit: number = 10, skip: number = 0, sortBy: string = null, asc: boolean = true): Promise<T[]> {
@@ -57,7 +72,7 @@ export default class MongoBase {
 
   async save() {
     this.created = new Date();
-    const response: InsertOneWriteOpResult<MongoBase> = await MongoBase.dao.insertOne(this.constructor.collectionName, this);
+    const response: InsertOneWriteOpResult<TInterface> = await MongoBase.dao.insertOne(this.constructor.collectionName, this);
     if (response?.result?.ok) {
       this._id = response?.insertedId;
     }
@@ -84,7 +99,7 @@ export default class MongoBase {
         $set: fields,
       });
       if (response?.result?.ok) {
-        await this.getById(this._id);
+        await this.refresh();
       }
       return !!response?.result?.ok ?? false;
     }
