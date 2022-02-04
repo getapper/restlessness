@@ -23,7 +23,7 @@
     "@restlessness/core": "0.5.11",
     "@types/bson": "4.0.2",
     "@types/mongodb": "3.5.9",
-    "aws-sdk": "2.718.0",
+    "aws-sdk": "2.814.0",
     "bson": "4.0.4",
     "mongodb": "3.4.1",
     "pluralize": "8.0.0"
