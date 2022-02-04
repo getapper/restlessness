@@ -25,6 +25,20 @@ function getProjectName() {
   }
 }
 
+type RestlessnessConfig = {
+  RESTLESSNESS_DASHBOARD_PORT: number,
+  RESTLESSNESS_PROJECT_PORT: number,
+  RESTLESSNESS_PROJECT_LAMBDA_PORT: number
+}
+
+function getRlnConfig(): RestlessnessConfig {
+  try {
+    return require(path.join(process.cwd(), '.restlessness.json'));
+  } catch {
+    throw 'Cannot find .restlessness.json. Are you on the root folder?';
+  }
+}
+
 function checkPeerDependencies() {
   const deps = ['serve', 'serverless'];
   for (const dep of deps) {
@@ -84,9 +98,9 @@ function spawnBackend(): Promise<ChildProcess> {
   });
 }
 
-function spawnFrontend(): Promise<ChildProcess> {
+function spawnFrontend(restlessnessConfig: RestlessnessConfig): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
-    const proc = spawn('serve', [], {
+    const proc = spawn('serve', ['-p', restlessnessConfig.RESTLESSNESS_DASHBOARD_PORT.toString()], {
       cwd: path.join(__dirname, '..', '..', '..', 'lib', 'assets', 'frontend', 'build'),
       shell: true,
     });
@@ -103,10 +117,18 @@ function spawnFrontend(): Promise<ChildProcess> {
   });
 }
 
-function spawnProject(name: string, env: ENV): Promise<ChildProcess> {
+function spawnProject(restlessnessConfig: RestlessnessConfig, name: string, env: ENV): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
     // @TODO: 'serverless-services/offline.json' should be changed with `${PathResolver.getOfflineServerlessJsonPath}.json`
-    const proc = spawn('serverless', ['--config', 'serverless-services/offline.json', 'offline', '--httpPort', '4000', '--lambdaPort', '3002'], {
+    const proc = spawn('serverless', [
+      '--config',
+      'serverless-services/offline.json',
+      'offline',
+      '--httpPort',
+      restlessnessConfig.RESTLESSNESS_PROJECT_PORT.toString(),
+      '--lambdaPort',
+      restlessnessConfig.RESTLESSNESS_PROJECT_LAMBDA_PORT.toString()
+    ], {
       env: {
         ...process.env,
         ...env,
@@ -139,6 +161,7 @@ export default async (argv: minimist.ParsedArgs) => {
 
   checkPeerDependencies();
   const projectName = getProjectName();
+  const restlessnessConfig = getRlnConfig();
   const envFile = new EnvFile(argv._[1]);
   const projectEnv = await envFile.expand();
 
@@ -172,7 +195,7 @@ export default async (argv: minimist.ParsedArgs) => {
       if (message === 'RESTART_PROJECT') {
         projectProc?.kill();
         printRestlessnessData(`Restarting project ${projectName}...`);
-        projectProc = await spawnProject(projectName, projectEnv);
+        projectProc = await spawnProject(restlessnessConfig, projectName, projectEnv);
       }
     });
     backendProc.on('exit', terminateOnExit);
@@ -182,16 +205,16 @@ export default async (argv: minimist.ParsedArgs) => {
   }
 
   try {
-    frontendProc = await spawnFrontend();
+    frontendProc = await spawnFrontend(restlessnessConfig);
     frontendProc.on('exit', terminateOnExit);
-    printRestlessnessData('Running on http://localhost:5000\n');
+    printRestlessnessData(`Running on http://localhost:${restlessnessConfig.RESTLESSNESS_DASHBOARD_PORT}\n`);
   } catch (e) {
     terminateChildren();
     throw e;
   }
 
   try {
-    projectProc = await spawnProject(projectName, projectEnv);
+    projectProc = await spawnProject(restlessnessConfig, projectName, projectEnv);
     projectProc.on('exit', terminateOnExit);
   } catch (e) {
     terminateChildren();

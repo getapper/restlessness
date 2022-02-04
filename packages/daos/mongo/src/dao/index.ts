@@ -6,7 +6,7 @@ import {
   IndexOptions,
   UpdateOneOptions,
   MongoCountPreferences,
-  UpdateManyOptions,
+  UpdateManyOptions, ObjectId,
 } from 'mongodb';
 import Bson from 'bson';
 import { Lambda } from 'aws-sdk';
@@ -114,7 +114,7 @@ class MongoDao {
     return this.invokeProxy({ collectionName, operation: 'find', args: [query, options] });
   }
 
-  async insertOne(collectionName: string, object): Promise<InsertOneWriteOpResult<null>> {
+  async insertOne<T extends {_id: ObjectId}>(collectionName: string, object): Promise<InsertOneWriteOpResult<T>> {
     return this.invokeProxy({ collectionName, operation: 'insertOne', args: [object] });
   }
 
