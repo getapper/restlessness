@@ -3,7 +3,8 @@ import rimraf from 'rimraf';
 import { promisify } from 'util';
 import { promises as fs } from 'fs';
 import { Project, JsonDaos } from '@restlessness/core';
-import MongoDaoPackage, { ObjectId, yupObjectId } from '.';
+import { ObjectId } from 'mongodb';
+import MongoDaoPackage, { yupObjectId } from '.';
 import * as yup from 'yup';
 
 const PROJECT_NAME = 'tmp-mongo-dao';
@@ -11,13 +12,12 @@ const PROJECT_NAME = 'tmp-mongo-dao';
 const projectPath = path.join(process.cwd(), PROJECT_NAME);
 process.env['RLN_PROJECT_PATH'] = projectPath;
 
-beforeAll(async (done) => {
+beforeAll(async () => {
   await promisify(rimraf)(projectPath);
-  done();
 });
 
 describe('Mongo Dao Package hooks', () => {
-  test('New project post install',  async (done) => {
+  test('New project post install',  async () => {
     await Project.create(projectPath, {
       installNodemodules: false,
     });
@@ -27,10 +27,9 @@ describe('Mongo Dao Package hooks', () => {
     const jsonDaosEntry = await JsonDaos.getEntryById('dao-mongo');
     expect(jsonDaosEntry.package).toBe('@restlessness/dao-mongo');
     await expect(MongoDaoPackage.postInstall()).rejects.toEqual(new Error('Entry with id dao-mongo already exists'));
-    done();
   });
 
-  test('Yup object id validator',  async (done) => {
+  test('Yup object id validator',  async () => {
     const schema = yup.object().shape({
       _id: yupObjectId().required(),
     });
@@ -45,11 +44,9 @@ describe('Mongo Dao Package hooks', () => {
     const objId = new ObjectId();
     const result = await schema.validate({ _id: objId.toHexString() });
     expect(objId.equals(result._id)).toBe(true);
-    done();
   });
 });
 
-afterAll(async (done) => {
+afterAll(async () => {
   await promisify(rimraf)(projectPath);
-  done();
 });
