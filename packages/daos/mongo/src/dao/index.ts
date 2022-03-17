@@ -1,12 +1,5 @@
 import {
-  InsertOneWriteOpResult,
-  UpdateWriteOpResult,
-  FindOneOptions,
-  DeleteWriteOpResultObject,
-  IndexOptions,
-  UpdateOneOptions,
-  MongoCountPreferences,
-  UpdateManyOptions, ObjectId,
+  ObjectId,
 } from 'mongodb';
 import Bson from 'bson';
 import { Lambda } from 'aws-sdk';
@@ -110,35 +103,35 @@ class MongoDao {
     return this.invokeProxy({ collectionName, operation: 'findOne', args: [filters, options] });
   }
 
-  async find(collectionName: string, query, options?: FindOneOptions): Promise<any> {
+  async find(collectionName: string, query, options?: any): Promise<any> {
     return this.invokeProxy({ collectionName, operation: 'find', args: [query, options] });
   }
 
-  async insertOne<T extends {_id: ObjectId}>(collectionName: string, object): Promise<InsertOneWriteOpResult<T>> {
+  async insertOne<T extends {_id: ObjectId}>(collectionName: string, object): Promise<any> {
     return this.invokeProxy({ collectionName, operation: 'insertOne', args: [object] });
   }
 
-  async updateOne(collectionName: string, filter, object, options?: UpdateOneOptions): Promise<UpdateWriteOpResult> {
+  async updateOne(collectionName: string, filter, object, options?: any): Promise<any> {
     return this.invokeProxy({ collectionName, operation: 'updateOne', args: [filter, object, options] });
   }
 
-  async updateMany(collectionName: string, filter, object, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
+  async updateMany(collectionName: string, filter, object, options?: any): Promise<any> {
     return this.invokeProxy({ collectionName, operation: 'updateMany', args: [filter, object, options] });
   }
 
-  async deleteOne(collectionName: string, filter): Promise<DeleteWriteOpResultObject> {
+  async deleteOne(collectionName: string, filter): Promise<any> {
     return this.invokeProxy({ collectionName, operation: 'deleteOne', args: [filter] });
   }
 
-  async deleteMany(collectionName: string, filter): Promise<DeleteWriteOpResultObject> {
+  async deleteMany(collectionName: string, filter): Promise<any> {
     return this.invokeProxy({ collectionName, operation: 'deleteMany', args: [filter] });
   }
 
-  async count(collectionName: string, filter, options?: MongoCountPreferences): Promise<number> {
+  async count(collectionName: string, filter, options?: any): Promise<number> {
     return this.invokeProxy({ collectionName, operation: 'count', args: [filter, options] });
   }
 
-  async createIndex(collectionName: string, keys: string | any, options: IndexOptions): Promise<string> {
+  async createIndex(collectionName: string, keys: string | any, options: any): Promise<string> {
     return this.invokeProxy({ collectionName, operation: 'createIndex', args: [keys, options] });
   }
 }
