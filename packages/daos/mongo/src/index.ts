@@ -1,50 +1,56 @@
-import MongoBase from './base-model';
-import mongoDao from './dao';
-import { ObjectId } from 'mongodb';
-import * as yup from 'yup';
-import path from 'path';
-import { PathResolver, JsonEnvsEntry } from '@restlessness/core';
-import { DaoPackage, JsonDaos, JsonEnvs, EnvFile, JsonServices } from '@restlessness/core';
-import { modelTemplate } from './templates';
-import AWSLambda from 'aws-lambda';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import mongoDao from "./dao";
+import { ObjectId } from "mongodb";
+import * as yup from "yup";
+import path from "path";
+import { PathResolver, JsonEnvsEntry } from "@restlessness/core";
+import {
+  DaoPackage,
+  JsonDaos,
+  JsonEnvs,
+  EnvFile,
+  JsonServices,
+} from "@restlessness/core";
+import { modelTemplate } from "./templates";
+import AWSLambda from "aws-lambda";
+import { exec } from "child_process";
+import { promisify } from "util";
 
-const yupObjectId = () => yup
-  .mixed()
-  .transform((value, originalValue) => {
-    if (value === null) {
-      return null;
-    }
-    if (!ObjectId.isValid(value)) {
-      return null;
-    }
-    return new ObjectId(value);
-  })
-  .test(
-    'isValidObjectId',
-    'Argument passed in must be a single String of 12 bytes or a string of 24 hex characters',
-    function (value) {
-      const { path, createError } = this;
-
+const yupObjectId = () =>
+  yup
+    .mixed()
+    .transform((value, originalValue) => {
       if (value === null) {
-        return createError({ path });
+        return null;
       }
+      if (!ObjectId.isValid(value)) {
+        return null;
+      }
+      return new ObjectId(value);
+    })
+    .test(
+      "isValidObjectId",
+      "Argument passed in must be a single String of 12 bytes or a string of 24 hex characters",
+      function (value) {
+        const { path, createError } = this;
 
-      return true;
-    },
-  );
+        if (value === null) {
+          return createError({ path });
+        }
+
+        return true;
+      },
+    );
 
 /**
  * @deprecated
  */
 class ObjectIdSchema extends yup.mixed {
   constructor() {
-    super({ type: 'objectId' });
+    super({ type: "objectId" });
 
     // @ts-ignore
-    this.withMutation(schema => {
-      schema.transform(function(value) {
+    this.withMutation((schema) => {
+      schema.transform(function (value) {
         if (value === null) {
           return null;
         }
@@ -61,9 +67,9 @@ class ObjectIdSchema extends yup.mixed {
 class MongoDaoPackage extends DaoPackage {
   async postInstall(): Promise<void> {
     await JsonDaos.addEntry({
-      id: 'dao-mongo',
-      name: 'Mongo DAO',
-      package: '@restlessness/dao-mongo',
+      id: "dao-mongo",
+      name: "Mongo DAO",
+      package: "@restlessness/dao-mongo",
     });
     await JsonEnvs.read();
     await Promise.all(JsonEnvs.entries.map(this.addEnv));
@@ -71,9 +77,14 @@ class MongoDaoPackage extends DaoPackage {
   }
 
   async installProxy() {
-    await promisify(exec)('npm i -E serverless-mongo-proxy', { cwd: PathResolver.getPrjPath });
+    await promisify(exec)("npm i -E -S serverless-mongo-proxy mongodb@4.5.0", {
+      cwd: PathResolver.getPrjPath,
+    });
     await JsonServices.read();
-    await JsonServices.addPlugin(JsonServices.SHARED_SERVICE_NAME, 'serverless-mongo-proxy');
+    await JsonServices.addPlugin(
+      JsonServices.SHARED_SERVICE_NAME,
+      "serverless-mongo-proxy",
+    );
     this.addProxyPermissions();
     await JsonServices.save();
   }
@@ -81,17 +92,18 @@ class MongoDaoPackage extends DaoPackage {
   addProxyPermissions() {
     for (let service of Object.values(JsonServices.services)) {
       const { provider } = service;
-      if (provider.name === 'aws') {
+      if (provider.name === "aws") {
         const statement = provider.iamRoleStatements?.find(
-          s => s['Effect'] === 'Allow' &&
-            s['Resource'] === '*' &&
-            s['Action'].includes('lambda:InvokeFunction')
+          (s) =>
+            s["Effect"] === "Allow" &&
+            s["Resource"] === "*" &&
+            s["Action"].includes("lambda:InvokeFunction"),
         );
         if (!statement) {
           const invokeStatement = {
-            'Effect': 'Allow',
-            'Resource': '*',
-            'Action': ['lambda:InvokeFunction'],
+            Effect: "Allow",
+            Resource: "*",
+            Action: ["lambda:InvokeFunction"],
           };
           if (!provider.iamRoleStatements) {
             provider.iamRoleStatements = [];
@@ -110,21 +122,30 @@ class MongoDaoPackage extends DaoPackage {
 
   private async addEnv(jsonEnvsEntry: JsonEnvsEntry): Promise<void> {
     const envFile = new EnvFile(jsonEnvsEntry.id);
-    await envFile.setParametricValue('MONGO_URI');
-    await envFile.setParametricValue('MONGO_DB_NAME');
+    await envFile.setParametricValue("MONGO_URI");
+    await envFile.setParametricValue("MONGO_DB_NAME");
   }
 
-  async beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void> {
+  async beforeEndpoint<T>(
+    event: AWSLambda.APIGatewayProxyEventBase<T>,
+    context: AWSLambda.Context,
+  ): Promise<void> {
     /**
      * @deprecated
      */
-    const projectYup = require(path.join(PathResolver.getNodeModulesPath, 'yup'));
+    const projectYup = require(path.join(
+      PathResolver.getNodeModulesPath,
+      "yup",
+    ));
     if (!projectYup.objectId) {
       projectYup.objectId = () => new ObjectIdSchema();
     }
   }
 
-  async beforeSchedule<T>(event: AWSLambda.ScheduledEvent | T, context: AWSLambda.Context): Promise<void> {}
+  async beforeSchedule<T>(
+    event: AWSLambda.ScheduledEvent | T,
+    context: AWSLambda.Context,
+  ): Promise<void> {}
 
   modelTemplate(modelName: string): string {
     return modelTemplate(modelName);
@@ -133,9 +154,4 @@ class MongoDaoPackage extends DaoPackage {
 
 export default new MongoDaoPackage();
 
-export {
-  MongoBase,
-  mongoDao,
-  ObjectId,
-  yupObjectId,
-};
+export { mongoDao, yupObjectId };
