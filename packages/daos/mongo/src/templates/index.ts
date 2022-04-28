@@ -25,7 +25,6 @@ export class ${name} implements WithId<I${name}> {
   
   constructor(i${name}: I${name}) {
     this.fromInterface(i${name});
-    this.v = 1;
   }
 
   static async create(): Promise<${name} | null> {
