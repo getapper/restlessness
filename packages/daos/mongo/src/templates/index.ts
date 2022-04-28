@@ -123,6 +123,8 @@ export class ${name} implements WithId<I${name}> {
       throw new Error("Interface object doesn't have an _id");
     }
     this._id = i${name}._id;
+    this.created = i${name}.created;
+    this.v = i${name}.v;
   }
 
   async refresh() {
