@@ -181,7 +181,7 @@ class MongoDao {
   ): Promise<InsertManyResult<Interface>> {
     return this.invokeProxy({
       collectionName,
-      operation: "insertOne",
+      operation: "insertMany",
       args: [documents, options],
     });
   }

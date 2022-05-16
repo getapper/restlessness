@@ -79,12 +79,13 @@ const generatePackageJson = (name: string) => `{
     "@types/aws-lambda": "8.10.50",
     "@types/jest": "25.2.3",
     "@types/node": "12.7.2",
-    "jest": "26.0.1",
+    "jest": "27.5.1",
     "prettier": "2.6.2",
     "serverless-offline": "6.8.0",
     "serverless-plugin-warmup": "4.9.0",
     "serverless-prune-plugin": "1.4.3",
-    "typescript": "4.6.2"
+    "typescript": "4.6.2",
+    "yup": "0.32.11"
   },
   "peerDependencies": {
     "serverless": "^1.63.0"
@@ -118,6 +119,9 @@ const generateGitIgnore = (): string => `node_modules
 
 #TSC
 /dist
+
+.vscode
+.nvmrc
 `;
 
 export {
