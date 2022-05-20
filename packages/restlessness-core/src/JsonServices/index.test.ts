@@ -12,7 +12,7 @@ beforeAll(async () => {
 });
 
 describe("JsonServices", () => {
-  test("Default services check", async (done) => {
+  test("Default services check", async () => {
     await JsonServices.read();
     expect(JsonServices.offlineService).toBeDefined();
     expect(JsonServices.sharedService).toBeDefined();
@@ -52,7 +52,7 @@ describe("JsonServices", () => {
     expect(JsonServices.services["testService"]).toBeFalsy();
   });
 
-  test("Add/Remove Schedule Event", async (done) => {
+  test("Add/Remove Schedule Event", async () => {
     await JsonServices.read();
     await JsonServices.addScheduleEvent({
       id: "schedule-event-test",
@@ -76,7 +76,7 @@ describe("JsonServices", () => {
     ).not.toBeDefined();
   });
 
-  test("Add/Remove Plugin", async (done) => {
+  test("Add/Remove Plugin", async () => {
     const service1 = "testService-1";
     const service2 = "testService-2";
     const pluginName = "serverless-plugin-test";
@@ -112,7 +112,7 @@ describe("JsonServices", () => {
     ).toBeFalsy();
   });
 
-  test("Create Simple Authorizer", async (done) => {
+  test("Create Simple Authorizer", async () => {
     const authorizer = await createTestAuthorizer();
     const serviceName = "auth-service-test";
     await JsonServices.addService(serviceName);
@@ -125,7 +125,7 @@ describe("JsonServices", () => {
     expect(JsonServices.offlineService?.functions[authorizer.id]).toBeDefined();
   });
 
-  test("Health Check", async (done) => {
+  test("Health Check", async () => {
     const service1 = "test-health-service-1";
     const service2 = "test-health-service-2";
 
