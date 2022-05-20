@@ -22,7 +22,7 @@
     "yup": "^0.28.3"
   },
   "dependencies": {
-    "@restlessness/core": "0.5.29",
+    "@restlessness/core": "0.6.3",
     "aws-sdk": "2.814.0",
     "kebab-case": "1.0.1",
     "pluralize": "8.0.0"
