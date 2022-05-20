@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
 export interface ValidationObjects {
-  queryStringParameters?: yup.Schema<object>,
-  payload?: yup.Schema<object>,
-  pathParameters?: yup.Schema<object>,
+  queryStringParameters?: yup.SchemaOf<object>,
+  payload?: yup.SchemaOf<object>,
+  pathParameters?: yup.SchemaOf<object>,
 }
 
 export interface ValidationResult {

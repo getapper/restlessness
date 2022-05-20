@@ -7,11 +7,11 @@ export default abstract class AddOnPackage {
     return require(path.join(PathResolver.getNodeModulesPath, packageName)).default;
   }
 
-  abstract async postInstall(): Promise<void>
+  abstract postInstall(): Promise<void>
 
-  abstract async postEnvCreated(envName: string): Promise<void>
+  abstract postEnvCreated(envName: string): Promise<void>
 
-  abstract async beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void>
+  abstract beforeEndpoint<T>(event: AWSLambda.APIGatewayProxyEventBase<T>, context: AWSLambda.Context): Promise<void>
 
-  abstract async beforeSchedule<T>(event: AWSLambda.ScheduledEvent | T, context: AWSLambda.Context): Promise<void>
+  abstract beforeSchedule<T>(event: AWSLambda.ScheduledEvent | T, context: AWSLambda.Context): Promise<void>
 }
