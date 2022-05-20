@@ -21,6 +21,5 @@ describe('Miscellaneous', () => {
       () => Misc.createAwsSafeFunctionName('10/()$23', 'service-test-1'),
     ).toThrowError();
 
-    done();
-  });
+      });
 });

@@ -20,22 +20,19 @@ const ${jsonEndpointsEntry.id} = '${jsonEndpointsEntry.safeFunctionName}';
 
 beforeAll(async done => {
   await TestHandler.beforeAll();
-  done();
-});
+  });
 
 describe('${jsonEndpointsEntry.id} API', () => {
-  test('', async (done) => {
+  test('', async () => {
     ${authorizerPackage ? `const session = new ${authorizerPackage.getSessionModelName()}();\n    session.id = 'test_id';\n    const serializedSession = await session.serialize();` : ''}
     const res = await TestHandler.invokeLambda(${jsonEndpointsEntry.id}${authorizerPackage ? ', null, {serializedSession}' : ''});
     // expect(res.statusCode).toBe(StatusCodes.OK);
-    done();
-  });
+      });
 });
 
 afterAll(async done => {
   await TestHandler.afterAll();
-  done();
-});
+  });
 `;
 
 const handlerTemplate = (

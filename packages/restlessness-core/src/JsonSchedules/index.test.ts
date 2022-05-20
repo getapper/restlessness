@@ -7,13 +7,12 @@ import PathResolver from '../PathResolver';
 
 const PROJECT_NAME = 'tmp-json-schedule-events';
 
-beforeAll(async (done) => {
+beforeAll(async () => {
   await TestUtils.createProjectInCwd(PROJECT_NAME);
-  done();
-});
+  });
 
 describe('JsonSchedules', () => {
-  test('Create/Remove schedule',  async (done) => {
+  test('Create/Remove schedule',  async () => {
     await JsonServices.read();
     await JsonServices.addService('service-test-1');
 
@@ -34,12 +33,10 @@ describe('JsonSchedules', () => {
 
     await JsonSchedules.removeEntryById(schedulesEntry.id);
     expect(JsonSchedules.entries.length).toBe(0);
-    done();
-  });
+      });
 });
 
-afterAll(async (done) => {
+afterAll(async () => {
   await TestUtils.deleteProjectFromCwd(PROJECT_NAME);
-  done();
-});
+  });
 

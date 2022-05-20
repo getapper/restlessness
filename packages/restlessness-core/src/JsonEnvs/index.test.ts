@@ -6,13 +6,12 @@ import * as TestUtils from '../TestUtils';
 
 const PROJECT_NAME = 'tmp-json-env';
 
-beforeAll(async (done) => {
+beforeAll(async () => {
   await TestUtils.createProjectInCwd(PROJECT_NAME);
-  done();
-});
+  });
 
 describe('JsonEnvs model', () => {
-  test('it should create default envs',  async (done) => {
+  test('it should create default envs',  async () => {
     await JsonEnvs.read();
     const envs: JsonEnvsEntry[] = JsonEnvs.entries;
     expect(envs?.length).toBe(4);
@@ -22,10 +21,9 @@ describe('JsonEnvs model', () => {
     expect(envIds.includes('staging')).toBe(true);
     expect(envIds.includes('production')).toBe(true);
     expect((await fs.readdir(PathResolver.getEnvsPath)).length).toBe(4);
-    done();
-  });
+      });
 
-  test('it should create a new env',  async (done) => {
+  test('it should create a new env',  async () => {
     await JsonEnvs.create('locale2');
     await JsonEnvs.read();
     const envs: JsonEnvsEntry[] = JsonEnvs.entries;
@@ -34,10 +32,9 @@ describe('JsonEnvs model', () => {
     expect(envIds.includes('locale2')).toBe(true);
     expect((await fs.readdir(PathResolver.getEnvsPath)).length).toBe(5);
     expect((await fs.readdir(PathResolver.getEnvsPath)).includes('.env.locale2')).toBe(true);
-    done();
-  });
+      });
 
-  test('it should removed an env',  async (done) => {
+  test('it should removed an env',  async () => {
     await JsonEnvs.read();
     let envs: JsonEnvsEntry[] = JsonEnvs.entries;
     expect(envs?.length).toBe(5);
@@ -48,11 +45,9 @@ describe('JsonEnvs model', () => {
     expect((await fs.readdir(PathResolver.getEnvsPath)).includes('.env.locale2')).toBe(false);
     const packageJson = await PackageJson.read();
     expect(packageJson?.scripts?.['DEV:locale2'] ?? null).toBe(null);
-    done();
-  });
+      });
 });
 
-afterAll(async (done) => {
+afterAll(async () => {
   await TestUtils.deleteProjectFromCwd(PROJECT_NAME);
-  done();
-});
+  });
