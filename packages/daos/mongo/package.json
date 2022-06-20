@@ -24,6 +24,7 @@
   "dependencies": {
     "@restlessness/core": "0.6.3",
     "aws-sdk": "2.814.0",
+    "bson": "4.6.4",
     "kebab-case": "1.0.1",
     "pluralize": "8.0.0"
   },
