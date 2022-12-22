@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@restlessness/core": "0.5.10",
-    "jsonwebtoken": "8.5.1"
+    "jsonwebtoken": "9.0.0"
   },
   "peerDependencies": {
     "yup": "^0.28.3"
